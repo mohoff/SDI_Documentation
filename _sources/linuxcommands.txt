@@ -7,8 +7,6 @@ Linux Commands
 General
 #######
 
-Press Control-R for Commandd Line History incSearch
-
 head and tail
 *************
 
