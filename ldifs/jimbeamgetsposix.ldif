@@ -1,0 +1,14 @@
+dn: uid=beam,ou=devel,ou=software,ou=departments,dc=mi,dc=hdm-stuttgart,dc=de
+changetype: modify
+add: objectClass
+objectClass: posixAccount
+-
+add: uidNumber
+uidNumber: 600
+-
+add: gidNumber
+gidNumber: 600
+-
+add: homeDirectory
+homeDirectory: /home/beam/
+

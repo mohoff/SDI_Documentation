@@ -149,3 +149,95 @@ Apache Directory Studio
 
 Ein auch als Eclipse-Plugin erhaeltliches Tool, mit dem CRUD-Operations auf LDAP-Datenbaenken
 ausgefuehrt werden koennen.
+
+Exercises
+#########
+
+At first we have populated the LDAF- Server with the following .ldif-File:
+
+.. code-block:: html
+  :linenos:
+
+  dn: ou=departments,dc=mi,dc=hdm-stuttgart;dc=de
+  changetype: add
+  objectClass: top
+  objectClass: organizationalUnit
+  ou: departments
+
+  dn: ou=software,ou=departments,dc=mi,dc=hdm-stuttgart;dc=de
+  changetype: add
+  objectClass: top
+  objectClass: organizationalUnit
+  ou: software
+
+  dn: ou=devel,ou=software,ou=departments,dc=mi,dc=hdm-stuttgart;dc=de
+  changetype: add
+  objectClass: top
+  objectClass: organizationalUnit
+  ou: devel
+
+  dn: uid=beam,ou=devel,ou=software,ou=departments,dc=mi,dc=hdm-stuttgart;dc=de
+  changetype: add
+  objectClass: inetOrgPerson
+  uid: beam
+  cn: Jim Beam
+  givenName: Jim
+  sn: Beam
+  mail: beam@betrayer.com
+
+This .ldif-file can be easily imported via Apache Directory Studio.
+Another user has been added, too:
+
+.. code-block:: html
+  :linenos:
+
+  uid=lappen,ou=devel,ou=software,ou=departments,dc=mi,dc=hdm-stuttgart,dc    =de
+  changetype: add
+  objectClass: inetOrgPerson
+  uid: lappen
+  cn: Lars Lappen
+  givenName: Lars
+  sn: Lappen
+  mail: lappen@sdi1a.mi.hdm-stuttgart.de
+
+The data can now be accessed with a mail client, in our case we accessed the data with Mozilla ThunderBird.
+
+Via Tools->Address Book->New->LDAP Directory a new LDAP directory can be added:
+
+.. image:: images/addressbooksettings.png
+
+I also downloaded the Directory:
+
+.. image:: images/offline.png
+
+Now the emails can be viewed with the correct filter:
+
+.. image:: images/addressbook.png
+
+
+
+In Apache Directory Studio, filter based search can be used.
+
+The filter ``(uid=b*)`` filters users with an attribute starting with "d".
+
+The filter ``(|(uid=*)(ou=d*))`` filters users all entries either with either a defined uid attribute or a ou attribute starting with letter “d”.
+
+Finally, we added a posixAccount for Jim Beam with the following .ldif-file:
+
+.. code-block:: html
+  :linenos:
+
+  dn: uid=beam,ou=devel,ou=software,ou=departments,dc=mi,dc=hdm-stuttgart,dc=d    e
+  changetype: modify
+  add: objectClass
+  objectClass: posixAccount
+  -
+  add: uidNumber
+  uidNumber: 600
+  -
+  add: gidNumber
+  gidNumber: 600
+  -
+  add: homeDirectory
+  homeDirectory: /home/beam/
+

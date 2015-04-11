@@ -1,0 +1,12 @@
+#!RESULT OK
+#!CONNECTION ldap://sdi1a.mi.hdm-stuttgart.de:389
+#!DATE 2015-04-10T11:00:59.574
+dn: uid=lappen,ou=devel,ou=software,ou=departments,dc=mi,dc=hdm-stuttgart,dc
+ =de
+changetype: add
+objectClass: inetOrgPerson
+uid: lappen
+cn: Lars Lappen
+givenName: Lars
+sn: Lappen
+mail: lappen@sdi1a.mi.hdm-stuttgart.de
