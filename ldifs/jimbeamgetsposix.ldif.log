@@ -1,0 +1,18 @@
+#!RESULT OK
+#!CONNECTION ldap://sdi1a.mi.hdm-stuttgart.de:389
+#!DATE 2015-04-10T11:54:41.788
+dn: uid=beam,ou=devel,ou=software,ou=departments,dc=mi,dc=hdm-stuttgart,dc=d
+ e
+changetype: modify
+add: objectClass
+objectClass: posixAccount
+-
+add: uidNumber
+uidNumber: 600
+-
+add: gidNumber
+gidNumber: 600
+-
+add: homeDirectory
+homeDirectory: /home/beam/
+
