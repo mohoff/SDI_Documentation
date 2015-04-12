@@ -196,11 +196,36 @@ Ein LDIF-File kann z.B. folgendermassen aussehen:
   sn: Beam
   mail: beam@betrayer.com
 
-**ERKLAERUNG DAZU**
+  dn: uid=lappen,ou=devel,ou=software,ou=departments,dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
+  changetype: add
+  objectClass: inetOrgPerson
+  uid: lappen
+  cn: Lars Lappen
+  givenName: Lars
+  sn: Lappen
+  mail: lappen@sdi1a.mi.hdm-stuttgart.de
+
+Ein weiter "Leaf"-Usre wurde im letzten Block hinzugefuegt.
+
+**weitere ERKLAERUNGen DAZU**
 
 LDAP with mail client Thunderbird
 #################################
-**Address Book .... was muss man da eingeben... und was kann man dann damit machen**
+The data can now be accessed with a mail client, in our case we accessed the data
+with Mozilla ThunderBird.
+
+Via Tools->Address Book->New->LDAP Directory a new LDAP directory can be added:
+
+.. image:: images/addressbooksettings.png
+
+I also downloaded the Directory:
+
+.. image:: images/offline.png
+
+Now the emails can be viewed with the correct filter:
+
+.. image:: images/addressbook.png
+
 
 LDAP Filter Search
 ##################
@@ -230,27 +255,39 @@ Beispiele:
       Jeder Eintrag mito ``objectClass=user`` UND einer E-Mail-Adresse, die
       mit "abc" beginnt.
 
-    ``(weitere bsp)``
-      Erklaerungen
-
-Aus Goik's Aufgaben:
-
-All users with a uid attribute value starting with the letter “b”.
-
-All entries either with either a defined uid attribute or a ou attribute starting with letter “d”.
 
 Allgemein: die Search-Syntax uenterstuetzt Operatoren (!, &, |, =, ~=, <=, >=) und
 Wildcards (*). Gruppierungen erfolgt durch Einklammern. Falls nach reservierten
 Sonderzeichen gesucht werden muss (Klammern, !, ^, ...) lassen sich diese im
 Suchstring escapen.
 
+
+Search Filter Aufgaben
+**********************
+The filter ``(uid=b*)`` filters users with an attribute starting with "d".
+
+The filter ``(|(uid=*)(ou=d*))`` filters users all entries either with either a defined uid attribute or a ou attribute starting with letter “d”.
+
 Extending an existing Entry
 ###########################
-Aufgabe:
+Finally, we added a ``posixAccount`` for the user Jim Beam with the following .ldif-file:
 
-The entry uid=beam,ou=devel,ou=software,ou=departments,dc=betrayer;dc=com may be
-extended by the objectclass posixAccount. Construct a LDIF file to add the
-attributes uidNumber, gidNumber and homeDirectory by a modify/add operation.
+.. code-block:: html
+  :linenos:
+
+  dn: uid=beam,ou=devel,ou=software,ou=departments,dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
+  changetype: modify
+  add: objectClass
+  objectClass: posixAccount
+  -
+  add: uidNumber
+  uidNumber: 600
+  -
+  add: gidNumber
+  gidNumber: 600
+  -
+  add: homeDirectory
+  homeDirectory: /home/beam/
 
 LDAP Account Manager (LAM)
 ##########################
@@ -304,63 +341,5 @@ Depending on the configuration, updates can either be propagated from the master
 (single source) or bidirectional.
 
 
-In our environment, user rights get included via a LDIF-file for each LDAP instance.
-
-
-
-
-This .ldif-file can be easily imported via Apache Directory Studio.
-Another user has been added, too:
-
-.. code-block:: html
-  :linenos:
-
-  uid=lappen,ou=devel,ou=software,ou=departments,dc=mi,dc=hdm-stuttgart,dc    =de
-  changetype: add
-  objectClass: inetOrgPerson
-  uid: lappen
-  cn: Lars Lappen
-  givenName: Lars
-  sn: Lappen
-  mail: lappen@sdi1a.mi.hdm-stuttgart.de
-
-The data can now be accessed with a mail client, in our case we accessed the data with Mozilla ThunderBird.
-
-Via Tools->Address Book->New->LDAP Directory a new LDAP directory can be added:
-
-.. image:: images/addressbooksettings.png
-
-I also downloaded the Directory:
-
-.. image:: images/offline.png
-
-Now the emails can be viewed with the correct filter:
-
-.. image:: images/addressbook.png
-
-
-
-In Apache Directory Studio, filter based search can be used.
-
-The filter ``(uid=b*)`` filters users with an attribute starting with "d".
-
-The filter ``(|(uid=*)(ou=d*))`` filters users all entries either with either a defined uid attribute or a ou attribute starting with letter “d”.
-
-Finally, we added a posixAccount for Jim Beam with the following .ldif-file:
-
-.. code-block:: html
-  :linenos:
-
-  dn: uid=beam,ou=devel,ou=software,ou=departments,dc=mi,dc=hdm-stuttgart,dc=d    e
-  changetype: modify
-  add: objectClass
-  objectClass: posixAccount
-  -
-  add: uidNumber
-  uidNumber: 600
-  -
-  add: gidNumber
-  gidNumber: 600
-  -
-  add: homeDirectory
-  homeDirectory: /home/beam/
+In our environment, user rights get included via a LDIF-file for each LDAP instance
+in a replicating system.
