@@ -33,6 +33,16 @@ _ Abkuerzungen:
 * cn
 * ou
 
+Apache Directory Studio
+#######################
+
+Ein auch als Eclipse-Plugin erhaeltliches Tool, mit dem CRUD-Operations auf LDAP-Datenbaenken
+ausgefuehrt werden koennen.
+
+Dient zur Unterstuetzung des Instalationsprozesses sowie der Entwicklung und dem Debugging unter LDAP.
+Fuer die alltaeglichen Administrierungsaufgaben sind jedoch webbasierte Tools geeigneter.
+
+
 
 Setting up a LDAP-Server
 ########################
@@ -142,10 +152,156 @@ and Security Layer" (SASL) (-Y <SASL mechanism>).
 LDIF Files
 ##########
 
-add data
+Mit LDIF Files lassen sich LDAP-spezifische Daten speichern, z.B. als Export-Funktion.
+Ueber ``slapadd`` im Terminal (LDAP-Server zur Sicherheit dafuer stoppen) oder die
+Import-Funktion des Apache Directory Studios lassen sich LDIF Files importieren.
 
-Apache Directory Studio
-#######################
+Ein LDIF-File kann z.B. folgendermassen aussehen:
 
-Ein auch als Eclipse-Plugin erhaeltliches Tool, mit dem CRUD-Operations auf LDAP-Datenbaenken
-ausgefuehrt werden koennen.
+.. code-block:: html
+  :linenos:
+
+  dn:dc=betrayer,dc=com
+  changetype: add
+  objectclass: dcObject
+  objectclass: organizationalUnit
+  dc: betrayer
+  ou: config
+  ou: betrayer Dot com
+
+  dn: ou=departments,dc=betrayer;dc=com
+  changetype: add
+  objectClass: top
+  objectClass: organizationalUnit
+  ou: departments
+
+  dn: ou=software,ou=departments,dc=betrayer;dc=com
+  changetype: add
+  objectClass: top
+  objectClass: organizationalUnit
+  ou: software
+
+  dn: ou=devel,ou=software,ou=departments,dc=betrayer;dc=com
+  changetype: add
+  objectClass: top
+  objectClass: organizationalUnit
+  ou: devel
+
+  dn: uid=beam,ou=devel,ou=software,ou=departments,dc=betrayer;dc=com
+  changetype: add
+  objectClass: inetOrgPerson
+  uid: beam
+  cn: Jim Beam
+  givenName: Jim
+  sn: Beam
+  mail: beam@betrayer.com
+
+**ERKLAERUNG DAZU**
+
+LDAP with mail client Thunderbird
+#################################
+**Address Book .... was muss man da eingeben... und was kann man dann damit machen**
+
+LDAP Filter Search
+##################
+
+Filter kann man ueber das CLI oder ueber das Apache Directory Studio festlegen.
+
+Die ``ldapsearch``-Syntax ist oben aufgefuehrt.
+
+Im Apache Directory Studio stellt man Fliter ein, indem man auf den zu filternden
+Knoten rechtsklickt und "Filter Children" auswaehlt. ImPopup-Fenster laests sich
+dann ein Suchstring eingeben. Um die Syntax naeher zu beleuchten, hier ein paar
+Beispiele:
+
+.. topic:: Beispiele zu LDAP Search Filtern
+
+  .. glossary::
+    ``(objectClass=*)``
+      default Search Filter. Laesst alle objectClasses zu.
+
+    ``(uid=*b*)``
+      Jeder uid-Eintrag, der ein "b" enthaelt.
+
+    ``(cn=b*)``
+      Jeder uid-Eintrag, der mit einem "b" beginnt.
+
+    ``(&(objectClass=user)(email=abc*))``
+      Jeder Eintrag mito ``objectClass=user`` UND einer E-Mail-Adresse, die
+      mit "abc" beginnt.
+
+    ``(weitere bsp)``
+      Erklaerungen
+
+Aus Goik's Aufgaben:
+
+All users with a uid attribute value starting with the letter “b”.
+
+All entries either with either a defined uid attribute or a ou attribute starting with letter “d”.
+
+Allgemein: die Search-Syntax uenterstuetzt Operatoren (!, &, |, =, ~=, <=, >=) und
+Wildcards (*). Gruppierungen erfolgt durch Einklammern. Falls nach reservierten
+Sonderzeichen gesucht werden muss (Klammern, !, ^, ...) lassen sich diese im
+Suchstring escapen.
+
+Extending an existing Entry
+###########################
+Aufgabe:
+
+The entry uid=beam,ou=devel,ou=software,ou=departments,dc=betrayer;dc=com may be
+extended by the objectclass posixAccount. Construct a LDIF file to add the
+attributes uidNumber, gidNumber and homeDirectory by a modify/add operation.
+
+LDAP Account Manager (LAM)
+##########################
+Installation unter Ubuntu mit
+::
+
+    [sudo] apt-get install ldap-account-manager
+
+Der LAM laeuft auf Apache und ist nach der Installation sofort unter
+``http://sdi1b.mi.hdm-stuttgart.de/lam`` erreichbar. Auf dieser Webseite
+lassen sich gleich die LAM-Einstellungen vornehmen. Das default-Master-Passwort
+ist ``lam``.
+
+Die "General Settings" umfassen Einstellungen zur Sicherheit, Passwoertern und
+deren Policies, und Logging.
+
+Die "Server Profiles" bestehen aus den "General Settings", "Account Types", "Modules"
+und "Module Settings". Unter "General Settings" sollte man den Tree-Suffix setzen,
+in unserem Fall ist das ``dc=mi,dc=hdm-stuttgart,dc=de``. Weiter unten kann man die
+User angeben, die sich ueber das Web-UI anmelden koennen. Wir haben
+::
+
+  cn=admin,dc=mi,dc=hdm-stuttgart,dc=de
+
+und
+::
+
+  uid=boss,ou=software,ou=departments,dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
+
+zusaetzlich eingetragen.
+
+Auch unter "Account Types" muessen fuer User, Hosts und Groups die entsprechenden
+LDAP-Suffixes angegeben werden.
+
+Unter "Modules" koennen die "objectClass"es der LDAP-Entitaetstypen verwaltet
+werden.
+
+Unter "Module Settings" lassen sich u.a. Einstellungen zu den UIDs fuer Users, Groups 
+und Hosts vornehmen. Also z.B. die Art des UID-Generators, sowie die Range, in der sich
+generierte UIDs befinden duerfen.
+
+
+LDAP Replication (basic theory)
+###############################
+LDAP Replication serves failure safety, so the LDAP services are still available when
+some nodes crash in the LDAP-infrastructure.
+
+
+The HdM environment contains a LDAP-master and serveral LDAP-slaves like ``ldap1.mi``.
+Depending on the configuration, updates can either be propagated from the master to all slaves
+(single source) or bidirectional.
+
+
+In our environment, user rights get included via a LDIF-file for each LDAP instance.

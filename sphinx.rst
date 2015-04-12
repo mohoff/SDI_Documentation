@@ -85,7 +85,7 @@ Math
 ####
 .. warning::
 
-   Somehow, math expressions aren't displayed correctly!
+    Somehow, math expressions aren't displayed correctly!
 
 Ahhh. lateX needs to be installed so equations can get rendered into PNG
 
