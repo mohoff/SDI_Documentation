@@ -3,75 +3,157 @@
 DNS
 ***
 
-DNS intro mit HdM addresses
-###########################
+DNS Introduction
+################
 
-nslookup hdm-stuttgart.de geht nicht
-nslookup www.hdm-stuttgart.de geht
-nslookup mi.hdm-stuttgart.de geht
+Was ist DNS und was macht ``nslookup``?
+***************************************
 
-Domainnamen -> IP-Adressen
-Rechnernamen (in der Domaene) <-> IP-Adressen
-mx-records
-Nameservce
-(logisch) <-> (physisch)
+DNS (Domain Name Service) ist ein Netzwerkprotokoll, mit dem logische Netzadressen in physische und umgekehrt umgewandelt werden. Man spricht je nach Aufloesungsrichtung von "lookup" oder "reverse lookup".
 
-wenn der rechner in der gleichen Domaene ist, kann auch nslookup <rechnername> eingegeben werden.
-Sonst mit nslookup <rechnernetze>.<domain> erreichbar
+* Domainnamen <-> IP-Adressen
+* Rechnernamen (in der gleichen Domaene) <-> IP-Adressen
+* MX-Records
+* Nameservice
+
+Der Windows- und Linux-CLI-Command fuer DNS-lookups ist ``nslookup``. Optional koennen abhaengig von der Aufloesungsrichtung Domainnamen bzw. IP-Adressen angegeben werden, die aufgeloest werden sollen.
+
+Falls die aufzuloesende Maschine in der gleichen Domaene wie der Requestor liegt, kann mit ``nslookup <hostname>`` dieser direkt ohne Kenntnis ueber den FQDN (Fully Qualified Domain Name) aufgeloest werden. Wenn die
+Zielmaschine nicht in der gleichen Domaene liegt, erfolt der Lookup mit ``nslookup <hostname>.<domain>``.
+
+Eigenheiten von ``nslookup``
+++++++++++++++++++++++++++++
+Folgende Befehle wurden ausgefuehrt:
+::
+		nslookup hdm-stuttgart.de		# geht nicht
+		nslookup www.hdm-stuttgart.de		# geht
+		nslookup mi.hdm-stuttgart.de		# geht
+
+**ERKLAERUNG**
 
 Warum braucht man DNS?
-######################
-- IP Adressen aendern sich.
-- IP Adressen kann man sich schlecht merken
+**********************
+* IP Adressen koennen sich aendern. Ein referenzierender Domainname kann dagegen immer gleich bleiben.
+* IP Adressen kann man sich schlecht merken, Domainnamen sind einpraegsamer.
+* Fuer einen Domainname koennen mehrere IP-Adressen existieren (Ausfallsicherheit, Lastverteilung)
 
-bla
-###
+``nslookup`` im Detail
+**********************
+Mit ``nslookup`` allein, startet man das Tool, ueber das sich DNS-Server genauer abfragen lassen.
 
-nslookup eingeben fuer nslookup-CLI:
-> set type=mx
-> mi.hdm-stuttgart.de
-(mehrere maschinen mx1,mx2,..,mx5.hdm-stuttgart.de)
-warum mehrere? Lastverteilung, in gewissen Graden Ausfallsicherheit
-DNS kann mit lastverteilungs-prozenten konfiguriert werden, damit grosse mailserver z.b. mehr
-traffic bekommen wie kleine mailserver.
+*Eingabe*
+::
+		> nslookup
+		>> set type=mx
+		>> mi.hdm-stuttgart.de
 
-bei www.google.de kommt nur ein Eintrag zurueck. bei google.de kommen mehrere zurueck (PTR-verweis?)
+*Ausgabe*
+::
+		mx1.mi.hdm-stuttgart.de		
+		mx2.mi.hdm-stuttgart.de
+		mx3.mi.hdm-stuttgart.de
+		mx4.mi.hdm-stuttgart.de
+		mx5.mi.hdm-stuttgart.de
 
->set type=ns
->mi.hdm-stuttgart.de
-(hat 3 eintrage, wegen ausfallsicherheit)
->hdm-stuttgart.de
-(hat 5 eintrage, 3 davon intern, 2 von belwue [forschungsnetz]. belwue verlangt dass 2 DNS ausserhalb
-der einrichtung ist)
+Wie in der Ausgabe zu sehen ist, hat der DNS-Server auf der Maschine ``mi.hdm-stuttgart.de`` sogar 5 Mailserver eingetragen. Inn diesem Fall dient das zur Lastverteilung (und auch Ausfallsicherheit durch Redundanz). Der DNS-Server kann so konfiguriert werden, dass er die 5 hinterlegten Adressen unterschiedlich auslastet. So kann z.B. angegeben werden, dass ``mx1.mi.hdm-stuttgart.de`` 50% aller Anfragen (=~ Traffic) erhalten soll, da er der leistungsstaerkste unter den 5 Eintraegen ist.
 
+*Eingabe*:
+::
+		> nslookup
+		> server sdi1a.mi.hdm-stuttgart.de
 
-links im freedocs-script  (erster ist basic, zweiter komplex, dritter fuer die heutige vorlesung gut, ganz detailliert im vierten link (isc.org))
-
-Es gibt ein DNS-secure, da es viele DNS-angriffsszenarien gibt (spoofing vor allem...)
-
-Man braucht 2 Zonen um einfachen DNS-server einzurichten.
-1.) Forward-Zone: Rechnername -> IP-Adresse
-2.) Reverse-Zone: IP-Adresse -> Rechername
-
-DNS-Forwarding
-##############
-Wenn Leaf-DNS etwas nicht aufloesen kann, geht die Anfrage weiter an uebergeordnetes DNS, das evtl. mehr weiss.
-
-Relevant: Attribute DNSSEC
+Erklaerung: Jetzt spricht man mit Eingaben direkt den DNS-Server auf ``sdi1a.mi.hdm-stuttgart.de`` an.
 
 
 
->nslookup
->server sdi1a.mi.hdm-stuttgart.de
-(jetzt gehen die anfragen an diesen DNS-server und fraegen dessen eintraege ab)
+Beispiel google.de
+++++++++++++++++++
+
+Bei der Eingabe von
+:: 
+		nslookup www.google.de
+
+kommt ein Eintrag zurueck. Bei der Eingabe von
+::
+		nslookup google.de
+
+kommen jedoch mehrere Eintraege zurueck.
+
+**ERKLAEUNG ... vllt: Diese Eigenschaft kann von DNS-Pointer-Eintraegen (CNAME und PTR) realisiert werden.**
+
+Beispiel hdm-stuttgart.de
++++++++++++++++++++++++++
+*Eingabe:*
+::
+		> set type=ns
+		> mi.hdm-stuttgart.de
+
+Die Ausgabe davon hat 3 Eintraege zur Ausfallsicherheit.
+
+*Eingabe:*
+::
+		> hdm-stuttgart.de
+
+Die Ausgabe davon hat 5 Eintrage. 2 davon intern, 3 davon sind von BelWue, dem Forschungsnetzwerk, an das die HdM angeschlossen ist. Das haengt damit zusammen, dass BelWue verlangt, dass 2 DNS ausserhalb der Einrichtung liegen muessen.
+
+DNS Secure
+**********
+Es gibt ein DNS-Secure, da es viele DNS-Angriffsszenarien gibt (z.B. DNS-Spoofing). Wie verwenden das bei uns in der Veranstaltung aber nicht.
+
+**ERKLAERUNG: DNSSEC ?**
+
+DNS Zones
+*********
+Man braucht 2 Zonen, um einen einfachen DNS-Service einzurichten.
+
+1. Forward-Zone: Rechnername -> IP-Adresse
+2. Reverse-Zone: IP-Adresse -> Rechername
+
+Bei der Administrierung von DNS-Services kann das umstaendlich sein, da fuer jeden Eintrag im semantischen Sinn jeweils 2 Zone-Eintraege getaetigt werden muessen. Durch Managing-Tools oder Hooks stehen haber Massnahmen zur Verfuegung, diesen Prozess zu vereinfachen.
+
+DNS Forwarding
+**************
+DNS-Server sind hierarchisch in einer Baumstruktur geordnet. Wenn ein "Leaf"-DNS, z.B. der DNS-Service den wir im Rahmen der Veranstaltung aufsetzen, eine Eingabe nicht aufloesen kann, geht die Anfrage weiter an einen uebergeordneten DNS. Je hoeher der DNS-Server in der Struktur liegt, desto wahrscheinlicher ist id.R., dass er die Domain bzw. die IP-Adresse aufloesen kann. etwas nicht aufloesen kann, geht die Anfrage weiter an uebergeordnetes DNS, das evtl. mehr weiss.
 
 
-Logs sind default-maessig in ``/var/log``. Nicht DNS-spezifisch, sondern allgemeiner log-Ordner fuer viele Dienste. Uns interessiert ``syslog`` (da steht u.a. DNS-log drin, auch LDAP (slapd) drin). Wenn logfiles zu gross werden, werden sie separat unter neuem Namen abgespeichert. Es gibt einen Service, der das uebernimmt. Mit ``tail`` laesst sich aber das "Ende einer Datei" ausgeben. ``tail syslog`` in ``/var/log``. ``tail -f syslog`` macht das live, sprich pollt die Datei regelmaessig und gibt immer die neusten Zeilen aus. Bei ``service bind9 restart`` wird DNS-Service neu gestartet und ``tail -f syslog`` spuckt neue Zeilen aus. Trotzdem koennen noch zu viele Eintraege kommen. Mit Filtern wie ``tail -f syslog | grep named | grep loaded`` laesst sich die Ausgabe weiter einschraenken.
+DNS Logs
+********
+Logs sind default-maessig in ``/var/log``. Das ist der allgemeine Log-Ordner unter Linux, worunter viele Dienste ihre Logs ablegen. Im File ``syslog`` in diesem Verzeichnis werden u.a. DNS-Logs gespeichert, auch LDAP-Logs existieren vom Prozess ``slapd``.
 
+Wenn Log-Files zu gross werden, koennen sie von einem eigenen Service umbenannt und seperat als Datei abgespeichert werden.
 
-Datei ``/etc/resolv.conf`` ist fuer ... gut.
+Mit ``tail`` laesst sich das Ende einer Datei ausgeben. Mit dem Parameter ``f``, also
+::
 
-Einzelne Hosts koennen in ``etc/hosts`` eingetragen werden. Da steht meistens local loopback drin.
+		tail -f <dateiname>
 
-Hostname eines Rechners mit ``hostname`` zu bestimmen.
+kann eine Datei "live" getracked werden. Sobald in die Datei geschrieben wird, in unserem Fall also ``/var/log/syslog``, werden die letzten Aenderungen im CLI ausgegeben.
+
+Ein DNS-Log-Eintrag kann z.B. mit einem Neustart des DNS-Services erreicht werden. Ein Neustart kann mit
+::
+
+		service bind9 restart
+
+initiiert werden.
+
+Verbunden mit dem Tool ``grep`` kann die Ausgabe weiter eingeschraenkt werden, z.B. mit:
+::
+
+		tail -f syslog | grep named | grep loaded
+
+Sonstiges
+*********
+**UNVOLLSTAENDIG**
+
+* Die Datei ``/etc/resolv.conf`` ist fuer ... gut.
+
+* Einzelne Hosts koennen in ``etc/hosts`` eingetragen werden. Da steht meistens der local loopback drin.
+
+* Der Hostname eines Rechners kann mit ``hostname`` bestimmt werden.
+
+Exercises
+#########
+
+The stage is yours, Paul :P
+
 
