@@ -15,7 +15,7 @@ Contents:
    Sphinx <sphinx>
    Linux Commands <linuxcommands>
    LDAP <ldap>
-	 DNS <dns>
+   DNS <dns>
 
 
 

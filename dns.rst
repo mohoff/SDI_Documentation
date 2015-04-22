@@ -154,6 +154,110 @@ Sonstiges
 Exercises
 #########
 
-The stage is yours, Paul :P
+
+Setup des DNS-Servers
+*********************
+
+Mithilfe von apt-get wurden zunächst die benötigten Pakete auf
+dem Server installiert:
+
+``apt-get update``
+``apt-get install bind9 bind9utils``
+
+Anschließend wurde unter /etc/default/bind9 die Option "-4" 
+hinzugefügt. Die OPTIONS-Variable sah nun folgendermaßen aus:
+
+``OPTIONs="-4 -u bind"``
+
+Der zusätzliche Eintrag versetzt BIND in den IPv4-Modus.
+
+Als nächstes muss die Options-Datei von BIND bearbeitet werden.
+Dies befindet sich unter ``/etc/bind/named.conf.options``
+
+Im Block *options* wurden die folgenden Einträge hinzugefügt:
+
+.. code-block:: html
+  :linenos:
+  
+  options {
+        directory "/var/cache/bind";
+        recursion yes;                 
+        //allow-recursion { trusted; }; 
+        listen-on { 141.62.75.101; };   
+        allow-transfer { none; };   
+	
+	forwarders {
+	};
+  ...
+  };
 
 
+Anschließend müssen die Zonen unter  ``/etc/bind/named.conf.local``
+definiert werden:
+
+.. code-block:: html
+  :linenos:
+
+  #Lookup zone
+  zone "mi.hdm-stuttgart.de" {
+    type master;
+    file "/etc/bind/zones/db.mi.hdm-stuttgart.de"; # zone file path
+  };
+
+  #For reverse lookup
+  zone "75.62.141.in-addr.arpa" {
+    type master;
+    file "/etc/bind/zones/db.141.62.75";  
+  };
+
+
+
+
+Nun müssen die jeweiligen Zone-Files erstellt werden:
+
+``/etc/bind/zones/db.mi.hdm-stuttgart.de`` :
+
+.. code-block:: html
+  :linenos:
+
+  ;
+  ; BIND data file 
+  ;
+  $TTL    604800
+  @       IN      SOA     ns1a.mi.hdm-stuttgart.de. root.mi.hdm-stuttgart.de. (
+                                3         ; Serial
+                           604800         ; Refresh
+                            86400         ; Retry
+                          2419200         ; Expire
+                           604800 )       ; Negative Cache TTL
+  ;
+  
+  ; name servers - NS records
+          IN      NS      ns4.mi.hdm-stuttgart.de.
+  ; name servers - A records
+  ns1a.mi.hdm-stuttgart.de.          IN      A       141.62.75.101
+  www1a.mi.hdm-stuttgart.de.         IN      A       141.62.75.101
+
+``/etc/bind/zones/db.141.62.75`` :
+
+
+.. code-block:: html
+  :linenos:
+
+  ;
+  ; BIND reverse data file 
+  ;
+  $TTL    604800
+  @       IN      SOA     ns1a.mi.hdm-stuttgart.de. root.mi.hdm-stuttgart.de. (
+                                1         ; Serial
+                           604800         ; Refresh
+                            86400         ; Retry
+                          2419200         ; Expire
+                           604800 )       ; Negative Cache TTL
+  ;
+
+  ; name servers - NS records
+        IN      NS      ns1a.mi.hdm-stuttgart.de.
+
+  ; PTR Records
+  104   IN      PTR     sdi1a.mi.hdm-stuttgart.de.    ; 141.62.75.101

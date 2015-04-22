@@ -3,7 +3,7 @@
 **************
 Linux Commands
 **************
-.. code-block::
+.. code-block:: html
 
   ssh root@141.62.75.101 / sdi1a.mi.hdm-stuttgart.de
   ssh root@141.62.75.106 / sdi1b.mi.hdm-stuttgart.de
