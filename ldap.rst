@@ -297,30 +297,34 @@ Installation unter Ubuntu mit
     [sudo] apt-get install ldap-account-manager
 
 Der LAM laeuft auf Apache und ist nach der Installation sofort unter
-``http://sdi1b.mi.hdm-stuttgart.de/lam`` erreichbar. Auf dieser Webseite
+``http://localhost/lam`` erreichbar. Auf dieser Webseite
 lassen sich gleich die LAM-Einstellungen vornehmen. Das default-Master-Passwort
 ist ``lam``.
+
+.. image:: images/LAM/lamlogin.png
 
 Die "General Settings" umfassen Einstellungen zur Sicherheit, Passwoertern und
 deren Policies, und Logging.
 
-Die "Server Profiles" bestehen aus den "General Settings", "Account Types", "Modules"
-und "Module Settings". Unter "General Settings" sollte man den Tree-Suffix setzen,
-in unserem Fall ist das ``dc=mi,dc=hdm-stuttgart,dc=de``. Weiter unten kann man die
-User angeben, die sich ueber das Web-UI anmelden koennen. Wir haben
-::
+Damit wir auf unseren LDAP- Server zugreifen können, müssen unter Server-Profiles die Daten unseren Servers eingestellt werden.
 
-  cn=admin,dc=mi,dc=hdm-stuttgart,dc=de
+.. image:: images/LAM/ServerSetting.png
 
-und
-::
+Außerdem müssen die richtigen Security-Settings eingestellt werden:
 
-  uid=boss,ou=software,ou=departments,dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
+.. image:: images/LAM/SecuritySettings.png
 
-zusaetzlich eingetragen.
+Nun können wir uns auf unserem LDAP-Server korrekt anmelden.
 
 Auch unter "Account Types" muessen fuer User, Hosts und Groups die entsprechenden
-LDAP-Suffixes angegeben werden.
+LDAP-Suffixes angegeben werden:
+
+.. image:: images/LAM/AccountSettings.png
+
+Mit diesen Einstellungen werden im Server die User korrekt angezeigt:
+
+.. image:: images/LAM/UserList.png
+
 
 Unter "Modules" koennen die "objectClass"es der LDAP-Entitaetstypen verwaltet
 werden.
