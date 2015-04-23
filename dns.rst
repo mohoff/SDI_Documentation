@@ -29,7 +29,7 @@ Folgende Befehle wurden ausgefuehrt:
 		nslookup www.hdm-stuttgart.de		# geht
 		nslookup mi.hdm-stuttgart.de		# geht
 
-**ERKLAERUNG**
+**ERKLAERUNG...mit Goik nochmal absprechen**
 
 Warum braucht man DNS?
 **********************
@@ -77,9 +77,9 @@ kommt ein Eintrag zurueck. Bei der Eingabe von
 ::
 		nslookup google.de
 
-kommen jedoch mehrere Eintraege zurueck.
-
-**ERKLAEUNG ... vllt: Diese Eigenschaft kann von DNS-Pointer-Eintraegen (CNAME und PTR) realisiert werden.**
+kommen jedoch mehrere Eintraege zurueck. Mit der ``rrset-order``-Einstellung im DNS-Server kann die Reihenfolge
+der zurueckgegebenen A- (IPv4) oder AAAAA-Eintraege (IPv6) festgelegt werden, z.B. eine zufaellige Reihenfolge. Diese haette zur Folge,
+dass die gelisteten IP-Adressen gleich stark ausgelastet werden (Ziel: Lastverteilung und Ausfallsicherheit).
 
 Beispiel hdm-stuttgart.de
 +++++++++++++++++++++++++
@@ -98,9 +98,9 @@ Die Ausgabe davon hat 5 Eintrage. 2 davon intern, 3 davon sind von BelWue, dem F
 
 DNS Secure
 **********
-Es gibt ein DNS-Secure, da es viele DNS-Angriffsszenarien gibt (z.B. DNS-Spoofing). Wie verwenden das bei uns in der Veranstaltung aber nicht.
+Die Domain Name System Security Extensions (DNSSEC) sind eine Reihe von Internetstandards, die DNS um Sicherheitsmechanismen zur Gewährleistung der Authentizität und Integrität der Daten erweitern. Ein DNS-Teilnehmer kann damit verifizieren, dass die erhaltenen DNS-Zonendaten auch tatsächlich identisch sind mit denen, die der Ersteller der Zone autorisiert hat. DNSSEC wurde als Mittel gegen Cache Poisoning entwickelt. Es sichert die Übertragung von Resource Records durch digitale Signaturen ab. Eine Authentifizierung von Servern oder Clients findet nicht statt.
 
-**ERKLAERUNG: DNSSEC ?**
+*Quelle: http://de.wikipedia.org/wiki/Domain_Name_System_Security_Extensions*
 
 DNS Zones
 *********
@@ -143,31 +143,41 @@ Verbunden mit dem Tool ``grep`` kann die Ausgabe weiter eingeschraenkt werden, z
 
 Sonstiges
 *********
-**UNVOLLSTAENDIG**
+``hostname``
+++++++++++++
+Der Hostname eines Rechners kann mit ``hostname`` bestimmt werden.
 
-* Die Datei ``/etc/resolv.conf`` ist fuer ... gut.
+``/etc/resolv.conf``
+++++++++++++++++++++
+Die Datei ``/etc/resolv.conf`` wird für die Namensauflösung nach DNS verwendet. ``nameserver`` ist die IP-Adresse eines DNS-Servers, der abgefragt werden soll. Bis zu drei Server werden in der Reihenfolge abgefragt in der sie aufgezählt sind. In folgendem Beispiel wird auf Localhost und auf einen Google-DNS mit der IP-Adresse 8.8.8.8 verwiesen.
+::
+		nameserver 127.0.0.1
+ 		nameserver 8.8.8.8
 
-* Einzelne Hosts koennen in ``etc/hosts`` eingetragen werden. Da steht meistens der local loopback drin.
+``/etc/hosts``
+++++++++++++++
+In der Datei ``/etc/hosts`` koennen konkrete Hostname<->IP-Adressen -Assoziationen eingetragen werden. Obwohl
+ueblicherweise die Aufloesung ueber DNS stattfindet, wird i.d.R. die Loopback-Adresse statisch in das File eingetragen:
+::
+		127.0.0.1 localhost
 
-* Der Hostname eines Rechners kann mit ``hostname`` bestimmt werden.
 
 Exercises
 #########
-
 
 Setup des DNS-Servers
 *********************
 
 Mithilfe von apt-get wurden zunächst die benötigten Pakete auf
 dem Server installiert:
-
-``apt-get update``
-``apt-get install bind9 bind9utils``
+::
+    apt-get update
+    apt-get install bind9 bind9utils
 
 Anschließend wurde unter /etc/default/bind9 die Option "-4" 
 hinzugefügt. Die OPTIONS-Variable sah nun folgendermaßen aus:
-
-``OPTIONs="-4 -u bind"``
+::
+    OPTIONS="-4 -u bind"
 
 Der zusätzliche Eintrag versetzt BIND in den IPv4-Modus.
 
@@ -198,22 +208,20 @@ definiert werden:
 .. code-block:: html
   :linenos:
 
-  #Lookup zone
+  # Lookup zone
   zone "mi.hdm-stuttgart.de" {
     type master;
     file "/etc/bind/zones/db.mi.hdm-stuttgart.de"; # zone file path
   };
 
-  #For reverse lookup
+  # For reverse lookup
   zone "75.62.141.in-addr.arpa" {
     type master;
-    file "/etc/bind/zones/db.141.62.75";  
+    file "/etc/bind/zones/db.141.62.75"; # zone file path
   };
 
 
-
-
-Nun müssen die jeweiligen Zone-Files erstellt werden:
+Nun müssen die jeweiligen Zone-Files (Forward- und Reverse-File) erstellt werden, in denen die einzelnen Aufloesungen definiert sind:
 
 ``/etc/bind/zones/db.mi.hdm-stuttgart.de`` :
 
