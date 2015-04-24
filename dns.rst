@@ -269,3 +269,31 @@ Nun müssen die jeweiligen Zone-Files (Forward- und Reverse-File) erstellt werde
 
   ; PTR Records
   104   IN      PTR     sdi1a.mi.hdm-stuttgart.de.    ; 141.62.75.101
+  
+Rekursive Anfragen ermöglichen
+******************************
+Aktuell beantwortet der Nameserver lediglich Anfragen, die er selbstständig beantworten kann, also nur für Einträge, die in den jeweiligen Zone-Dateien definiert sind. Eine Anfrage an www.google.de würde beispielsweise keine Ergebnisse liefern. Der DNS kann so eingestellt werden, dass er Anfragen, die er nicht beantworten kann, automatisch an einen anderen Nameserver weitergibt. Falls der zweite Nameserver den Namen ebenfalls nicht auflösen kann, gibt dieser die Anfrage an einen weiteren Server weiter - vorausgesetzt, dass er entsprechend konfiguriert ist. Diesen Prozess nennt man eine rekursive Anfrage.
+
+Rekursive Anfragen können in der Konfigurationsdatei ``/etc/bind/named.conf.options`` aktiviert werden:
+
+.. code-block:: html
+  :linenos:
+  
+  options {
+	directory "/var/cache/bind";
+	listen-on { 141.62.75.101; };   
+	allow-transfer { none; }; 
+        
+	recursion yes; // Rekursive Anfragen aktivieren  
+	allow-recursion { any; }; // Rekursive Anfragen von allen Hosts erlauben  
+	
+	forwarders {
+		141.62.64.21; // lokaler DNS
+	};
+	
+	dnssec-enable yes; // Sicherheitseinstellungen
+	dnssec-validation yes;
+	
+	auth-nxdomain no;
+	listen-on-v6 { any; };
+  };
