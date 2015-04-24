@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3. LDAP &mdash; software-defined-infrastructure 3.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="software-defined-infrastructure 3.0 documentation" href="index.html" />
+    <link rel="prev" title="2. Linux Commands" href="linuxcommands.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="linuxcommands.html" title="2. Linux Commands"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">software-defined-infrastructure 3.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="ldap">
+<h1>3. LDAP<a class="headerlink" href="#ldap" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-ldap-concept">
+<h2>3.1. The LDAP concept<a class="headerlink" href="#the-ldap-concept" title="Permalink to this headline">¶</a></h2>
+<p>SOMETHING AMNOG THOSE LINES:</p>
+<ul class="simple">
+<li>schemas (also built-ins like cosine, nis, inetorgperson)</li>
+<li>tree structure</li>
+<li>A LDAP directory is a tree of data entries that is hierarchical in nature and is called the Directory Information Tree (DIT).</li>
+<li>An entry consists of a set of attributes.</li>
+<li>An attribute has a type (a name/description) and one or more values.</li>
+<li>Every attribute must be defined in at least one objectClass.</li>
+<li>Attributes and objectclasses are defined in schemas (an objectclass is actually considered as a special kind of attribute).</li>
+<li>Each entry has a unique identifier: its Distinguished Name (DN or dn). This, in turn, consists of a Relative Distinguished Name (RDN) followed by the parent entry&#8217;s DN.</li>
+<li>The entry&#8217;s DN is not an attribute. It is not considered part of the entry itself.</li>
+<li>The terms object, container, and node have certain connotations but they all essentially mean the same thing as entry, the technically correct term.</li>
+<li>For example, below we have a single entry consisting of 11 attributes where the following is true:</li>
+<li>DN is &#8220;cn=John Doe,dc=example,dc=com&#8221;</li>
+<li>RDN is &#8220;cn=John Doe&#8221;</li>
+<li>parent DN is &#8220;dc=example,dc=com&#8221;</li>
+</ul>
+<p>_ Abkuerzungen:</p>
+<ul class="simple">
+<li>dc</li>
+<li>dn (distinguished name)</li>
+<li>rdn (relative distinguished name)</li>
+<li>cn</li>
+<li>ou</li>
+</ul>
+</div>
+<div class="section" id="setting-up-a-ldap-server">
+<h2>3.2. Setting up a LDAP-Server<a class="headerlink" href="#setting-up-a-ldap-server" title="Permalink to this headline">¶</a></h2>
+<p>Man unterscheidet zwischen dem OpenLDAP server daemon im Package <tt class="docutils literal"><span class="pre">slapd</span></tt> und LDAP
+management utilities im Package <tt class="docutils literal"><span class="pre">ldap-utils</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install slapd ldap-utils
+</pre></div>
+</div>
+<p>Waehrend der Installation muss man Admin credentials festlegen, die fuer den
+<tt class="docutils literal"><span class="pre">rootDN</span></tt> der LDAP-Datenbank gesetzt werden, by default ist das</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cn</span><span class="o">=</span><span class="n">admin</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">mi</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">hdm</span><span class="o">-</span><span class="n">stuttgart</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">de</span>
+</pre></div>
+</div>
+<p>Neben der eigentlichen LDAP-Datenbank, in der spaeter Daten gespeichert werden, wird
+eine config-database erstellt, auf die man sich auf eine andere Art und Weise (TODO)
+authentifizieren muss.</p>
+<p>Die Installation erstellt eine lauffaehige Konfiguration, darunter eine Datenbank
+in der die LDAP-Daten gespeichert werden koennen.</p>
+<p>Der &#8220;base DN&#8221; (DN = Distinguished Name) dieser Instanz wird vom Domainnamen des
+localhosts abgeleitet. Alternativ kann man die Datei <tt class="docutils literal"><span class="pre">/etc/hosts</span></tt> editieren, um manuell
+Domainnamen fuer localhost vergeben, sodass ein erwuenschter base DN erstellt
+werden kann. Die default Konfiguration in unseren VM ist daher</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dc</span><span class="o">=</span><span class="n">mi</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">hdm</span><span class="o">-</span><span class="n">stuttgart</span><span class="p">,</span><span class="n">dc</span><span class="o">=</span><span class="n">de</span>
+</pre></div>
+</div>
+<div class="section" id="die-config-datenbank">
+<h3>3.2.1. Die <tt class="docutils literal"><span class="pre">config</span></tt>-Datenbank<a class="headerlink" href="#die-config-datenbank" title="Permalink to this headline">¶</a></h3>
+<p>Der Inhalt der config-Datenbank sieht aus wie folgt:</p>
+<div class="highlight-html"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14</pre></div></td><td class="code"><div class="highlight"><pre>/etc/ldap/slapd.d/
+/etc/ldap/slapd.d/cn=config
+/etc/ldap/slapd.d/cn=config/cn=module{0}.ldif
+/etc/ldap/slapd.d/cn=config/cn=schema
+/etc/ldap/slapd.d/cn=config/cn=schema/cn={0}core.ldif
+/etc/ldap/slapd.d/cn=config/cn=schema/cn={1}cosine.ldif
+/etc/ldap/slapd.d/cn=config/cn=schema/cn={2}nis.ldif
+/etc/ldap/slapd.d/cn=config/cn=schema/cn={3}inetorgperson.ldif
+/etc/ldap/slapd.d/cn=config/cn=schema.ldif
+/etc/ldap/slapd.d/cn=config/olcBackend={0}hdb.ldif
+/etc/ldap/slapd.d/cn=config/olcDatabase={0}config.ldif
+/etc/ldap/slapd.d/cn=config/olcDatabase={-1}frontend.ldif
+/etc/ldap/slapd.d/cn=config/olcDatabase={1}hdb.ldif
+/etc/ldap/slapd.d/cn=config.ldif
+</pre></div>
+</td></tr></table></div>
+<p>Direkte Aenderungen in der config-Datenbank sind nicht empfohlen, man soll besser
+ueber das LDAP Protocol (Tool aus dem Package <tt class="docutils literal"><span class="pre">ldap-utils</span></tt>) Aenderungen vornehmen.</p>
+</div>
+</div>
+<div class="section" id="the-ldap-protocol">
+<h2>3.3. The LDAP-Protocol<a class="headerlink" href="#the-ldap-protocol" title="Permalink to this headline">¶</a></h2>
+<p>Befehl <tt class="docutils literal"><span class="pre">ldapsearch</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>[sudo] ldapsearch -Q -LLL -Y EXTERNAL -H ldapi:/// -b cn=config dn
+</pre></div>
+</div>
+<p>Variation davon:</p>
+<div class="highlight-python"><div class="highlight"><pre>[sudo] ldapsearch -x -LLL -H ldap:/// -b dc=example,dc=com dn
+</pre></div>
+</div>
+<p>Entweder ohne Authentifizierung (Parameter <tt class="docutils literal"><span class="pre">-x</span></tt>) oder mit &#8220;Simple Authentication
+and Security Layer&#8221; (SASL) (-Y &lt;SASL mechanism&gt;).</p>
+<div class="topic">
+<p class="topic-title first"><tt class="docutils literal"><span class="pre">ldapsearch</span></tt></p>
+<dl class="glossary docutils">
+<dt id="term-q"><tt class="docutils literal"><span class="pre">-Q</span></tt></dt>
+<dd>Use SASL Quiet mode. Never prompt.</dd>
+<dt id="term-lll"><tt class="docutils literal"><span class="pre">-LLL</span></tt></dt>
+<dd>Displaying: restricts output to LDIFv1, hides comments, disables
+printing of the LDIF version (each &#8220;L&#8221; restricts output more)</dd>
+<dt id="term-y-mechanism"><tt class="docutils literal"><span class="pre">-Y</span> <span class="pre">&lt;mechanism&gt;</span></tt></dt>
+<dd>Authentication: specifies the authentication mechanism. Common ones are <tt class="docutils literal"><span class="pre">DIGIEST-MD5</span></tt>, <tt class="docutils literal"><span class="pre">KERBEROS_V4</span></tt> and <tt class="docutils literal"><span class="pre">EXTERNAL</span></tt>.
+Here: <tt class="docutils literal"><span class="pre">EXTERNAL</span></tt> which enables authentication over a lower level security mechanism like TLS.</dd>
+<dt id="term-h-uris"><tt class="docutils literal"><span class="pre">-h</span> <span class="pre">&lt;URIs&gt;</span></tt></dt>
+<dd>Specify URI(s) referring to the LDAP server(s). Default is <tt class="docutils literal"><span class="pre">ldap:///</span></tt>
+which implies LDAP over TCP. Used <tt class="docutils literal"><span class="pre">ldapi:///</span></tt> also uses the protocol LDAP but uses IPC
+(UNIX-domain socket) instead of TCP.</dd>
+<dt id="term-b-searchbase"><tt class="docutils literal"><span class="pre">-b</span> <span class="pre">&lt;searchbase&gt;</span></tt></dt>
+<dd>Specify a searchbase as the starting point for the search. In our
+case <tt class="docutils literal"><span class="pre">cn=config</span></tt></dd>
+<dt id="term-x"><tt class="docutils literal"><span class="pre">-x</span></tt></dt>
+<dd>Use simple authentication instead of SASL.</dd>
+<dt id="term-filter"><tt class="docutils literal"><span class="pre">&lt;filter&gt;</span></tt></dt>
+<dd>Specifies an output filter. If not specified, the default filter <tt class="docutils literal"><span class="pre">(objectClass=*)</span></tt>
+is used. We used <tt class="docutils literal"><span class="pre">dn</span></tt>, so all distinguished names inside the searchbase will be displayed</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="ldif-files">
+<h2>3.4. LDIF Files<a class="headerlink" href="#ldif-files" title="Permalink to this headline">¶</a></h2>
+<p>add data</p>
+</div>
+<div class="section" id="apache-directory-studio">
+<h2>3.5. Apache Directory Studio<a class="headerlink" href="#apache-directory-studio" title="Permalink to this headline">¶</a></h2>
+<p>Ein auch als Eclipse-Plugin erhaeltliches Tool, mit dem CRUD-Operations auf LDAP-Datenbaenken
+ausgefuehrt werden koennen.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3. LDAP</a><ul>
+<li><a class="reference internal" href="#the-ldap-concept">3.1. The LDAP concept</a></li>
+<li><a class="reference internal" href="#setting-up-a-ldap-server">3.2. Setting up a LDAP-Server</a><ul>
+<li><a class="reference internal" href="#die-config-datenbank">3.2.1. Die <tt class="docutils literal"><span class="pre">config</span></tt>-Datenbank</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-ldap-protocol">3.3. The LDAP-Protocol</a></li>
+<li><a class="reference internal" href="#ldif-files">3.4. LDIF Files</a></li>
+<li><a class="reference internal" href="#apache-directory-studio">3.5. Apache Directory Studio</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="linuxcommands.html"
+                        title="previous chapter">2. Linux Commands</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/ldap.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="linuxcommands.html" title="2. Linux Commands"
+             >previous</a> |</li>
+        <li><a href="index.html">software-defined-infrastructure 3.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Moritz Hoffmann, Paul Kraus.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
