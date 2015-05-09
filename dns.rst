@@ -241,7 +241,7 @@ Nun müssen die jeweiligen Zone-Files (Forward- und Reverse-File) erstellt werde
   ;
   
   ; name servers - NS records
-          IN      NS      ns4.mi.hdm-stuttgart.de.
+          IN      NS      ns1a.mi.hdm-stuttgart.de.
   ; name servers - A records
   ns1a.mi.hdm-stuttgart.de.          IN      A       141.62.75.101
   www1a.mi.hdm-stuttgart.de.         IN      A       141.62.75.101
@@ -268,7 +268,7 @@ Nun müssen die jeweiligen Zone-Files (Forward- und Reverse-File) erstellt werde
         IN      NS      ns1a.mi.hdm-stuttgart.de.
 
   ; PTR Records
-  104   IN      PTR     sdi1a.mi.hdm-stuttgart.de.    ; 141.62.75.101
+  101   IN      PTR     sdi1a.mi.hdm-stuttgart.de.    ; 
   
 Rekursive Anfragen ermöglichen
 ******************************
@@ -297,3 +297,34 @@ Rekursive Anfragen können in der Konfigurationsdatei ``/etc/bind/named.conf.opt
 	auth-nxdomain no;
 	listen-on-v6 { any; };
   };
+
+
+
+Logging aktivieren.
+*******************
+
+Falls der DNS-Server nicht erwartungsgemäß funktioniert, oder man einfach
+aufgetretene Fehler abspeichern möchte, so bietet bind9 die Möglichkeit, Logging auf verschiedenen Loglevels zu  aktivieren.
+
+Dazu muss der folgende Eintrag in named.conf.options hinzugefügt werden;
+
+.. code-block:: html
+  :linenos:
+  
+  logging{
+      channel simple_log { // Channel wird definiert. 
+                           // Es können mehrere Channels definiert werden,
+                           // um Lognachrichten von verschiedenen Levels in
+                           // unterschiedlichen Dateien zu speichern.
+              file "/var/log/bind.log" versions 3 size 5m; // Log wird in dieser Datei gespeichert.
+              severity debug;  // Hier wird der Loglevel definiert.
+              print-time yes;
+              print-severity yes;
+              print-category yes;
+      };
+      category default{
+              simple_log;
+      };
+  };
+
+
