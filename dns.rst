@@ -39,7 +39,7 @@ Warum braucht man DNS?
 
 ``nslookup`` im Detail
 **********************
-Mit ``nslookup`` allein, startet man das Tool, ueber das sich DNS-Server genauer abfragen lassen.
+Mit ``nslookup`` allein startet man das Tool, ueber das sich DNS-Server genauer abfragen lassen.
 
 *Eingabe*
 ::
@@ -55,7 +55,7 @@ Mit ``nslookup`` allein, startet man das Tool, ueber das sich DNS-Server genauer
 		mx4.mi.hdm-stuttgart.de
 		mx5.mi.hdm-stuttgart.de
 
-Wie in der Ausgabe zu sehen ist, hat der DNS-Server auf der Maschine ``mi.hdm-stuttgart.de`` sogar 5 Mailserver eingetragen. Inn diesem Fall dient das zur Lastverteilung (und auch Ausfallsicherheit durch Redundanz). Der DNS-Server kann so konfiguriert werden, dass er die 5 hinterlegten Adressen unterschiedlich auslastet. So kann z.B. angegeben werden, dass ``mx1.mi.hdm-stuttgart.de`` 50% aller Anfragen (=~ Traffic) erhalten soll, da er der leistungsstaerkste unter den 5 Eintraegen ist.
+Wie in der Ausgabe zu sehen ist, hat der DNS-Server auf der Maschine ``mi.hdm-stuttgart.de`` sogar 5 Mailserver eingetragen. In diesem Fall dient das zur Lastverteilung (und auch Ausfallsicherheit durch Redundanz). Der DNS-Server kann so konfiguriert werden, dass er die 5 hinterlegten Adressen unterschiedlich auslastet. So kann z.B. angegeben werden, dass ``mx1.mi.hdm-stuttgart.de`` 50% aller Anfragen (=~ Traffic) erhalten soll, da er der leistungsstaerkste unter den 5 Eintraegen ist.
 
 *Eingabe*:
 ::
@@ -64,6 +64,7 @@ Wie in der Ausgabe zu sehen ist, hat der DNS-Server auf der Maschine ``mi.hdm-st
 
 Erklaerung: Jetzt spricht man mit Eingaben direkt den DNS-Server auf ``sdi1a.mi.hdm-stuttgart.de`` an.
 
+``nslookup`` ist bei vielen Distributionen, u.a. bei Ubuntu, im Standardumfang enthalten. Falls es jedoch nicht vorinstalliert ist, kann das Tool mit ``apt-get install dnsutils`` installiert werden.
 
 
 Beispiel google.de
@@ -297,6 +298,10 @@ Rekursive Anfragen können in der Konfigurationsdatei ``/etc/bind/named.conf.opt
 	auth-nxdomain no;
 	listen-on-v6 { any; };
   };
+  
+  
+Mail Exchange Record einrichten
+*******************************
 
 
 
