@@ -209,22 +209,25 @@ definiert werden:
 .. code-block:: html
   :linenos:
 
-  # Lookup zone
+  # Forward Zone
   zone "mi.hdm-stuttgart.de" {
     type master;
     file "/etc/bind/zones/db.mi.hdm-stuttgart.de"; # zone file path
   };
 
-  # For reverse lookup
+  # Reverse Zone
   zone "75.62.141.in-addr.arpa" {
     type master;
     file "/etc/bind/zones/db.141.62.75"; # zone file path
   };
 
 
-Nun müssen die jeweiligen Zone-Files (Forward- und Reverse-File) erstellt werden, in denen die einzelnen Aufloesungen definiert sind:
+Der Name der Reverse-Zone bildet sich aus der umgekehrten Reihenfolge der IP-Oktetten, gefolgt von dem Zusatz ``.in-addr.arpa``. Für die Reverse-Zone für Adressen, die mit ``141.62.75.*`` beginnen, lautet der Name der Zone folglich ``75.62.141.in-addr.arpa``.
 
-``/etc/bind/zones/db.mi.hdm-stuttgart.de`` :
+Nun müssen die jeweiligen Zone-Files (Forward- und Reverse-File) erstellt werden, in denen die einzelnen Aufloesungen definiert sind. 
+Als Vorlage für die Zone-Files können die ``db.*``-Templatedateien aus dem ``/etc/bind/``-Verzeichnis verwendet werden.
+
+Forward-Zone - ``/etc/bind/zones/db.mi.hdm-stuttgart.de``:
 
 .. code-block:: html
   :linenos:
@@ -233,22 +236,30 @@ Nun müssen die jeweiligen Zone-Files (Forward- und Reverse-File) erstellt werde
   ; BIND data file 
   ;
   $TTL    604800
-  @       IN      SOA     ns1a.mi.hdm-stuttgart.de. root.mi.hdm-stuttgart.de. (
-                                3         ; Serial
+  @       IN      SOA     ns1a.mi.hdm-stuttgart.de. root.mi.hdm-stuttgart.de. ( ; (1)
+                                3         ; Serial                              ; (2)
                            604800         ; Refresh
                             86400         ; Retry
                           2419200         ; Expire
                            604800 )       ; Negative Cache TTL
   ;
   
-  ; name servers - NS records
+  ; name servers - NS records                                                   ; (3)
           IN      NS      ns1a.mi.hdm-stuttgart.de.
-  ; name servers - A records
+          
+  ; name servers - A records                                                    ; (4)
   ns1a.mi.hdm-stuttgart.de.          IN      A       141.62.75.101
   www1a.mi.hdm-stuttgart.de.         IN      A       141.62.75.101
+  
+Erläuterungen zum Aufbau:
 
-``/etc/bind/zones/db.141.62.75`` :
+1. Ein SOA-Record (Start of Authority) definiert eine Domäne. ``ns1a.mi.hdm-stuttgart.de.`` kennzeichnet den primären (Master-) Nameserver und ``root.mi.hdm-stuttgart.de.`` die E-Mail-Adresse des Administrators - der erste Punkt ersetzt ein @-Symbol.
+2. Die Serial dient der Dokumentation und sollte nach jeder Änderung der Datei inkrementiert werden.
+3. Im NS records-Abschnitt sind alle Nameserver für diese Domain gelistet.
+4. Im A records-Abschnitt sind die Hosts mit ihren IP-Adressen gelistet. Im Beispiel werden zwei Hostnamen auf die Adresse ``141.62.75.107`` gemappt: ``ns1a.mi.hdm-stuttgart.de`` und ``www1a.mi.hdm-stuttgart.de``. 
 
+
+Reverse-Zone - ``/etc/bind/zones/db.141.62.75``:
 
 .. code-block:: html
   :linenos:
@@ -269,7 +280,9 @@ Nun müssen die jeweiligen Zone-Files (Forward- und Reverse-File) erstellt werde
         IN      NS      ns1a.mi.hdm-stuttgart.de.
 
   ; PTR Records
-  101   IN      PTR     sdi1a.mi.hdm-stuttgart.de.    ; 
+  101   IN      PTR     sdi1a.mi.hdm-stuttgart.de.
+  
+
   
 Rekursive Anfragen ermöglichen
 ******************************
@@ -355,4 +368,26 @@ Dazu muss der folgende Eintrag in named.conf.options hinzugefügt werden;
       };
   };
 
+
+
+Überprüfung der Konfiguration
+*****************************
+Zur Überprüfung der Konfiguration bietet BIND folgende Kommandozeilentools:
+
+.. glossary::
+
+  named-checkconf
+    Überprüft alle ``named.conf*``-Dateien auf ihre Syntax. Falls keine Fehler gefunden wurden, kehrt das Tool kommentarlos auf die Konsole zurück.
+    
+  named-checkzone (1) (2)
+  	Überprüft alle Zone-Dateien auf ihre Korrektheit. Parameter (1) verlangt den Namen der Zone und Parameter (2) die zugehörige Zone-Datei. Im Beispiel lauten die Befehle für die Forward-, bzw. Reverse-Zone ``named-checkzone mi.hdm-stuttgart.de /etc/bind/zones/db.mi.hdm-stuttgart.de`` bzw. ``named-checkzone 75.62.141.in-addr.arpa /etc/bind/zones/db.141.62.75``
+  	
+  	
+Falls keine Fehler auftreten, kann der Server verwendet werden. Ein Host kann den Server nun als Standard-Nameserver festlegen, indem er ihn in seine ``/etc/resolv.conf`` aufnimmt:
+
+
+.. code-block:: none
+
+  nameserver 141.62.75.101
+  
 
