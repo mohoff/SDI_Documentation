@@ -302,8 +302,31 @@ Rekursive Anfragen können in der Konfigurationsdatei ``/etc/bind/named.conf.opt
   
 Mail Exchange Record einrichten
 *******************************
+Um die Namensauflösung für einen Mailserver einzurichten, muss die Forward-Zone um den entsprechenden Eintrag erweitert werden.
 
+.. code-block:: none
+  :linenos:
+  :emphasize-lines: 16,17
+  
+  ;
+  ; BIND data file
+  ;
+  $TTL    604800
+  @       IN      SOA     ns1a.mi.hdm-stuttgart.de. dh055.hdm-stuttgart.de. (
+                              3         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+  
+  ; ...
+  ; ... NS records and A records ...
+  ; ...
+  
+  ; mail server - A record
+  mx1.mi.hdm-stuttgart.de.        IN      A       141.62.64.21
 
+Im Beispiel ist der Nameserver nun so konfiguriert, dass er Anfragen an ``mx1.mi.hdm-stuttgart.de`` an die Adresse ``141.62.64.21`` (= der Mailserver der HdM) weiterleitet.
 
 Logging aktivieren.
 *******************

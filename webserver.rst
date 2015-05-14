@@ -22,6 +22,15 @@ Die Aufgabe eines Webservers ist es, statische Dateien zur Darstellung von Webse
 
 Virtual Hosts
 #############
+Falls auf einem Webserver mehrere Domains gehostet werden sollen, benötigt man Virtual Hosting. Es gibt zwei Techiken um dies zu erreichen: IP- und namensbasiertes Virtual Hosting.
+
+IP-basiertes Virtual Hosting
+****************************
+
+
+Namensbasiertes Virtual Hosting
+*******************************
+
 
 TLS
 ###
@@ -31,9 +40,12 @@ TLS
 
 Einrichtung des Apache Webservers
 *********************************
+Zunächst wird der Apache Webserver über die Paketverwaltung mit dem Befehl ``sudo apt-get install apache2`` installiert.
 
-Eigene Seiten hosten
-*********************
+
+Eigenen Inhalt hosten
+********************
+
 
 Einrichtung von virtuellen Hosts
 ********************************
