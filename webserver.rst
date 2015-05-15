@@ -18,7 +18,7 @@ Die Aufgabe eines Webservers ist es, statische Dateien zur Darstellung von Webse
   * cacht ggf. die Anfrage für zukünftige Anfragen der gleichen Ressource
 
 * ... und antwortet mit der angeforderte Seite, bzw. einer Fehlerseite, falls die Ressource nicht gefunden wurde / die Authentifizierung fehlgeschlagen ist / etc.
-* der Browser interpretiert das HTML-Dokument, inklusive der enthaltenen Skripte, und zeigt sie dem Benutzer an 
+* der Browser interpretiert die vom Webserver erhaltenen Daten, inklusive der Skripte, rendert die Seite und zeigt sie dem Benutzer an.
 
 Virtual Hosts
 #############
@@ -35,8 +35,8 @@ Namensbasiertes Virtual Hosting
 TLS
 ###
 
-Übungen
-#######
+Exercises
+#########
 
 Einrichtung des Apache Webservers
 *********************************
@@ -44,7 +44,7 @@ Zunächst wird der Apache Webserver über die Paketverwaltung mit dem Befehl ``s
 
 
 Eigenen Inhalt hosten
-********************
+*********************
 
 
 Einrichtung von virtuellen Hosts

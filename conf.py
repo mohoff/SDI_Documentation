@@ -46,8 +46,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'software-defined-infrastructure'
-copyright = u'2015, Moritz Hoffmann, Paul Kraus'
+project = u'SDI Doku'
+copyright = u'2015, Moritz Hoffmann, Paul Kraus, David Hettler'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -113,10 +113,10 @@ html_theme = 'default'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = 'Software Defined Infrastructure - Doku'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+html_short_title = 'SDI Doku'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -162,7 +162,7 @@ html_static_path = ['_static']
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+html_show_sourcelink = False
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 #html_show_sphinx = True
@@ -200,7 +200,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'software-defined-infrastructure.tex', u'software-defined-infrastructure Documentation',
-   u'Moritz Hoffmann, Paul Kraus', 'manual'),
+   u'Moritz Hoffmann, Paul Kraus, David Hettler', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -230,7 +230,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'software-defined-infrastructure', u'software-defined-infrastructure Documentation',
-     [u'Moritz Hoffmann, Paul Kraus'], 1)
+     [u'Moritz Hoffmann, Paul Kraus, David Hettler'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -244,7 +244,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'software-defined-infrastructure', u'software-defined-infrastructure Documentation',
-   u'Moritz Hoffmann, Paul Kraus', 'software-defined-infrastructure', 'One line description of project.',
+   u'Moritz Hoffmann, Paul Kraus, David Hettler', 'software-defined-infrastructure', 'One line description of project.',
    'Miscellaneous'),
 ]
 

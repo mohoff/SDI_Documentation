@@ -341,13 +341,15 @@ Um die Namensauflösung für einen Mailserver einzurichten, muss die Forward-Zon
 
 Im Beispiel ist der Nameserver nun so konfiguriert, dass er Anfragen an ``mx1.mi.hdm-stuttgart.de`` an die Adresse ``141.62.64.21`` (= der Mailserver der HdM) weiterleitet.
 
+**FRAGE: Warum braucht man ueberhaupt separate MX records? Warum koennen die nicht gleich mit regulaeren A-records bedient werden?**
+
 Logging aktivieren.
 *******************
 
 Falls der DNS-Server nicht erwartungsgemäß funktioniert, oder man einfach
 aufgetretene Fehler abspeichern möchte, so bietet bind9 die Möglichkeit, Logging auf verschiedenen Loglevels zu  aktivieren.
 
-Dazu muss der folgende Eintrag in named.conf.options hinzugefügt werden;
+Dazu muss der folgende Eintrag in ``named.conf.options`` hinzugefügt werden;
 
 .. code-block:: html
   :linenos:
@@ -370,8 +372,8 @@ Dazu muss der folgende Eintrag in named.conf.options hinzugefügt werden;
 
 
 
-Überprüfung der Konfiguration
-*****************************
+Überprüfung der DNS-Konfiguration
+*********************************
 Zur Überprüfung der Konfiguration bietet BIND folgende Kommandozeilentools:
 
 .. glossary::

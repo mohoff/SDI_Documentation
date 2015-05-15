@@ -9,7 +9,6 @@ Welcome to software-defined-infrastructure's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
    :numbered:
 
    Sphinx <sphinx>
