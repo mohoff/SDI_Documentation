@@ -153,18 +153,18 @@ Mounten von shares
 
 Windows
 +++++++
-Das Homedirectory des Users smbtester kann folgendermaßen in Windows eingebunden werden. 
+Der freigegebene ```shared```-Ordner kann folgendermaßen in Windows eingebunden werden. 
 Im Arbeitsplatz im Reiter "Computer" die Option "Netzwerkaufwerk verbinden" wählen.
 
-.. image:: images/Samba/windows/01.png
+.. image:: images/Samba/windows/04.png
 
-Im erscheinenden Dialog den Laufwerkbuchstaben wähen und den Pfad eingeben und "Fertig stellen" klicken.
+Im erscheinenden Dialog den Laufwerkbuchstaben wähen und den Pfad eingeben und mit "Fertig stellen" bestätigen.
 
-.. image:: images/Samba/windows/02.png
+.. image:: images/Samba/windows/05.png
 
 Der Ordner erscheint nun in Form eines Netzwerklauferks im Arbeitsplatz.
 
-.. image:: images/Samba/windows/03.png
+.. image:: images/Samba/windows/06.png
 
 
 Linux
