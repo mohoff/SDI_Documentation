@@ -16,6 +16,7 @@ Contents:
    LDAP <ldap>
    DNS <dns>
    Webserver <webserver>
+   Samba <samba>
 
 
 
