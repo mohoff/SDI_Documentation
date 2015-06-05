@@ -113,7 +113,7 @@ Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfü
 
 Der User ```smbtester``` kann anschließend über den Pfad ```\\sdi2b.mi.hdm-stuttgart.de\smbtester\``` auf sein Homedirectory zugreifen.
 
-Zur Überprüfung der Konfiguration kann weiterhin der Befehl ```testparm``` ausgeführt werden:
+Die Konfiguration kann mit dem Befehl ```testparm``` überprüft werden:
 ::
   root@sdi2b:~# testparm
   Load smb config files from /etc/samba/smb.conf
@@ -126,4 +126,47 @@ Zur Überprüfung der Konfiguration kann weiterhin der Befehl ```testparm``` aus
   Server role: ROLE_STANDALONE
   Press enter to see a dump of your service definitions
 
-**was ist der sinn von smbclient?**
+Informationen zu einzelnen Samba-Usern können mit ```smbclient``` abgerufen werden.
+:: 
+  root@sdi2b:~# smbclient -L localhost --user smbtester
+  Enter smbtester's password:
+  Domain=[WORKGROUP] OS=[Unix] Server=[Samba 4.1.6-Ubuntu]
+  
+          Sharename       Type      Comment
+          ---------       ----      -------
+          print$          Disk      Printer Drivers
+          shared          Disk
+          IPC$            IPC       IPC Service (sdi2b server (Samba, Ubuntu))
+          smbtester       Disk      Home Directories
+  Domain=[WORKGROUP] OS=[Unix] Server=[Samba 4.1.6-Ubuntu]
+  
+          Server               Comment
+          ---------            -------
+          SDI2B                sdi2b server (Samba, Ubuntu)
+  
+          Workgroup            Master
+          ---------            -------
+          WORKGROUP            SDI2B
+
+Mounten von shares
+##################
+
+Windows
++++++++
+Das Homedirectory des Users smbtester kann folgendermaßen in Windows eingebunden werden. 
+Im Arbeitsplatz im Reiter "Computer" die Option "Netzwerkaufwerk verbinden" wählen.
+.. image:: images/Samba/windows/01.png
+
+Im erscheinenden Dialog den Laufwerkbuchstaben wähen und den Pfad eingeben und "Fertig stellen" klicken.
+.. image:: images/Samba/windows/02.png
+
+Der Ordner erscheint nun in Form eines Netzwerklauferks im Arbeitsplatz.
+.. image:: images/Samba/windows/03.png
+
+
+Linux
++++++
+
+
+Verknüpfung mit einem LDAP-Server
+#################################
