@@ -155,12 +155,15 @@ Windows
 +++++++
 Das Homedirectory des Users smbtester kann folgendermaßen in Windows eingebunden werden. 
 Im Arbeitsplatz im Reiter "Computer" die Option "Netzwerkaufwerk verbinden" wählen.
+
 .. image:: images/Samba/windows/01.png
 
 Im erscheinenden Dialog den Laufwerkbuchstaben wähen und den Pfad eingeben und "Fertig stellen" klicken.
+
 .. image:: images/Samba/windows/02.png
 
 Der Ordner erscheint nun in Form eines Netzwerklauferks im Arbeitsplatz.
+
 .. image:: images/Samba/windows/03.png
 
 
