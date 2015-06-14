@@ -170,6 +170,172 @@ Der Ordner erscheint nun in Form eines Netzwerklauferks im Arbeitsplatz.
 Linux
 +++++
 
+Mithilfe des mount-Kommandos kann das Dateisystem im Zielverzeichnis /mnt/test/ eingehängt werden:
+::
+  sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/shared /mnt/test/ -ouser=testuser
 
 Verknüpfung mit einem LDAP-Server
 #################################
+
+Zunächst müssen diverse Packages installiert werden:
+::
+  sudo apt-get install samba samba-doc smbldap-tools
+
+
+Samba LDAP Schema
++++++++++++++++++
+
+Nun muss ein Samba LDAP Schema eingerichtet werden, so dass OpenLDAP als Backend von Samba  verwendet werden kann.
+
+Der DIT braucht hierbei Attribute zum Beschreiben der Samba-Daten.
+Diese Attribute sind im Samba LDAP Schema hinterlegt.
+
+Entpacken des Schemas:
+::
+  sudo cp /usr/share/doc/samba-doc/examples/LDAP/samba.schema.gz /etc/ldap/schema
+  sudo gzip -d /etc/ldap/schema/samba.schema.gz
+
+Erstellen einer Datei "schema_convert.conf":
+::
+  include /etc/ldap/schema/core.schema
+  include /etc/ldap/schema/collective.schema
+  include /etc/ldap/schema/corba.schema
+  include /etc/ldap/schema/cosine.schema
+  include /etc/ldap/schema/duaconf.schema
+  include /etc/ldap/schema/dyngroup.schema
+  include /etc/ldap/schema/inetorgperson.schema
+  include /etc/ldap/schema/java.schema
+  include /etc/ldap/schema/misc.schema
+  include /etc/ldap/schema/nis.schema
+  include /etc/ldap/schema/openldap.schema
+  include /etc/ldap/schema/ppolicy.schema
+  include /etc/ldap/schema/ldapns.schema
+  include /etc/ldap/schema/pmi.schema
+  include /etc/ldap/schema/samba.schema
+
+Erstellen einer Output-Directory:
+::
+  mkdir ldif_output
+
+Ermitteln des korrekten Index:
+::
+  slapcat -f schema_convert.conf -F ldif_output -n 0 | grep samba,cn=schema
+
+  dn: cn={14}samba,cn=schema,cn=config
+
+Konvertieren des Schemas ins LDIF-Format:
+::
+  slapcat -f schema_convert.conf -F ldif_output -n0 -H \
+  ldap:///cn={14}samba,cn=schema,cn=config -l cn=samba.ldif
+
+Anschließend muss noch die Index- Information aus der generierten LDIF- Datei entfernt werden.
+
+Am Ende der Datei müssen die Zeilen
+::
+  structuralObjectClass: olcSchemaConfig
+  entryUUID: b53b75ca-083f-102d-9fff-2f64fd123c95
+  creatorsName: cn=config
+  createTimestamp: 20080827045234Z
+  entryCSN: 20080827045234.341425Z#000000#000#000000
+  modifiersName: cn=config
+  modifyTimestamp: 20080827045234Z
+ebenfalls gelöscht werden.
+
+Das Schema kann nun zu LDAP-Server hinzugefügt werden:
+::
+  sudo ldapadd -Q -Y EXTERNAL -H ldapi:/// -f cn\=samba.ldif
+
+
+Samba Indizes
++++++++++++++
+
+OpenLDAP kennt nun Samba-Attribute, nun können noch Indizes für diese hinzugefügt werden, um die Performanz zu verbessern.
+
+Eine neue Datei "samba_indices.ldif" wurde hierzu erstellt:
+::
+  dn: olcDatabase={1}hdb,cn=config
+  changetype: modify
+  add: olcDbIndex
+  olcDbIndex: uidNumber eq
+  olcDbIndex: gidNumber eq
+  olcDbIndex: loginShell eq
+  olcDbIndex: uid eq,pres,sub
+  olcDbIndex: memberUid eq,pres,sub
+  olcDbIndex: uniqueMember eq,pres
+  olcDbIndex: sambaSID eq
+  olcDbIndex: sambaPrimaryGroupSID eq
+  olcDbIndex: sambaGroupType eq
+  olcDbIndex: sambaSIDList eq
+  olcDbIndex: sambaDomainName eq
+  olcDbIndex: default sub
+
+
+Die erstellten neuen Indizes können per
+::
+  sudo ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f samba_indices.ldif
+geladen werden.
+
+Hinzufügen von Samba LDAP Objekten
+++++++++++++++++++++++++++++++++++
+
+
+Nun sollen die für Samba notwendigen Objekte in den DIT eingefügt werden.
+Dies wird mithilfe des Packages "smbldap-tools" realisiert.
+
+Zunächst wird ein Backup des aktuellen DIT erstellt, für den Fall dass etwas schief geht.
+::
+  slapcat -l backup.ldif
+
+Anschließend werden die Objekte mithilfe des Kommandos 
+::
+  smbldap-populate
+erzeugt.
+
+Anmerkung:
+
+Aufgrund eines Fehlers wurden die von smbldap-populate verwendeten Skripte nicht korrekt erzeugt.
+Als Notlösung wurden uns diese von Hr. Goik zur Verfügung gestellt, mussten jedoch noch manuell konfiguriert werden:
+
+In smbldap_bind.conf müssen die korrekten Credentials für den Root-Zugang des LDAP-Servers hinterlegt werden:
+::
+  masterDN="cn=admin,dc=mi,dc=hdm-stuttgart,dc=de"
+  masterPw="test"
+  slaveDN="cn=admin,dc=mi,dc=hdm-stuttgart,dc=de"
+  slavePw="test"
+
+
+In smbldap.conf müssen einiger Parameter angepasst werden:
+::
+  SID="S-1-5-21-191455238-2906638316-4037938886"	//Eigene SID einfügen
+  ldapTLS="0" 						//Deaktivieren von TLS
+  suffix="dc=mi,dc=hdm-stuttgart,dc=de"			//Korrekter LDAP-Suffix
+
+Samba Konfiguration
++++++++++++++++++++
+
+Nun muss lediglich Samba so konfiguriert werden, dass LDAP zur Authentifizierung verwendet wird.
+
+Dazu werden in der Datei /etc/samba/smb.conf die folgenden Parameter eingefügt :
+::
+  passdb backend = ldapsam:ldap://sdi1a.mi.hdm-stuttgart.de
+  ldap suffix = dc=mi,dc=hdm-stuttgart,dc=de
+  ldap user suffix = ou=People
+  ldap group suffix = ou=Groups
+  ldap machine suffix = ou=Computers
+  ldap idmap suffix = ou=Idmap
+  ldap admin dn = cn=admin,dc=mi,dc=hdm-stuttgart,dc=de
+  ldap passwd sync = yes
+  ldap ssl = off      #WICHTIG, da wir TLS bei LDAP deaktiviert haben
+
+Nun muss Samba neu gestartet werden:
+::
+  restart smbd
+  restart nmbd
+
+Samba benötigt noch das Passwot für den Root-DN:
+::
+  smbpasswd -w test
+
+
+Nun erfolgt die Authentifizierung beim mounten wie in Kapitel 6.2.3
+gezeigt mithilfe von LDAP! 
