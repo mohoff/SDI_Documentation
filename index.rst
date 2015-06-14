@@ -17,6 +17,7 @@ Contents:
    DNS <dns>
    Webserver <webserver>
    Samba <samba>
+   Nagios <nagios>
 
 
 
