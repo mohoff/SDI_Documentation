@@ -266,4 +266,4 @@ Anzahl der Prozesse:
 An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befehl **check_nrpe**. Zu beachten ist hier, dass die einzelnen Argumente NICHT, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem Leerzeichen.
 Die Übersichtsseite zeigt nun die per NRPE überwachten Services an.
 
-.. image::/images/nagios/09-nrpe-services.png
+.. image:: images/Nagios/09-nrpe-services.png
