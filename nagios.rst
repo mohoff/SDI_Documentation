@@ -217,6 +217,8 @@ Eine Befehlsdefinition für einen Befehl mit Argumenten sieht ähnlich aus. Der 
   command[check_disk]=/usr/lib/nagios/plugins/check_disk -w $ARG1$ -c $ARG2$
   command[check_procs]=/usr/lib/nagios/plugins/check_procs -w $ARG1$ -c $ARG2$
   
+Der Service muss nun neugestartet werden: ``service nagios-nrpe-server restart``
+
 Auf der Seite des überwachenden Systems müssen zur Überwachung dieser Dienste folgende Einträge in die Datei ``/etc/nagios3/conf.d/sdi2b.cfg`` eingefügt werden:
 
 Benutzer:
@@ -235,7 +237,7 @@ Prozessorauslastung:
 ::
 
   define service{
-    use                             generic-service         ; Name of service template to use
+    use                             generic-service
     host_name                       sdi2b
     service_description             Current Load
     check_command                   check_nrpe!check_load!5.0,4.0,3.0 10.0,6.0,4.0
@@ -264,6 +266,6 @@ Anzahl der Prozesse:
   }
   
 An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befehl **check_nrpe**. Zu beachten ist hier, dass die einzelnen Argumente NICHT, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem Leerzeichen.
-Die Übersichtsseite zeigt nun die per NRPE überwachten Services an.
+Nach einem Neustart des Servers mit ``service nagios3 restart`` zeigt die Übersichtsseite nun die per NRPE überwachten Services an.
 
 .. image:: images/Nagios/09-nrpe-services.png
