@@ -87,8 +87,8 @@ Das Admin-Passwort kann auch nachträglich mit dem Befehl ``htpasswd /etc/nagios
 
 .. image:: images/Nagios/01-webinterface.png
 
-Überwachung eines Services
-**************************
+Überwachung eines Services auf eienm remote Host
+************************************************
 In Nagios müssen alle Services, die überwacht werden sollen, explizit in einer Konfigurationsdatei definiert werden. Hierfür wird auf dem überwachenden System die Datei ``/etc/nagios3/conf.d/sdi2b.conf`` angelegt. In dieser muss zunächst der überwachte Host definiert werden:
 
 ::
@@ -118,7 +118,7 @@ Außerdem soll der Festplattenspeicher auf sdi2b überwacht werden. Hierfür wir
 Eine Auflistung aller verfügbarer Paramter befindet sich auf: http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#service
 
 Die Konfiguration kann anschließend mit dem Befehl ``nagios3 -v /etc/nagios3/nagios.cfg`` überprüft werden.
-Sollten keine Fehler aufgetreten sein, muss der Server neu gestart werden: ``service nagios restart``
+Sollten keine Fehler aufgetreten sein, muss der Server neu gestart werden: ``service nagios3 restart``
 
 Das Webinterface zeigt nun beide Hosts an. Der überwachende Rechner wird ebenfalls angezeigt, da Nagios standardmäßig eine Kofigurationsdatei für den eigenen Host mitliefert (``/etc/nagios3/conf.d/localhost_nagios2.cfg``).
 
@@ -197,4 +197,73 @@ Einrichtung des NRPE Servers
 Auf dem überwachten System wird der nrpe Server mit dem Befehl ``apt-get install nagios-nrpe-server`` installiert.
 Standardmäßig ist der Aufruf von Nagios-Plugins auf dem Remote System aus Sicherheitsgründen nur ohne Argumente erlaubt. Um Argumente zu aktivieren, muss in der Konfigurationsdatei ``/etc/nagios/nrpe.cfg`` die Option ``dont_blame_nrpe=1`` gesetzt werden. Zustäzlich muss der Zugriff des überwachenden Systems explizit gestattet werden. Dies wird durch die Option ``allowed_hosts=141.62.75.102`` erreicht.
 
+Ebenfalls in dieser Datei sind die Befehle definiert, wie sie vom überwachenden System aufgerufen werden. Standardmäßig sind nur Befehle ohne Argumente definiert:
 
+::
+
+  command[check_users]=/usr/lib/nagios/plugins/check_users -w 5 -c 10
+  command[check_load]=/usr/lib/nagios/plugins/check_load -w 15,10,5 -c 30,25,20
+  command[check_hda1]=/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -p /dev/hda1
+  command[check_zombie_procs]=/usr/lib/nagios/plugins/check_procs -w 5 -c 10 -s Z
+  command[check_total_procs]=/usr/lib/nagios/plugins/check_procs -w 150 -c 200
+
+Da wir Befehle mit Argumenten aufrufen wollen, werden diese Einträge nicht gebraucht und können auskommentiert werden. 
+Eine Befehlsdefinition für einen Befehl mit Argumenten sieht ähnlich aus. Der Unterschied ist, dass an die Stelle der hartcodierten Werte Argument-Platzhalter stehen. Die Befehle zur Überwachung der Benutzer, Auslastung, Plattenspeicher und Prozesse sehen beispielsweise folgendermaßen aus.
+
+::
+
+  command[check_users]=/usr/lib/nagios/plugins/check_users -w $ARG1$ -c $ARG2$
+  command[check_load]=/usr/lib/nagios/plugins/check_load -w $ARG1$ -c $ARG2$
+  command[check_disk]=/usr/lib/nagios/plugins/check_disk -w $ARG1$ -c $ARG2$
+  command[check_procs]=/usr/lib/nagios/plugins/check_procs -w $ARG1$ -c $ARG2$
+  
+Auf der Seite des überwachenden Systems müssen zur Überwachung dieser Dienste folgende Einträge in die Datei ``/etc/nagios3/conf.d/sdi2b.cfg`` eingefügt werden:
+
+Benutzer:
+
+::
+
+  define service{
+    use                             generic-service
+    host_name                       sdi2b
+    service_description             Disk Space
+    check_command                   check_nrpe!check_users!20 50
+  }
+
+Prozessorauslastung:
+
+::
+
+  define service{
+    use                             generic-service         ; Name of service template to use
+    host_name                       sdi2b
+    service_description             Current Load
+    check_command                   check_nrpe!check_load!5.0,4.0,3.0 10.0,6.0,4.0
+  }
+
+Festplattenspeicher:
+
+::
+
+  define service{
+    use                             generic-service
+    host_name                       sdi2b
+    service_description             Disk Space
+    check_command                   check_nrpe!check_disk!20% 10%
+  }
+  
+Anzahl der Prozesse:
+
+::
+
+  define service{
+    use                             generic-service
+    host_name                       sdi2b
+    service_description             Total Processes
+    check_command                   check_nrpe!check_procs!250 400
+  }
+  
+An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befehl **check_nrpe**. Zu beachten ist hier, dass die einzelnen Argumente NICHT, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem Leerzeichen.
+Die Übersichtsseite zeigt nun die per NRPE überwachten Services an.
+
+.. image::/images/nagios/09-nrpe-services.png
