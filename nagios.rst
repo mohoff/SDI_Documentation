@@ -269,3 +269,43 @@ An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befeh
 Nach einem Neustart des Servers mit ``service nagios3 restart`` zeigt die Übersichtsseite nun die per NRPE überwachten Services an.
 
 .. image:: images/Nagios/09-nrpe-services.png
+
+Überwachung der HTTPS Authentifizierung
+***************************************
+HTTPS Authentifizierung lässt sich mit dem Programm ``check_http --ssl -I [IP] -a [username:password]`` überwachen. Da der Befehl die Kenntnis über die Credentials von mindestens einem authorisierten Benutzer auf dem remote Host voraussetzt, bietet sich hier die Überwachung per NRPE an. Zusätzlich will man die Credentials evtl nicht über das Netzwerk schicken. Die Idee ist, auf dem überwachten System einen Befehl ohne Argumente zur Verfügung zustellen, welcher von dem überwachenden System aufgerufen wird. Die Credentials sind in der Definition des Befehls auf der überwachten Seite angegeben. Somit muss die überwachende Seite keine Credentials wissen und übers Netzwerk schicken.
+
+Auf der überwachten Seite wird der Befehl in der Datei ``/etc/nagios/nrpe.cfg`` folgenermaßen definiert:
+
+::
+
+  command[check_http_auth]=/usr/lib/nagios/plugins/check_http --ssl -I localhost -a beam:password
+
+Die Credentials sind in diesem Fall die des Beispielbenutzers **beam**. Sein Passwort ist **password** 
+Anschließend wird der Daemon neugestartet: ´´service nagios-nrpe-server restart´´.
+
+Auf dem Nagios-Server auf der überwachenden Seite wird der Befehl in ``/etc/nagios3/conf.d/sdi2b.cfg`` aufgerufen:
+
+::
+
+  define service{
+    use                             generic-service
+    host_name                       sdi2b
+    service_description             HTTPS Auth
+    check_command                   check_nrpe_1arg!check_http_auth
+  }
+  
+``check_nrpe_1arg`` ruft einen Befehl auf dem remote nur mit dem nachfolgenden Befehl auf, also ohne zusätzliche Argumente.
+
+Nach einem Neustart des Services (``service nagios3 restart``) erscheint der überwachte Service auf dem Webinterface:
+
+.. image:: images/Nagios/10-https-ok.png
+
+Um zu überprüfen, ob der Test funktioniert, ändern wird das Passwort zu einem falschen Passwort, sodass die Authentifizierung fehlschlägt:
+
+::
+
+  command[check_http_auth]=/usr/lib/nagios/plugins/check_http --ssl -I localhost -a beam:bad_credentials
+  
+Nach einem Neustart zeigt die Weboberfläche die Änderung korrekt an:
+
+.. image:: images/Nagios/10-https-warning.png
