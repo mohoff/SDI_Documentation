@@ -280,8 +280,8 @@ Auf der überwachten Seite wird der Befehl in der Datei ``/etc/nagios/nrpe.cfg``
 
   command[check_http_auth]=/usr/lib/nagios/plugins/check_http --ssl -I localhost -a beam:password
 
-Die Credentials sind in diesem Fall die des Beispielbenutzers **beam**. Sein Passwort ist **password** 
-Anschließend wird der Daemon neugestartet: ´´service nagios-nrpe-server restart´´.
+Die Credentials sind in diesem Fall die des Beispielbenutzers **beam**. Sein Passwort ist **password**.
+Anschließend wird der Daemon neugestartet: ``service nagios-nrpe-server restart``.
 
 Auf dem Nagios-Server auf der überwachenden Seite wird der Befehl in ``/etc/nagios3/conf.d/sdi2b.cfg`` aufgerufen:
 
@@ -300,7 +300,7 @@ Nach einem Neustart des Services (``service nagios3 restart``) erscheint der üb
 
 .. image:: images/Nagios/10-https-ok.png
 
-Um zu überprüfen, ob der Test funktioniert, ändern wird das Passwort zu einem falschen Passwort, sodass die Authentifizierung fehlschlägt:
+Um zu überprüfen, ob der Test funktioniert, ändern wir das Passwort zu einem falschen Passwort, sodass die Authentifizierung fehlschlägt:
 
 ::
 
@@ -308,4 +308,4 @@ Um zu überprüfen, ob der Test funktioniert, ändern wird das Passwort zu einem
   
 Nach einem Neustart zeigt die Weboberfläche die Änderung korrekt an:
 
-.. image:: images/Nagios/10-https-warning.png
+.. image:: images/Nagios/11-https-warning.png
