@@ -9,8 +9,25 @@ Nagios Introduction
 Was ist Nagios
 **************
 
+Nagios ist eine Software, mit deren Hilfe Hosts in einer Infrastruktur überwacht werden können.
+
+Nagios hat eine Sammlung von Modulen, mit deren spezielle Dienste eines Hosts überwacht werden können, zB. DNS, LDAP, etc...
+
+Außerdem verfügt Nagios über einen Web-Schnittstelle mit der die gesammeltenabgefragt werden können.
+
 Überwachung mittels NRPE
 ************************
+
+Zur Überwachung von internen Eigenschaften von Remote-Hosts müssen die nötigen Plug-ins direkt auf dem Host ausgeführt werden.
+Mittels NRPE ist es möglich, Plugins zur Überwachung interner Eigenschaften auf dem Remote-Hosts auszuführen.
+
+Soll zum Beispiel der verfügbare Speicherplatz auf einem entfernten Rechner überprüft werden, wird das Plugin check_nrpe (Client) auf dem Nagios-Rechner ausgeführt.
+check_nrpe sendet nun einen String an den zu überwachenden Rechner.
+Der dort (auf Port 5666) hörende NRPE-Dienst (Server) vergleicht den ankommenden String mit den in seiner Konfigurationsdatei hinterlegten.
+Jedem dieser Strings ist ein Kommando zugeordnet. Findet er den vomNagios Gesendeten in seiner Konfiguration, führt er das zugehörige Kommando aus und schickt das Ergebnis (Exitcode und Ausgabe) an check_nrpe der Nagiosmaschine zurück. 
+check_nrpe wiederum reicht das Ergebnis an Nagios weiter, wo es, wie die Ergebnisse anderer Plugins auch dargestellt wird.
+
+Quelle: http://wiki.monitoring-portal.org/nagios/howtos/nrpe
 
 Exercises
 #########
