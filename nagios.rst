@@ -337,3 +337,15 @@ Anschließend wird auf der überwachenden Seite die Servicedefinition zum Aufruf
 Nach einem Neustart des Nagios-Daemons (``service nagios3 restart``) erscheint der Service auf dem Webinterface:
 
 .. image:: images/Nagios/12-ldap-ok.png
+
+Einrichten von Serviceabhängigkeiten
+************************************
+Oftmals bestehen logische Abhängigkeiten zwischen den überwachten Services. Der gerade eingerichtete **HTTPS Auth**-Service ist beispielsweise vom **LDAP**-Service abhängig, da die HTTPS-Authentifizierung über LDAP realisiert ist. Fällt der LDAP-Server aus, funktioniert folglich die Authentifizierung auf dem Webserver nicht mehr. Für den Fall, dass der LDAP-Server ausfällt, sendet der Nagios-Daeomon standardmäßig eine Benachrichtigungsmail für den Ausfall des LDAP-Servers sowie für jeden Service, der aufgrund der Nichterreichbarkeit von LDAP ausfällt. In einem realen Szenario wären noch viel mehr Services von LDAP abhängig, als nur der Webserver. Die Folge ist eine Kaskade an Benachrichtigungsmails, die dem Administrator nichts bringen, da dieser bereits weiß, dass die abhängigen Services nicht funktionieren können.
+
+Das Webinterface zeigt den Effekt, den das Ausschalten des LDAP-Servers hat:
+
+..image:: images/Nagios/12-ldap-down.png
+
+Wie erwartet kommen zwei E-Mails:
+
+..image:: images/Nagios/13-redundant-mails.png
