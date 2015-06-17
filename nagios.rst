@@ -194,7 +194,7 @@ und Nagios sendet die Mail:
 
 Einrichtung des NRPE Servers
 *****************************
-Auf dem überwachten System wird der nrpe Server mit dem Befehl ``apt-get install nagios-nrpe-server`` installiert.
+Auf dem überwachten System wird der NRPE Server mit dem Befehl ``apt-get install nagios-nrpe-server`` installiert.
 Standardmäßig ist der Aufruf von Nagios-Plugins auf dem Remote System aus Sicherheitsgründen nur ohne Argumente erlaubt. Um Argumente zu aktivieren, muss in der Konfigurationsdatei ``/etc/nagios/nrpe.cfg`` die Option ``dont_blame_nrpe=1`` gesetzt werden. Zustäzlich muss der Zugriff des überwachenden Systems explizit gestattet werden. Dies wird durch die Option ``allowed_hosts=141.62.75.102`` erreicht.
 
 Ebenfalls in dieser Datei sind die Befehle definiert, wie sie vom überwachenden System aufgerufen werden. Standardmäßig sind nur Befehle ohne Argumente definiert:
@@ -217,7 +217,7 @@ Eine Befehlsdefinition für einen Befehl mit Argumenten sieht ähnlich aus. Der 
   command[check_disk]=/usr/lib/nagios/plugins/check_disk -w $ARG1$ -c $ARG2$
   command[check_procs]=/usr/lib/nagios/plugins/check_procs -w $ARG1$ -c $ARG2$
   
-Der Service muss nun neugestartet werden: ``service nagios-nrpe-server restart``
+Der Service muss nun neu gestartet werden: ``service nagios-nrpe-server restart``
 
 Auf der Seite des überwachenden Systems müssen zur Überwachung dieser Dienste folgende Einträge in die Datei ``/etc/nagios3/conf.d/sdi2b.cfg`` eingefügt werden:
 
@@ -281,7 +281,7 @@ Auf der überwachten Seite wird der Befehl in der Datei ``/etc/nagios/nrpe.cfg``
   command[check_http_auth]=/usr/lib/nagios/plugins/check_http --ssl -I localhost -a beam:password
 
 Die Credentials sind in diesem Fall die des Beispielbenutzers **beam**. Sein Passwort ist **password**.
-Anschließend wird der Daemon neugestartet: ``service nagios-nrpe-server restart``.
+Anschließend wird der Daemon neu gestartet: ``service nagios-nrpe-server restart``.
 
 Auf dem Nagios-Server auf der überwachenden Seite wird der Befehl in ``/etc/nagios3/conf.d/sdi2b.cfg`` aufgerufen:
 
@@ -309,3 +309,31 @@ Um zu überprüfen, ob der Test funktioniert, ändern wir das Passwort zu einem 
 Nach einem Neustart zeigt die Weboberfläche die Änderung korrekt an:
 
 .. image:: images/Nagios/11-https-warning.png
+
+Überwachung des LDAP-Servers
+****************************
+Analog zum vorherigen Abschnitt kann der LDAP-Server auf dem remote Host überwacht werden.
+Zunächst wird der Befehl ``check_ldap`` auf der NRPE-Seite in ``/etc/nagios/nrpe.cfg`` definiert:
+
+::
+
+  command[check_ldap]=/usr/lib/nagios/plugins/check_ldap -H localhost -b dc=betrayer,dc=com -3
+  
+Mit dem Argument ``-b [base-dn]`` gibt man den Basis-DN des DIT an. In diesem Fall lautet dieser **dc=betrayer,dc=com**. Mit dem Argument ``-3`` wird angegeben, dass es sich um einen LDAP-Server nach der LDAP-Protokollversion **3** handelt.
+
+Der NRPE-Server muss nun neu gestartet werden: ``service nagios-nrpe-server restart``
+
+Anschließend wird auf der überwachenden Seite die Servicedefinition zum Aufrufen des Befehls in die ``/etc/nagios3/conf.d/sdi2b.cfg`` aufgenommen:
+
+::
+
+  define service{
+    use                     generic-service
+    host_name               sdi2b
+    service_description     LDAP
+    check_command           check_nrpe_1arg!check_ldap
+  }
+  
+Nach einem Neustart des Nagios-Daemons (``service nagios3 restart``) erscheint der Service auf dem Webinterface:
+
+.. image:: images/Nagios/12-ldap-ok.png
