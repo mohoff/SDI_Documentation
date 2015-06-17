@@ -340,12 +340,30 @@ Nach einem Neustart des Nagios-Daemons (``service nagios3 restart``) erscheint d
 
 Einrichten von Serviceabhängigkeiten
 ************************************
-Oftmals bestehen logische Abhängigkeiten zwischen den überwachten Services. Der gerade eingerichtete **HTTPS Auth**-Service ist beispielsweise vom **LDAP**-Service abhängig, da die HTTPS-Authentifizierung über LDAP realisiert ist. Fällt der LDAP-Server aus, funktioniert folglich die Authentifizierung auf dem Webserver nicht mehr. Für den Fall, dass der LDAP-Server ausfällt, sendet der Nagios-Daeomon standardmäßig eine Benachrichtigungsmail für den Ausfall des LDAP-Servers sowie für jeden Service, der aufgrund der Nichterreichbarkeit von LDAP ausfällt. In einem realen Szenario wären noch viel mehr Services von LDAP abhängig, als nur der Webserver. Die Folge ist eine Kaskade an Benachrichtigungsmails, die dem Administrator nichts bringen, da dieser bereits weiß, dass die abhängigen Services nicht funktionieren können.
+Oftmals bestehen logische Abhängigkeiten zwischen den überwachten Services. Der gerade eingerichtete **HTTPS Auth**-Service ist beispielsweise vom **LDAP**-Service abhängig, da die HTTPS-Authentifizierung über LDAP realisiert ist. Fällt der LDAP-Server aus, funktioniert folglich die Authentifizierung auf dem Webserver nicht mehr. Für den Fall, dass der LDAP-Server ausfällt, sendet der Nagios-Daemon standardmäßig eine Benachrichtigungsmail für den Ausfall des LDAP-Servers sowie für jeden Service, der aufgrund der Nichterreichbarkeit von LDAP ausfällt. In einem realen Szenario wären noch viel mehr Services von LDAP abhängig, als nur der Webserver. Die Folge ist eine Kaskade an Benachrichtigungsmails, die dem Administrator nichts bringen, da dieser bereits weiß, dass die abhängigen Services nicht funktionieren können.
 
 Das Webinterface zeigt den Effekt, den das Ausschalten des LDAP-Servers hat:
 
-..image:: images/Nagios/12-ldap-down.png
+.. image:: images/Nagios/12-ldap-down.png
 
 Wie erwartet kommen zwei E-Mails:
 
-..image:: images/Nagios/13-redundant-mails.png
+.. image:: images/Nagios/13-redundant-mails.png
+
+Eine solche Abhängigkeit kann in unserer Konfigurationsdatei ``/etc/nagios3/conf.d/sdi2b.cfg`` mit folgendem Eintrag definiert werden:
+
+::
+
+  define servicedependency{
+    host_name                       sdi2b
+    service_description             LDAP
+    dependent_host_name             sdi2b
+    dependent_service_description   HTTPS Auth
+    notification_failure_criteria   o,w,u,c
+  }
+
+Diese Definition sagt aus, dass der Service mit dem Bezeichner **HTTPS Auth**, der auf dem Host **sdi2b** läuft, vom Service **LDAP**, der ebenfalls auf **sdi2b** läuft, abhängig ist. ``notification_failure_criteria`` bestimmt, in welchen Fällen KEINE Benachrichtigungen gesendet werden sollen. Die Werte ``o,w,u,c`` geben an, dass keine Benachrichtigungen gesendet werden sollen, wenn sich der **Masterservice** in einer der Zustände **OK** (o), **Warning** (w), **Unknown** (u) oder **Critical** (c) befindet.
+
+Wird der LDAP-Server nun gestoppt, wird nur eine Mail versendet:
+
+.. image:: images/Nagios/14-one-mail.png
