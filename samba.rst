@@ -18,6 +18,8 @@ Die Bezeichnung "Samba-Server" bezeichnet den Rechner, der die Freigaben zur Ver
 Der "Samba-Klient" ist der Rechner, welcher die Freigaben einbindet.
 Ein Server kann mehrere Verzeichnisse für verschiedene Benutzer freigeben, so dass jeder Benutzer eine eigene Freigabe hat.
 Falls nun ein Klient eine Freigabe einbinden will, so muss er sich zuerst gegenüber dem Server authentifizieren.
+
+
 Exercises
 *********
 
@@ -48,7 +50,7 @@ Auf die gleiche Weise wurden mehrere Samba-Benutzer für verschiedene Linux-User
 
 Samba user können nun mit dem Befehl ```pdbedit -L -v``` aufgelistet werden:
 ::
-  root@sdi2b:~# pdbedit -L -v
+  root@sdi1a:~# pdbedit -L -v
   ---------------
   Unix username:        testuser0
   NT username:          testuser0
@@ -108,11 +110,14 @@ Um beispielsweise das Verzeichnis ```/home/testuser0/shared``` freizugeben, muss
   [testshare0]
   path = /home/testuser0/shared
   available = yes
-  valid users = testuser0
+  valid users = testuser0 #Nur testuser0 kann auf dieses Verzeichnis zugreifen.
   read only = no
   browseable = yes
   public = yes
   writable = yes
+
+//TODO: mehr zu den verschiedenen Optionen?
+
   
 Nach einem Serverneustart mit ```service smbd restart``` kann auf den Ordner über den Pfad ```\\sdi1a.mi.hdm-stuttgart.de\testshare0\``` zugegriffen werden.
 
@@ -121,6 +126,8 @@ Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfü
   [homes]
     comment = Home Directories
     browseable = no
+
+//TODO: überprüfen!
 
 Der User ```testuser0``` kann anschließend über den Pfad ```\\sdi1a.mi.hdm-stuttgart.de\testuser0\``` auf sein Homedirectory zugreifen.
 
@@ -136,6 +143,8 @@ Die Konfiguration kann mit dem Befehl ```testparm``` überprüft werden:
   Loaded services file OK.
   Server role: ROLE_STANDALONE
   Press enter to see a dump of your service definitions
+
+//TODO: überprüfen
 
 Informationen zu einzelnen Samba-Usern können mit ```smbclient``` abgerufen werden.
 ::
@@ -182,6 +191,7 @@ Der Ordner erscheint nun in Form eines Netzwerklauferks im Arbeitsplatz.
 
 .. image:: images/Samba/windows/06.png
 
+//TODO: eigene screenshots
 
 Linux
 +++++
@@ -210,6 +220,9 @@ Nun muss ein Samba LDAP Schema eingerichtet werden, so dass OpenLDAP als Backend
 
 Der DIT braucht hierbei Attribute zum Beschreiben der Samba-Daten.
 Diese Attribute sind im Samba LDAP Schema hinterlegt.
+
+
+//TODO: was ist das überhaupt?
 
 Entpacken des Schemas:
 ::
@@ -269,6 +282,9 @@ Das Schema kann nun zu LDAP-Server hinzugefügt werden:
 
 Samba Indizes
 +++++++++++++
+
+
+//TODO: Was ist das überhaupt?
 
 OpenLDAP kennt nun Samba-Attribute, nun können noch Indizes für diese hinzugefügt werden, um die Performanz zu verbessern.
 
@@ -357,6 +373,11 @@ Samba benötigt noch das Passwort für den Root-DN:
 ::
   smbpasswd -w test
 
+Außerdem müssen die Samba-User noch in das LDAP-Verzeichnis eingefügt werden:
+::
+  smbldap-useradd -a -P testuser0
+
+TODO: Screenshot von LDAP-Verzeichnis?
 
 Nun erfolgt die Authentifizierung beim mounten wie in Kapitel 6.2.3
 gezeigt mithilfe von LDAP! 
