@@ -6,7 +6,18 @@ Samba
 Samba Introduction
 ******************
 
+Der Name Samba stammt vom Server Message Block-Protokoll (SMB).
+Mithilfe von Samba können Daten (Verzeichnisse, Laufwerke, Festplatten) sowie Geräte (zb. Drucker) im Netzwerk geteilt werden.
+Diese sogenannten Freigaben tauchen dann zB. in der Windows-Netzwerkumgebung auf und können eingebunden werden.
+Unter Linux diese Freigaben ebenfalls gemountet werden.
 
+Samba kann in gemischten Netzen (Windows & Linux) sowie homogenen Netzwerken zum Datenaustausch eingesetzt werden. 
+Samba ist unter Linux sozusagen das Bindeglied zu anderen Betriebssystemen.
+
+Die Bezeichnung "Samba-Server" bezeichnet den Rechner, der die Freigaben zur Verfügung stellt.
+Der "Samba-Klient" ist der Rechner, welcher die Freigaben einbindet.
+Ein Server kann mehrere Verzeichnisse für verschiedene Benutzer freigeben, so dass jeder Benutzer eine eigene Freigabe hat.
+Falls nun ein Klient eine Freigabe einbinden will, so muss er sich zuerst gegenüber dem Server authentifizieren.
 Exercises
 *********
 
@@ -24,64 +35,64 @@ Anschließend können Benutzer hinzugefügt werden. Dies geschieht mit dem Befeh
 
 Hierfür ist es notwendig, dass auf dem System Linux Benutzer mit dem entsprechenden Benutzernamen angelegt ist. Benutzer können mit dem Befehl ```useradd --create-home %username%``` angelegt werden. Mit dem Parameter ```--create-home``` wird gleichzeitig ein Homeverzeichnis angelegt.
 ::
-  root@sdi2b:~# useradd --create-home smbtester
+  root@sdi1a:~# useradd --create-home testuser0 
 
 Zur Erstellung des Samba-Users:
 ::
-  root@sdi2b:~# smbpasswd -a smbtester
+  root@sdi1a:~# smbpasswd -a testuser0
   New SMB password:
   Retype new SMB password:
-  Added user smbtester.
+  Added user testuser0.
 
-Auf die gleiche Weise wurde ein Samba-User für den root-User angelegt.
+Auf die gleiche Weise wurden mehrere Samba-Benutzer für verschiedene Linux-User angelegt.
 
 Samba user können nun mit dem Befehl ```pdbedit -L -v``` aufgelistet werden:
 ::
   root@sdi2b:~# pdbedit -L -v
   ---------------
-  Unix username:        root
-  NT username:
+  Unix username:        testuser0
+  NT username:          testuser0
   Account Flags:        [U          ]
-  User SID:             S-1-5-21-3735746035-584030464-2538432411-1000
-  Primary Group SID:    S-1-5-21-3735746035-584030464-2538432411-513
-  Full Name:            root
-  Home Directory:       \\sdi2b\root
-  HomeDir Drive:
-  Logon Script:
-  Profile Path:         \\sdi2b\root\profile
-  Domain:               SDI2B
-  Account desc:
-  Workstations:
-  Munged dial:
+  User SID:             S-1-5-21-191455238-2906638316-4037938886-1003
+  Primary Group SID:    S-1-5-21-191455238-2906638316-4037938886-1002
+  Full Name:            testuser0
+  Home Directory:       \\PDC-SRV\testuser0
+  HomeDir Drive:        H:
+  Logon Script:         logon.bat
+  Profile Path:         \\PDC-SRV\profiles\testuser0
+  Domain:               SDI1A
+  Account desc:         
+  Workstations:         
+  Munged dial:          
   Logon time:           0
-  Logoff time:          Wed, 06 Feb 2036 15:06:39 UTC
-  Kickoff time:         Wed, 06 Feb 2036 15:06:39 UTC
-  Password last set:    Fri, 05 Jun 2015 08:43:24 UTC
-  Password can change:  Fri, 05 Jun 2015 08:43:24 UTC
+  Logoff time:          Tue, 19 Jan 2038 03:14:07 UTC
+  Kickoff time:         Tue, 19 Jan 2038 03:14:07 UTC
+  Password last set:    Tue, 23 Jun 2015 14:45:11 UTC
+  Password can change:  Tue, 23 Jun 2015 14:45:11 UTC
   Password must change: never
   Last bad password   : 0
   Bad password count  : 0
   Logon hours         : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
   ---------------
-  Unix username:        smbtester
-  NT username:
+  Unix username:        testuser1
+  NT username:          testuser1
   Account Flags:        [U          ]
-  User SID:             S-1-5-21-3735746035-584030464-2538432411-1001
-  Primary Group SID:    S-1-5-21-3735746035-584030464-2538432411-513
-  Full Name:
-  Home Directory:       \\sdi2b\smbtester
-  HomeDir Drive:
-  Logon Script:
-  Profile Path:         \\sdi2b\smbtester\profile
-  Domain:               SDI2B
-  Account desc:
-  Workstations:
-  Munged dial:
+  User SID:             S-1-5-21-191455238-2906638316-4037938886-1004
+  Primary Group SID:    S-1-5-21-191455238-2906638316-4037938886-513
+  Full Name:            testuser1
+  Home Directory:       \\PDC-SRV\testuser1
+  HomeDir Drive:        H:
+  Logon Script:         logon.bat
+  Profile Path:         \\PDC-SRV\profiles\testuser1
+  Domain:               SDI1A
+  Account desc:         
+  Workstations:         
+  Munged dial:          
   Logon time:           0
-  Logoff time:          Wed, 06 Feb 2036 15:06:39 UTC
-  Kickoff time:         Wed, 06 Feb 2036 15:06:39 UTC
-  Password last set:    Fri, 05 Jun 2015 09:30:26 UTC
-  Password can change:  Fri, 05 Jun 2015 09:30:26 UTC
+  Logoff time:          Tue, 19 Jan 2038 03:14:07 UTC
+  Kickoff time:         Tue, 19 Jan 2038 03:14:07 UTC
+  Password last set:    Tue, 23 Jun 2015 14:46:06 UTC
+  Password can change:  Tue, 23 Jun 2015 14:46:06 UTC
   Password must change: never
   Last bad password   : 0
   Bad password count  : 0
@@ -92,18 +103,18 @@ Samba user können nun mit dem Befehl ```pdbedit -L -v``` aufgelistet werden:
 Freigabe von Ordnern
 ####################
 Die Konfiguration zur Freigabe von Ordnern befindet sich in der Datei ```/etc/samba/smb.conf```.
-Um beispielsweise das Verzeichnis ```/home/root/shared``` freizugeben, muss in der Konfigurationsdatei folgender Block hinzugefügt werden:
+Um beispielsweise das Verzeichnis ```/home/testuser0/shared``` freizugeben, muss in der Konfigurationsdatei folgender Block hinzugefügt werden:
 ::
-  [shared]
-  path = /home/root/shared
+  [testshare0]
+  path = /home/testuser0/shared
   available = yes
-  valid users = root
+  valid users = testuser0
   read only = no
   browseable = yes
   public = yes
   writable = yes
   
-Nach einem Serverneustart mit ```service smbd restart``` kann auf den Ordner über den Pfad ```\\sdi2b.mi.hdm-stuttgart.de\shared\``` zugegriffen werden.
+Nach einem Serverneustart mit ```service smbd restart``` kann auf den Ordner über den Pfad ```\\sdi1a.mi.hdm-stuttgart.de\testshare0\``` zugegriffen werden.
 
 Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfür muss in der ````smb.conf``` folgender Eintrag auskommentiert werden:
 ::
@@ -111,11 +122,11 @@ Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfü
     comment = Home Directories
     browseable = no
 
-Der User ```smbtester``` kann anschließend über den Pfad ```\\sdi2b.mi.hdm-stuttgart.de\smbtester\``` auf sein Homedirectory zugreifen.
+Der User ```testuser0``` kann anschließend über den Pfad ```\\sdi1a.mi.hdm-stuttgart.de\testuser0\``` auf sein Homedirectory zugreifen.
 
 Die Konfiguration kann mit dem Befehl ```testparm``` überprüft werden:
 ::
-  root@sdi2b:~# testparm
+  root@sdi1a:~# testparm
   Load smb config files from /etc/samba/smb.conf
   rlimit_max: increasing rlimit_max (1024) to minimum Windows limit (16384)
   Processing section "[homes]"
@@ -127,26 +138,31 @@ Die Konfiguration kann mit dem Befehl ```testparm``` überprüft werden:
   Press enter to see a dump of your service definitions
 
 Informationen zu einzelnen Samba-Usern können mit ```smbclient``` abgerufen werden.
-:: 
-  root@sdi2b:~# smbclient -L localhost --user smbtester
-  Enter smbtester's password:
+::
+  root@sdi1a:/home# smbclient -L localhost --user testuser0
+  Enter testuser0's password: 
   Domain=[WORKGROUP] OS=[Unix] Server=[Samba 4.1.6-Ubuntu]
   
-          Sharename       Type      Comment
-          ---------       ----      -------
-          print$          Disk      Printer Drivers
-          shared          Disk
-          IPC$            IPC       IPC Service (sdi2b server (Samba, Ubuntu))
-          smbtester       Disk      Home Directories
+  	Sharename       Type      Comment
+  	---------       ----      -------
+	print$          Disk      Printer Drivers
+	testshare0      Disk      
+	testshare1      Disk      
+	testshare2      Disk      
+	IPC$            IPC       IPC Service (sdi1a server (Samba, Ubuntu))
+  	testuser0       Disk      Home Directories
   Domain=[WORKGROUP] OS=[Unix] Server=[Samba 4.1.6-Ubuntu]
-  
-          Server               Comment
-          ---------            -------
-          SDI2B                sdi2b server (Samba, Ubuntu)
-  
-          Workgroup            Master
-          ---------            -------
-          WORKGROUP            SDI2B
+
+	Server               Comment
+	---------            -------
+	SDI1A                sdi1a server (Samba, Ubuntu)
+
+	Workgroup            Master
+	---------            -------
+	WORKGROUP            SDI1A
+
+
+
 
 Mounten von shares
 ##################
@@ -172,8 +188,13 @@ Linux
 
 Mithilfe des mount-Kommandos kann das Dateisystem im Zielverzeichnis /mnt/test/ eingehängt werden:
 ::
-  sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/shared /mnt/test/ -ouser=testuser
+  sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/testshare0 /mnt/test/ -ouser=testuser0
 
+bzw zum Einhängen der Home-Directory von "testuser0":
+::
+  sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/testuser0 /mnt/test/ -ouser=testuser0
+
+  
 Verknüpfung mit einem LDAP-Server
 #################################
 
@@ -332,7 +353,7 @@ Nun muss Samba neu gestartet werden:
   restart smbd
   restart nmbd
 
-Samba benötigt noch das Passwot für den Root-DN:
+Samba benötigt noch das Passwort für den Root-DN:
 ::
   smbpasswd -w test
 
