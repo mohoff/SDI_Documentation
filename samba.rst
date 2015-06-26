@@ -46,7 +46,11 @@ Zur Erstellung des Samba-Users:
   Retype new SMB password:
   Added user testuser0.
 
+Man muss ein Passwort angeben, da Samba nicht die Standard-Linux-Passwörter nutzt, sondern eigene Passwörter.
+Diese werden unter  ``/etc/samba/smbpasswd`` gespeichert.
+
 Auf die gleiche Weise wurden mehrere Samba-Benutzer für verschiedene Linux-User angelegt.
+
 
 Samba user können nun mit dem Befehl ``pdbedit -L -v`` aufgelistet werden:
 ::
@@ -141,13 +145,14 @@ Die Parameter im Detail:
   
 Nach einem Serverneustart mit ``service smbd restart`` kann auf den Ordner über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testshare0\`` zugegriffen werden.
 
-Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfür muss in der ``smb.conf`` folgender Eintrag auskommentiert werden:
+Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfür müssen in der ``smb.conf`` die Kommentare vor dem folgendem Eintrag entfernt werden:
 ::
   [homes]
     comment = Home Directories
     browseable = no
 
-//TODO: überprüfen!
+Falls nun ein Klient versucht, sich mit einer Freigabe zu verbinden, die nicht explizit in der smb.conf definiert wurde, zb. "Alice", so durchsucht der Samba-Server das Password-Database-File nach einem User "Alice".
+Falls dieser gefunden wird und das vom Klienten eingegebene Passwort mit dem Unix-PW vom User "Alice" übereinstimmt, so wird eine neue Freigabe mit dem Namen "Alice" erzeugt, welcher auf Alice's Home-Directory zeigt.
 
 Der User ``testuser0`` kann anschließend über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testuser0\`` auf sein Homedirectory zugreifen.
 
@@ -159,12 +164,12 @@ Die Konfiguration kann mit dem Befehl ``testparm`` überprüft werden:
   Processing section "[homes]"
   Processing section "[printers]"
   Processing section "[print$]"
-  Processing section "[shared]"
+  Processing section "[testshare0]"
+  Processing section "[testshare1]"
+  Processing section "[testshare2]"
   Loaded services file OK.
   Server role: ROLE_STANDALONE
   Press enter to see a dump of your service definitions
-
-//TODO: überprüfen
 
 Informationen zu einzelnen Samba-Usern können mit ``smbclient`` abgerufen werden.
 ::
@@ -201,17 +206,20 @@ Windows
 Der freigegebene ``shared``-Ordner kann folgendermaßen in Windows eingebunden werden. 
 Im Arbeitsplatz im Reiter "Computer" die Option "Netzwerkaufwerk verbinden" wählen.
 
-.. image:: images/Samba/windows/04.png
+.. image:: images/Samba/windows/01.bmp
 
 Im erscheinenden Dialog den Laufwerkbuchstaben wähen und den Pfad eingeben und mit "Fertig stellen" bestätigen.
 
-.. image:: images/Samba/windows/05.png
+.. image:: images/Samba/windows/02.bmp
+
+Die korrekten Login-Daten angeben.
+
+.. image:: images/Samba/windows/03.bmp
 
 Der Ordner erscheint nun in Form eines Netzwerklauferks im Arbeitsplatz.
 
-.. image:: images/Samba/windows/06.png
+.. image:: images/Samba/windows/04.bmp
 
-//TODO: eigene screenshots
 
 Linux
 +++++
@@ -397,7 +405,10 @@ Außerdem müssen die Samba-User noch in das LDAP-Verzeichnis eingefügt werden:
 ::
   smbldap-useradd -a -P testuser0
 
-TODO: Screenshot von LDAP-Verzeichnis?
+Die Samba-Benutzer befinden sich nun im korrekten LDAP-User-Verzeichnis:
+
+.. image:: images/Samba/ADSWitthSamba.png
+
 
 Nun erfolgt die Authentifizierung beim mounten wie in Kapitel 6.2.3
 gezeigt mithilfe von LDAP! 
