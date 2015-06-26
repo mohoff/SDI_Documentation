@@ -26,6 +26,7 @@ SOMETHING AMNOG THOSE LINES:
 - parent DN is "dc=example,dc=com"
 
 .. topic:: Abkürzungen
+
   .. glossary::
     DIT
       Directory Information Tree
