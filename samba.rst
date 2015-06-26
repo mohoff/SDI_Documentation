@@ -114,10 +114,30 @@ Um beispielsweise das Verzeichnis ``/home/testuser0/shared`` freizugeben, muss i
   read only = no
   browseable = yes
   public = yes
-  writable = yes
 
-//TODO: mehr zu den verschiedenen Optionen?
+Der Bezeichner innerhalb der eckigen Klammern ist der Name des Shares. In diesem Fall also **testshare0**.
+Die Parameter im Detail: 
 
+.. glossary::
+
+	path
+  		Der Freizugebende Pfad
+  		
+	available
+  		dient als "Schalter" für das Share. Wird der Parameter auf **no** gesetzt, schlagen alle Versuche auf das Share zuzugreifen fehl.
+  		
+  	valid users
+  		Eine mit Kommas getrennte Liste an Benutzern, die auf das Share zugreifen dürfen; Andersherum können einzelne Benutzer mit dem Parameter **invalid users** vom Zugriff ausgeschlossen werden.
+  	
+  	read only
+  		Legt fest, ob die zugelassenen Benutzer Schreibzugriff auf das Share haben
+  	
+  	browsesable
+  		Ist diese Option auf "no" gesetzt, wird das Share niemals aufgelistet. Es ist also nur möglich direkt per Pfad auf das Share zuzugreifen.
+  	
+  	public
+  		Legt fest, ob für den Zugriff auf das Share ein Passwort benötigt wird. 
+  		
   
 Nach einem Serverneustart mit ``service smbd restart`` kann auf den Ordner über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testshare0\`` zugegriffen werden.
 
