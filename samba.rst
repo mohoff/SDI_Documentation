@@ -33,9 +33,9 @@ Der Samba Server wird mit dem Befehl
 
 installiert.
 
-Anschließend können Benutzer hinzugefügt werden. Dies geschieht mit dem Befehl ```smbpasswd -a %username%```.
+Anschließend können Benutzer hinzugefügt werden. Dies geschieht mit dem Befehl ``smbpasswd -a %username%``.
 
-Hierfür ist es notwendig, dass auf dem System Linux Benutzer mit dem entsprechenden Benutzernamen angelegt ist. Benutzer können mit dem Befehl ```useradd --create-home %username%``` angelegt werden. Mit dem Parameter ```--create-home``` wird gleichzeitig ein Homeverzeichnis angelegt.
+Hierfür ist es notwendig, dass auf dem System Linux Benutzer mit dem entsprechenden Benutzernamen angelegt ist. Benutzer können mit dem Befehl ``useradd --create-home %username%`` angelegt werden. Mit dem Parameter ``--create-home`` wird gleichzeitig ein Homeverzeichnis angelegt.
 ::
   root@sdi1a:~# useradd --create-home testuser0 
 
@@ -48,7 +48,7 @@ Zur Erstellung des Samba-Users:
 
 Auf die gleiche Weise wurden mehrere Samba-Benutzer für verschiedene Linux-User angelegt.
 
-Samba user können nun mit dem Befehl ```pdbedit -L -v``` aufgelistet werden:
+Samba user können nun mit dem Befehl ``pdbedit -L -v`` aufgelistet werden:
 ::
   root@sdi1a:~# pdbedit -L -v
   ---------------
@@ -104,8 +104,8 @@ Samba user können nun mit dem Befehl ```pdbedit -L -v``` aufgelistet werden:
 
 Freigabe von Ordnern
 ####################
-Die Konfiguration zur Freigabe von Ordnern befindet sich in der Datei ```/etc/samba/smb.conf```.
-Um beispielsweise das Verzeichnis ```/home/testuser0/shared``` freizugeben, muss in der Konfigurationsdatei folgender Block hinzugefügt werden:
+Die Konfiguration zur Freigabe von Ordnern befindet sich in der Datei ``/etc/samba/smb.conf``.
+Um beispielsweise das Verzeichnis ``/home/testuser0/shared`` freizugeben, muss in der Konfigurationsdatei folgender Block hinzugefügt werden:
 ::
   [testshare0]
   path = /home/testuser0/shared
@@ -119,9 +119,9 @@ Um beispielsweise das Verzeichnis ```/home/testuser0/shared``` freizugeben, muss
 //TODO: mehr zu den verschiedenen Optionen?
 
   
-Nach einem Serverneustart mit ```service smbd restart``` kann auf den Ordner über den Pfad ```\\sdi1a.mi.hdm-stuttgart.de\testshare0\``` zugegriffen werden.
+Nach einem Serverneustart mit ``service smbd restart`` kann auf den Ordner über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testshare0\`` zugegriffen werden.
 
-Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfür muss in der ````smb.conf``` folgender Eintrag auskommentiert werden:
+Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfür muss in der ``smb.conf`` folgender Eintrag auskommentiert werden:
 ::
   [homes]
     comment = Home Directories
@@ -129,9 +129,9 @@ Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfü
 
 //TODO: überprüfen!
 
-Der User ```testuser0``` kann anschließend über den Pfad ```\\sdi1a.mi.hdm-stuttgart.de\testuser0\``` auf sein Homedirectory zugreifen.
+Der User ``testuser0`` kann anschließend über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testuser0\`` auf sein Homedirectory zugreifen.
 
-Die Konfiguration kann mit dem Befehl ```testparm``` überprüft werden:
+Die Konfiguration kann mit dem Befehl ``testparm`` überprüft werden:
 ::
   root@sdi1a:~# testparm
   Load smb config files from /etc/samba/smb.conf
@@ -146,7 +146,7 @@ Die Konfiguration kann mit dem Befehl ```testparm``` überprüft werden:
 
 //TODO: überprüfen
 
-Informationen zu einzelnen Samba-Usern können mit ```smbclient``` abgerufen werden.
+Informationen zu einzelnen Samba-Usern können mit ``smbclient`` abgerufen werden.
 ::
   root@sdi1a:/home# smbclient -L localhost --user testuser0
   Enter testuser0's password: 
@@ -178,7 +178,7 @@ Mounten von shares
 
 Windows
 +++++++
-Der freigegebene ```shared```-Ordner kann folgendermaßen in Windows eingebunden werden. 
+Der freigegebene ``shared``-Ordner kann folgendermaßen in Windows eingebunden werden. 
 Im Arbeitsplatz im Reiter "Computer" die Option "Netzwerkaufwerk verbinden" wählen.
 
 .. image:: images/Samba/windows/04.png
