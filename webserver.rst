@@ -112,6 +112,8 @@ Die URL des Repositories finden, von dem das Package ``apache2-doc`` heruntergel
 Verstaendnis 2:
 Den Pfad finden, ueber den der Apache Webserver die installierte Doku zur Verfuegung stellt. Laut Tipp ist ein Hinweis in einer Datei im ``apache2-doc``-Package zu finden. Mit dem Command ``dpkg -L apache2-doc`` lassen sich nun alle zum Packe zugehoerigen Dateien samt absolutem Pfad ausgeben. Die Ausgabe ist jedoch zu komplex und kann mit dem grep-Filter entsprechend reduziert werden. Eine uebersichtlichere Ausgabe laesst sich mit dem Befehl ``dpkg -L apache2-doc | grep -vE '(manual|examples)'`` erzeugen:
 
+::
+
     /.
     /usr
     /usr/share
@@ -150,7 +152,7 @@ Auffaellig ist, dass beim Browsen dieser URL eine automatische Weiterleitung nac
 
 SDI-Doku hochladen und zugaenglich machen
 *****************************************
-
+Die SDI-Doku besteht aus mehreren Files, daher macht es Sinn die Doku vor dem Upload in eine Datei zu packen. Somit muss man nur eine Datei manuell hochladen. Gepackt wurde die Doku in einen Tarball mittels ``tar -cvzf sphinxdoku.tgz html`` (**ERKLAERUNG DER PARAMETER**)). Die Uebertragung von lokalem PC auf den Server ist mit dem Tool ``scp`` realisierbar, konkret dem Befehl ``scp sphinxdoku.tgz root@141.62.75.106:.`` (**ERKLAERUNG DER PARAMETER**). Durch die Angabe des Punkts hinten, landet die Datei dann serverseitig im Homeverzeichnis des Users root. Anschliessend muss die Datei wieder entpackt werden, z.B. mit dem Befehl ``tar -xvf sphinxdoku.tgz``.
 
 Einrichtung von virtuellen Hosts
 ********************************
