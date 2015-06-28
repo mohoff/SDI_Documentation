@@ -148,6 +148,24 @@ bla
 *****************************************
 bla
 
+Apache Befehle
+##############
+* a2ensite, a2dissite
+* a2enmod, a2dismod (?)
+* a2enconf, a2disconf (?)
+* apache2 -v (gibt versionsnummer und built-timestamp aus)
+* apache2 -t (checked syntax von config-files)
+* service apache restart,reload,start,stop,force-reload
+https://wiki.ubuntuusers.de/apache#Apache-steuern
+
+Apache Prozesse
+###############
+Wie in folgendem Auszug aus der Konsole zu sehen ist, existieren mehrere zu Apache zugeordnete Prozesse gleichzeitig wenn der Webserver gestartet ist. Grund hierfuer ist, dass bei Serverstart ein ``apache2``-Prozess vom User ``root`` gestartet wird, der die TCP-Ports oeffnet und ein paar Kindprozesse (standardmaessig 5 an der Zahl) unter dem User ``www-data`` forked, die als *Worker* die Client-Anfragen beantworten. Diese Kindprozesse werden je nach Auslastung vom Mutterprozess gespawned oder gekilled. Parameter, wie die initiale Anzahl an gestarteten Kindprozessen bei Serverstart, koennen ueber Direktiven in der bekannten ``apache2.conf`` festgelegt werden.
+
+(screenshot apache2 ps -aux)
+
+**Bemerkung**: Der User ``www-data`` wird bei der Apache-Installation erstellt und ist ein Systemuser, sprich ohne Homeverzeichnis. Der Vorteil von einen neuen User ist, dass die Rechte individuell pro Service/Daemon anpassbar sind und kein Service ausserhalb seiner Berichtigungsgrenzen arbeitet.
+
 TLS
 ###
 
