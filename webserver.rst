@@ -152,7 +152,59 @@ Auffaellig ist, dass beim Browsen dieser URL eine automatische Weiterleitung nac
 
 SDI-Doku hochladen und zugaenglich machen
 *****************************************
-Die SDI-Doku besteht aus mehreren Files, daher macht es Sinn die Doku vor dem Upload in eine Datei zu packen. Somit muss man nur eine Datei manuell hochladen. Gepackt wurde die Doku in einen Tarball mittels ``tar -cvzf sphinxdoku.tgz html`` (**ERKLAERUNG DER PARAMETER**)). Die Uebertragung von lokalem PC auf den Server ist mit dem Tool ``scp`` realisierbar, konkret dem Befehl ``scp sphinxdoku.tgz root@141.62.75.106:.`` (**ERKLAERUNG DER PARAMETER**). Durch die Angabe des Punkts hinten, landet die Datei dann serverseitig im Homeverzeichnis des Users root. Anschliessend muss die Datei wieder entpackt werden, z.B. mit dem Befehl ``tar -xvf sphinxdoku.tgz``.
+Die SDI-Doku besteht aus mehreren Files, daher macht es Sinn die Doku vor dem Upload in eine Datei zu packen. Somit muss man nur eine Datei manuell hochladen. Gepackt wurde die Doku in einen Tarball mittels ``tar -cvzf sphinxdoku.tgz html`` (**ERKLAERUNG DER PARAMETER**)). Die Uebertragung von lokalem PC auf den Server ist mit dem Tool ``scp`` realisierbar, konkret dem Befehl ``scp sphinxdoku.tgz root@141.62.75.106:.`` (**ERKLAERUNG DER PARAMETER**). Durch die Angabe des Punkts hinten, landet die Datei dann serverseitig im Homeverzeichnis des Users root. Anschliessend muss die Datei wieder entpackt werden, z.B. mit dem Befehl ``tar -xvf sphinxdoku.tgz``. Unsere SDI-Doku liegt nun also auf dem Server in dem Verzeichnis ``/home/sdidoc/``.
+
+Nun muss der Apache entsprechend konfiguriert werden, damit die Doku auch ueber einen Browser erreichbar ist:
+
+::
+
+    <Directory /home/sdidoc/>
+           Options Indexes FollowSymLinks
+           AllowOverride None
+           Require all granted
+    </Directory>
+ 
+Es gibt 2 Moeglichkeiten:  Eine Redirect-Directive oder einen Alias. Vorraussetzung fuer beide Varianten ist, dass im SDI-Doku-Verzeichnis eine ``index.html`` als Einstiegspunkt existiert, was bei uns von unserem Doku-Tool Shinx bereits so erstellt wurde.
+
+``Alias``-Direktive:
+
+Alias wurden im Prinzip schon in der letzten Aufgabe rund um ``apache2-doc`` behandelt. Die Alias-Direktive nimmt einen relativen Pfad (relativ zum ServerName), also ``/mh203``, entgegen und mappt diesen auf einen anderen Pfad, in unserem Fall also ``/home/sdidoc``.
+::
+
+    <VirtualHost *:80>
+            ServerName sdi1b.mi.hdm-stuttgart.de
+            DocumentRoot /var/www/html
+            Alias /mh203 /home/sdidoc
+            <Directory /home/sdidoc>
+                    Options Indexes FollowSymLinks
+                    AllowOverride None
+                    Require all granted
+            </Directory>
+    </VirtualHost>
+
+
+``Redirect``-Direktive:
+
+Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf ``sdidoc.mi.hdm-stuttgart.de`` weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
+::
+
+    <VirtualHost *:80>
+            ServerName sdi1b.mi.hdm-stuttgart.de
+            DocumentRoot /var/www/html
+            Redirect /mh203 http://sdidoc.mi.hdm-stuttgart.de
+    </VirtualHost>
+    <VirtualHost *:80>
+            ServerName sdidoc.mi.hdm-stuttgart.de
+            DocumentRoot /home/sdidoc/
+            <Directory /home/sdidoc>
+                    Options Indexes FollowSymLinks
+                    AllowOverride None
+                    Require all granted
+            </Directory>
+    </VirtualHost>
+
+
+
 
 Einrichtung von virtuellen Hosts
 ********************************
