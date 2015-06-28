@@ -85,9 +85,26 @@ Einrichtung des Apache Webservers und erste Schritte
 ****************************************************
 Zunächst wird der Apache Webserver über die Paketverwaltung mit dem Befehl ``sudo apt-get install apache2`` installiert.
 
-(screenshot custom index.html)
+Eine eigene ``index.html`` mit folgendem Content wurde im Default-Verzeichnis ``/var/www/html`` angelegt:
 
-(screenshot doc.html)
+::
+
+    <html>
+        <head>
+            <title>testpage</title>
+        </head>
+        <body>
+            testcontent
+        </body>
+    </html>
+
+Wenn man ``sdi1b.mi.hdm-stuttgart.de`` im Browser aufruft, erscheint wie erwartet unsere Testseite.
+
+.. image:: images/Apache/01_customIndexHTML.png
+
+Benannt man die ``index.html`` in ``doc.html`` um, erscheint die IndexOf-Seite, da der Einstiegspunkt einer ``index.html``-Datei nicht mehr vorhanden ist.
+
+.. image:: images/Apache/02_renamedToDocHTML.png
 
 Installation von ``apache2-doc`` sowie Suche der URL
 ****************************************************
@@ -146,7 +163,9 @@ In dieser Datei sind 2 Pfade zu sehen:
 * ``/usr/share/doc/apache2-doc-manual``: Der absolute Pfad, auf dem die Apache-Doku auf dem Server liegt.
 * ``/manual``: Ein relativer Pfad als Alias, ueber den die Doku im Browser aufgerufen kann. In unserem Fall waere das also ``sdi1b.mi.hdm-stuttgart.de/manual``.
 
-(screenshot(s) von Apache-Doku online, mit URL)
+Ruft man die Seite ``sdi1b.mi.hdm-stuttgart.de/manual`` im Browser auf, erscheint erwartungsgemaess die Apache-Doku:
+
+.. image:: images/Apache/03_apacheDocSlashManual.png
 
 Auffaellig ist, dass beim Browsen dieser URL eine automatische Weiterleitung nach ``sdi1b.mi.hdm-stuttgart.de/manual/en/index.html`` erfolgt. Diese Weiterleitung wird von einer ``index.html`` im ``/manual``-Verzeichnis angestossen.
 
@@ -182,6 +201,9 @@ Alias wurden im Prinzip schon in der letzten Aufgabe rund um ``apache2-doc`` beh
             </Directory>
     </VirtualHost>
 
+Wie folgender Screenshot zeigt, funktioniert dieser Ansatz:
+
+.. image:: images/Apache/04_sdiDocSlashMH203.png
 
 ``Redirect``-Direktive:
 
@@ -205,6 +227,10 @@ Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf einen ande
                     Require all granted
             </Directory>
     </VirtualHost>
+
+Auch dieser Ansatz funktioniert, wenn der DNS-Eintrag fuer ``sdidoc.mi.hdm-stuttgart.de`` eingetragen ist:
+
+.. image:: images/Apache/05_sdiDocSubdomain.png
 
 Einrichtung von virtuellen Hosts
 ********************************
@@ -238,6 +264,8 @@ Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin ueber ``s
 
 Damit auch der eigene DNS-Server zur Aufloesung verwendet wird, muss unter Ubuntu dieser manuell eingetragen werden. Das Ziel ist, dass in der Datei ``/etc/resolv.conf`` unser eigener DNS-Server an erster Stelle steht. Dazu kann der Eintrag in ``/etc/resolvconf/resolv.conf.d/head`` hinzugefuegt werden. Hintergrund ist, dass die ``/etc/resolv.conf`` aus den beiden ``head``- und ``base``-Dateien generiert wird. Der Inhalt von ``head`` wird bei der Generierung immer vor dem von ``base`` in das resultierende File eingefuegt.
 
+*Quelle: http://askubuntu.com/questions/157154/how-do-i-include-lines-in-resolv-conf-that-wont-get-lost-on-reboot*
+
 Wir fuegen also den Eintrag in die ``head``-Datei ein:
 
 ::
@@ -255,7 +283,7 @@ Die Warnung steht am Anfang dort, weil diese den User davon bewahren soll, die g
     nameserver 141.62.75.106
     nameserver 127.0.1.1
 
-Wie zu sehen ist, steht unser DNS-Server an erster Stelle, gefolgt von Nameserver des Host-OS (Ubuntu lief hier in einer VM als Guest-OS).
+Wie zu sehen ist, steht unser DNS-Server an erster Stelle, gefolgt von Nameserver des Host-OS (Ubuntu laeuft hier in einer VM als Guest-OS).
 
 
 SSL-Einrichtung
