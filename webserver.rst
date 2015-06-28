@@ -64,6 +64,90 @@ Voraussetzungen:
     </VirtualHost>
 
 
+Apache Funktionsweise
+#####################
+
+Apache wird standardmaessig in das Verzeichnis ``/etc/apache2/`` installiert. Dieses Root-Verzeichnis enthaelt zu Beginn folgende Dateien und Unterordner:
+
+::
+
+    apache2.conf
+    conf-available/
+    conf-enabled/
+    envvars
+    magic
+    mods-available/
+    mods-enabled/
+    ports.conf
+    sites-available/
+    sites-enabled/
+
+Das Standardverzeichnis fuer Webinhalte ist unter ``/var/www/html/``.
+
+Im Folgenden wird auf die vier Dateien ``apache2.conf``, ``envvars``, ``magic`` und ``ports.conf`` eingegangen, sowie auf die sechs Unterordner, die *verfuegbare* (``available``) und *aktivierte* (``enabled``) Konfigurationen, Mods und Seiten enthalten.
+
+``apache2.conf``
+****************
+``apache2.conf`` ist eine der beiden ``.conf``-Dateien, mit denen sich der Apache-Webserver konfigurieren laesst (frueher: ``httpd.conf``). Als Hauptkonfigurationsdatei fuegt die Teile anderer Konfigurationsdateien (``mods``, ``confs``, ``sites`` und ``ports.conf``) zusammen, wenn der Server gestartet wird. Beispielhaft sind hier ein paar wichtige Einstellungen aufgefuehrt:
+
+* ``ServerRoot``: Root-Verzeichnis, unter dem die Konfigurationen, Error- und Logdateien des Servers gehalten werden. Bsp.: ``/etc/apache2``.
+* ``Timeout``: Anzahl Sekunden, die gewartet wird, bevor ein Timeout-Signal gesendet wird. Bsp.: ``300``.
+* ``KeepAlive``: Ob permanente Verbindungen (mehrere Anfragen pro Verbindung) erlaubt sind oder nicht. Bsp.: ``On``.
+* ``MaxKeepAliveRequests``: maximale Zahl an Anfragen, die pro persistenter Verbindung erlaubt sind. Bsp.: ``100``.
+* ``HostnameLookups``: Ob nur die IP-Adresse oder auch der Hostname ueber einen versuchten DNS-Lookup in Logdateien gespeichert wird. Hat zur Folge, dass pro eingehender Verbindung mindestens 1 Lookup stattfindet. Bsp.: ``Off``.
+* ``ErrorLog``: Pfad der Errorlog-Files. Dient als Fallback, wenn die virtuellen Hosts diesen Wert nicht setzen. Bsp.: ``${APACHE_LOG_DIR}/error.log``.
+* ``Include`` bzw. ``IncludeOptional``: Andere Konfigurationsdateien werden eingebunden. Bsp.: ``ports.conf``.
+* ``LogLevel``: Gibt die "Strenge" an, mit der Nachrichten gelogged werden sollen. Bsp.: ``warn``.
+* globales, default Security-Model mittels ``Directory``-Direktiven:
+  
+  ::
+  
+      <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+        Require all denied
+      </Directory>
+      
+      <Directory /usr/share>
+        AllowOverride None
+        Require all granted
+      </Directory>
+      
+      <Directory /var/www/>
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+      </Directory>
+
+  Damit wird der Zugriff auf das Root-Filesystem explizit verboten (erste Direktive) und der Zugriff auf ``/usr/share/`` und ``/var/www/`` erlaubt (zweite und dritte Direktive). Host-spezifische (Directory-)Direktiven koennen in den entsprechenden VirtualHost-Direktiven in ``/etc/apache2/sites-available`` festgelegt werden.
+* ``AccessFileName``: Der Name der Datei, die in jedem Ordner gesucht wird, um nach zusaetzlichen Konfigurations-Direktiven zu schauen.
+* ``<FilesMatch "^\.ht">Require all denied</FilesMatch>``: Mit dieser Direktive koennen die Dateien ``.htaccess`` und ``.htpasswd`` nicht von Clients gelesen werden.
+* ... und einige Umgebungsvariablen, z.B. ``${APACHE_PID_FILE}``, die aus der Datei ``envvars`` referenziert werden.
+
+
+``ports.conf``
+**************
+``ports.conf`` wird immer von ``apache2.conf`` eingebunden. Es enthält Direktiven, die festlegen, auf welchen TCP-Ports Apache lauschen soll.
+
+``envvars`` und ``magic``
+*************************
+In ``envvars`` werden, wie der Name schon erahnen laesst, Apache-Umgebungsvariablen gesetzt.
+
+``magic`` enthaelt Regeln, um anhand der führenden Bytes einer Datei dem MIME-Typ zu erkennen.
+
+
+``conf-available`` und ``conf-enabled``
+***************************************
+bla
+
+``mods-available`` und ``mods-enabled``
+***************************************
+bla
+
+``sites-available`` und ``sites-enabled``
+*****************************************
+bla
+
 TLS
 ###
 
