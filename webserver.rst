@@ -185,7 +185,10 @@ Alias wurden im Prinzip schon in der letzten Aufgabe rund um ``apache2-doc`` beh
 
 ``Redirect``-Direktive:
 
-Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf ``sdidoc.mi.hdm-stuttgart.de`` weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
+Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf einen anderen Host, also wie in diesem Beispiel auf ``sdidoc.mi.hdm-stuttgart.de``, weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
+
+**Bemerkung**: Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgeloest werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgeloest wird. Vergleiche auch mit naechster Aufgabe.
+
 ::
 
     <VirtualHost *:80>
@@ -203,11 +206,34 @@ Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf ``sdidoc.m
             </Directory>
     </VirtualHost>
 
-
-
-
 Einrichtung von virtuellen Hosts
 ********************************
+Die Konfigurationsdatei, mit der das Verhalten erzielt werden kann sieht folgendermassen aus:
+
+::
+    <VirtualHost *:80>
+           ServerAdmin webmaster@localhost
+           DocumentRoot /var/www/html
+           ErrorLog ${APACHE_LOG_DIR}/error.log
+           CustomLog ${APACHE_LOG_DIR}/access.log combined
+    </VirtualHost>
+    <VirtualHost *:80>
+            ServerName mh203.mi.hdm-stuttgart.de
+            DocumentRoot /home/sdidoc
+            <Directory /home/sdidoc>
+                    Options Indexes FollowSymLinks
+                    AllowOverride None
+                    Require all granted
+            </Directory>
+    </VirtualHost>
+    <VirtualHost *:80>
+            ServerName manual.mi.hdm-stuttgart.de
+            DocumentRoot /usr/share/doc/apache2-doc/manual/
+    </VirtualHost>
+
+Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin ueber ``sdi1b.mi.hdm-stuttgart.de`` erreichbar (erster VirtualHost-Eintrag). Ein ServerName muss nicht zwangsweise mit angegeben werden, denn so wird dieser VirtualHost fuer alle Anfragen verwendet, die nicht einen anderen ServerName anfragen (s. folgende VirtualHosts), eine Art Fallback also. Der zweite VirtualHost-Eintrag ermoeglicht den Zugriff auf die SDI-Doku ueber ``mh203.mi.hdm-stuttgart.de``, der dritte Eintrag auf die Apache-Doku ueber ``manual.mi.hdm-stuttgart.de``. Ersteren muss man wieder ueber die ``Directory``-Direktive erweitern, sodass das Verzeichnis ``/home/sdidoc`` zugaenglich ist.
+
+**Bemerkung**: Auch hier wieder: die beiden Subdomains muessen in die Zonesfile des DNS-Servers aufgenommen werden, damit diese Namen auf die IP des Servers (141.62.75.106) verweisen.
 
 SSL-Einrichtung
 ***************
