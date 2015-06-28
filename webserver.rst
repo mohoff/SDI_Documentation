@@ -81,13 +81,75 @@ Bei HTTPS muss der Webserver fuer jeden Hostnamen ein eignenes Zertifikat auslie
 Exercises
 #########
 
-Einrichtung des Apache Webservers
-*********************************
+Einrichtung des Apache Webservers und erste Schritte
+****************************************************
 Zunächst wird der Apache Webserver über die Paketverwaltung mit dem Befehl ``sudo apt-get install apache2`` installiert.
 
+(screenshot custom index.html)
 
-Eigenen Inhalt hosten
-*********************
+(screenshot doc.html)
+
+Installation von ``apache2-doc`` sowie Suche der URL
+****************************************************
+Installiert werden kann die Apache Doku mit dem Command ``sudo apt-get install apache2-doc``.
+
+Verstaendnis 1:
+Die URL des Repositories finden, von dem das Package ``apache2-doc`` heruntergeladen wird. Das geht nicht mit dem in der Aufgabe erwaehnten Tipp "dpkg...", sondern geht ueber den Command ``apt-cache policy apache2-doc``, welcher die URLs wie folgt ausgibt:
+
+::
+
+    apache2-doc:
+      Installed: 2.4.7-1ubuntu4.4
+      Candidate: 2.4.7-1ubuntu4.4
+      Version table:
+     *** 2.4.7-1ubuntu4.4 0
+            500 http://archive.ubuntu.com/ubuntu/ trusty-updates/main amd64 Packages
+            500 http://security.ubuntu.com/ubuntu/ trusty-security/main amd64 Packag  es
+            100 /var/lib/dpkg/status
+         2.4.7-1ubuntu4 0
+            500 http://archive.ubuntu.com/ubuntu/ trusty/main amd64 Packages
+ 
+Verstaendnis 2:
+Den Pfad finden, ueber den der Apache Webserver die installierte Doku zur Verfuegung stellt. Laut Tipp ist ein Hinweis in einer Datei im ``apache2-doc``-Package zu finden. Mit dem Command ``dpkg -L apache2-doc`` lassen sich nun alle zum Packe zugehoerigen Dateien samt absolutem Pfad ausgeben. Die Ausgabe ist jedoch zu komplex und kann mit dem grep-Filter entsprechend reduziert werden. Eine uebersichtlichere Ausgabe laesst sich mit dem Befehl ``dpkg -L apache2-doc | grep -vE '(manual|examples)'`` erzeugen:
+
+    /.
+    /usr
+    /usr/share
+    /usr/share/doc
+    /usr/share/doc/apache2-doc
+    /usr/share/doc/apache2-doc/copyright
+    /usr/share/doc/apache2-doc/changelog.Debian.gz
+    /usr/share/doc-base
+    /etc
+    /etc/apache2
+    /etc/apache2/conf-available
+    /etc/apache2/conf-available/apache2-doc.conf
+
+Wie zu sehen ist, wurden die in Frage kommenden Files erheblich reduziert. Die einzigste Datei, die Sinn macht, ist die ``/etc/apache2/conf-available/apache2-doc.conf``. Ein Apache-Kenner haette sofot in dieser Datei nachschauen koennen, da in diesem Verzeichnis alle Konfigurationsdateien von auf Apache beruhenden Packages, also z.B. der Apache-Doku, dem MySql-Frontend und dem Nagios-Frontend, gehalten werden.
+
+Die gefundene Datei enthaelt:
+
+::
+
+    Alias /manual /usr/share/doc/apache2-doc/manual/
+    
+    <Directory "/usr/share/doc/apache2-doc/manual/">
+        Options Indexes FollowSymlinks
+        AllowOverride None
+        Require all granted
+        AddDefaultCharset off
+    </Directory>
+
+In dieser Datei sind 2 Pfade zu sehen:
+* ``/usr/share/doc/apache2-doc-manual``: Der absolute Pfad, auf dem die Apache-Doku auf dem Server liegt.
+* ``/manual``: Ein relativer Pfad als Alias, ueber den die Doku im Browser aufgerufen kann. In unserem Fall waere das also ``sdi1b.mi.hdm-stuttgart.de/manual``.
+
+(screenshot(s) von Apache-Doku online, mit URL)
+
+Auffaellig ist, dass beim Browsen dieser URL eine automatische Weiterleitung nach ``sdi1b.mi.hdm-stuttgart.de/manual/en/index.html`` erfolgt. Diese Weiterleitung wird von einer ``index.html`` im ``/manual``-Verzeichnis angestossen.
+
+SDI-Doku hochladen und zugaenglich machen
+*****************************************
 
 
 Einrichtung von virtuellen Hosts
