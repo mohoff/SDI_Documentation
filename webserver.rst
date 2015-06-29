@@ -253,7 +253,7 @@ Apache Prozesse
 ###############
 Wie in folgendem Auszug aus der Konsole zu sehen ist, existieren mehrere zu Apache zugeordnete Prozesse gleichzeitig wenn der Webserver gestartet ist. Grund hierfuer ist, dass bei Serverstart ein ``apache2``-Prozess vom User ``root`` gestartet wird, der die TCP-Ports oeffnet und ein paar Kindprozesse (standardmaessig 5 an der Zahl) unter dem User ``www-data`` forked, die als *Worker* die Client-Anfragen beantworten. Diese Kindprozesse werden je nach Auslastung vom Mutterprozess gespawned oder gekilled. Parameter, wie die initiale Anzahl an gestarteten Kindprozessen bei Serverstart, koennen ueber Direktiven in der bekannten ``apache2.conf`` festgelegt werden.
 
-(screenshot apache2 ps -aux)
+.. image:: images/Apache/00_apacheProzessePsAux.png
 
 **Bemerkung**: Der User ``www-data`` wird bei der Apache-Installation erstellt und ist ein Systemuser, sprich ohne Homeverzeichnis. Der Vorteil von einen neuen User ist, dass die Rechte individuell pro Service/Daemon anpassbar sind und kein Service ausserhalb seiner Berichtigungsgrenzen arbeitet.
 
@@ -547,7 +547,7 @@ Im naechsten Schritt wird das selbst-signierte Zertifikat erstellt. Auch hier wi
 
 Dadurch wird ein Skript gestartet, das ein paar Nutzereingaben erwartet:
 
-(screenshot rootCApem erstellen.png)
+.. image:: images/Apache/06_rootCApemErstellen.png
 
 Nach den Eingaben wird ein Zertifikat namens ``rootCA.pem`` erstellt (selbst-signiert), das 1024 Tage gueltig ist. Dieses dient nun als Root-Zertifikat der eigenen Root-CA. Auch offizielle Root-Zertifikate sind selbst-signiert.
 
@@ -586,7 +586,10 @@ Import des Root-Zertifikats in den Browser
 
 Dieses Zertifikat muss nun in den Browser des Clients, der die HTTPS-Verbindung speater aufbauen soll, importiert werden. Dazu wurde ``rootCA.pem`` unter Windows ueber das GUI-Took ``WinSCP`` auf den Client geladen und unter Linux folgender ``scp``-Command ausgefuert: ``scp root@141.62.75.106:rootCA.key``. Voraussetzung fuer den Linux-Command ist, dass das Zertifikat im Home-Verzeichnis des Users ``root`` liegt.
 
-(3 screenshots zu zertifikat import bei windows+firefox)
+.. image:: images/Apache/07_zertifikatManager.png
+.. image:: images/Apache/08_zertifikatVertrauenPopup.png
+.. image:: images/Apache/09_zertifikatDetails.png
+.. image:: images/Apache/10_zertifikatListe.png
 
 Erstellen des Server-Keys und des Server-Zertifikats
 ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -609,7 +612,7 @@ Aus diesem Key wird ein "Certificate Signing Request" (CSR) erstellt:
 
 Wieder werden einige User-Eingaben verlangt. Wichtig ist hierbei nur, dass unter der Eingabe "common name" der Hostname oder die IP-Adresse des Servers eingetragen werden soll, der das Zertifikat speater verwenden soll.
 
-(screenshot CSR request eingaben)
+.. image:: images/Apache/11_CSRRequest.png
 
 Der erstellte CSR hat folgenden Inhalt:
 
@@ -718,13 +721,13 @@ Praxistest
 
 Der Aufruf von ``https://sdi1b.mi.hdm-stuttgart.de`` funktioniert nun. Der Firefox gibt auch die Zusatzinfo aus, dass dieser Seite vertraut wird.
 
-(screenshot trustedPage)
+.. image:: images/Apache/12_pageTrusted.png
 
 Mit einem Click auf "Weitere Informationen..." kann das Server-Zertifikat (Device-Zertifikat) begutachtet werden.
 
 Wenn das Root-Zertifikat nicht im Browser integriert ist, kommt folgender bekannter Warnhinweis:
 
-(screenshot notTrustedPage)
+.. image:: images/Apache/13_pageNotTrusted.png
 
 
 LDAP Authentifizierung
