@@ -404,7 +404,10 @@ Wie folgender Screenshot zeigt, funktioniert dieser Ansatz:
 
 Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf einen anderen Host, also wie in diesem Beispiel auf ``sdidoc.mi.hdm-stuttgart.de``, weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
 
-**Bemerkung**: Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgeloest werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgeloest wird. Vergleiche auch mit naechster Aufgabe.
+.. topic:: Bemerkung
+
+    Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgeloest werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgeloest wird. Vergleiche auch mit naechster Aufgabe.
+
 
 ::
 
@@ -455,7 +458,9 @@ Die Konfigurationsdatei, mit der das Verhalten erzielt werden kann sieht folgend
 
 Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin ueber ``sdi1b.mi.hdm-stuttgart.de`` erreichbar (erster VirtualHost-Eintrag). Ein ServerName muss nicht zwangsweise mit angegeben werden, denn so wird dieser VirtualHost fuer alle Anfragen verwendet, die nicht einen anderen ServerName anfragen (s. folgende VirtualHosts), eine Art Fallback also. Der zweite VirtualHost-Eintrag ermoeglicht den Zugriff auf die SDI-Doku ueber ``mh203.mi.hdm-stuttgart.de``, der dritte Eintrag auf die Apache-Doku ueber ``manual.mi.hdm-stuttgart.de``. Ersteren muss man wieder ueber die ``Directory``-Direktive erweitern, sodass das Verzeichnis ``/home/sdidoc`` zugaenglich ist.
 
-**Bemerkung**: Auch hier wieder: die beiden Subdomains muessen in die Zonesfile des DNS-Servers aufgenommen werden, damit diese Namen auf die IP des Servers (141.62.75.106) verweisen. DNS-Serverneustart mit ``service bind9 restart``. 
+.. topic:: Bemerkung
+
+    Auch hier wieder: die beiden Subdomains muessen in die Zonesfile des DNS-Servers aufgenommen werden, damit diese Namen auf die IP des Servers (141.62.75.106) verweisen. DNS-Serverneustart mit ``service bind9 restart``. 
 
 Damit auch der eigene DNS-Server zur Aufloesung verwendet wird, muss unter Ubuntu dieser manuell eingetragen werden. Das Ziel ist, dass in der Datei ``/etc/resolv.conf`` unser eigener DNS-Server an erster Stelle steht. Dazu kann der Eintrag in ``/etc/resolvconf/resolv.conf.d/head`` hinzugefuegt werden. Hintergrund ist, dass die ``/etc/resolv.conf`` aus den beiden ``head``- und ``base``-Dateien generiert wird. Der Inhalt von ``head`` wird bei der Generierung immer vor dem von ``base`` in das resultierende File eingefuegt.
 
@@ -684,7 +689,9 @@ Exemplarisch der Inhalt der aktuellen ``rootCA.srl``:
 
     B47676414D9D3AD5
 
-*Bemerkung*: Das Root-Zertifikat ist 1024 Tage gueltig, es macht also keinen Sinn das Device-Zertifikat ueber einen laengeren Zeitraum auszustellen. Nach Ablauf des Root-Zertifikats wird auch dieses ungueltig werden.
+.. topic:: Bemerkung
+
+    Das Root-Zertifikat ist 1024 Tage gueltig, es macht also keinen Sinn das Device-Zertifikat ueber einen laengeren Zeitraum auszustellen. Nach Ablauf des Root-Zertifikats wird auch dieses ungueltig werden.
 
 zugehoeriger ``VirtualHost`` unter Apache
 +++++++++++++++++++++++++++++++++++++++++
