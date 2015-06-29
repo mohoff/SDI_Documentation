@@ -668,10 +668,44 @@ Exemplarisch der Inhalt der aktuellen ``rootCA.srl``:
 
 *Bemerkung*: Das Root-Zertifikat ist 1024 Tage gueltig, es macht also keinen Sinn das Device-Zertifikat ueber einen laengeren Zeitraum auszustellen. Nach Ablauf des Root-Zertifikats wird auch dieses ungueltig werden.
 
-Der private Device-Key und das Device-Zertifikat muessen nun auf dem Server ``sdi1b.mi.hdm-stuttgart.de`` installiert werden.
+Der private Device-Key und das Device-Zertifikat muessen nun auf dem Server ``sdi1b.mi.hdm-stuttgart.de`` in das richtige Verzeichnis kopiert werden. Common sense ist, dass man die beiden Files unter ``/etc/ssl/certs/`` zu den anderen Zertifikaten packt.
 
-...
+Folgende Commands kopieren die beiden Files in das gewuenschte Verzeichnis.
 
+::
+
+    cp device.crt /etc/ssl/certs/device.crt
+    cp device.key /etc/ssl/certs/device.key
+
+
+Seitens Key und Zertifikat ist das Setup beendet. Nun muss der Apache im letzten Schritt noch angewiesen werden, diese beiden Dateien in seiner SSL-Konfiguration auch zu verwenden.
+
+Ein passender ``VirtualHost`` sieht z.B. folgendermassen aussehen:
+
+::
+
+    <VirtualHost *:443>
+            ServerAdmin mh203@hdm-stuttgart.de
+            ServerName sdi1b.mi.hdm-stuttgart.de
+            DocumentRoot /var/www/html
+    
+            SSLEngine on
+            SSLCertificateFile /etc/ssl/certs/device.crt
+            SSLCertificateKeyFile /etc/ssl/certs/device.key
+    </VirtualHost>
+
+
+Neu sind die 3 Zeilen in der Mitte: sie sagen aus, dass die ``SSLEngine`` fuer diesen Host aktiv sein soll und gibt die Pfade zum ``SSLCertificateFile`` und zum ``SSLCertificateKeyFile`` an, die im letzten Schritt jeweils in das Verzeichnis ``/etc/ssl/certs`` kopiert wurden.
+
+Der Aufruf von ``https://sdi1b.mi.hdm-stuttgart.de`` funktioniert nun. Der Firefox gibt auch die Zusatzinfo aus, dass dieser Seite vertraut wird.
+
+(screenshot trustedPage)
+
+Mit einem Click auf "Weitere Informationen..." kann das Server-Zertifikat (Device-Zertifikat) begutachtet werden.
+
+Wenn das Root-Zertifikat nicht im Browser integriert ist, kommt folgender bekannter Warnhinweis:
+
+(screenshot notTrustedPage)
 
 
 LDAP Authentifizierung
