@@ -486,7 +486,14 @@ Damit SSL genutzt werden kann, muss das entsprechende Modul zuerst aktiviert und
 ::
 
     sudo a2enmod ssl
-    sudo service apache2 force-reload 
+    sudo service apache2 force-reload
+
+Der folgende prinzipielle Ablauf ist: Wir erstellen uns eine eigene Root-CA, die wir in den Browser importieren. Anschliessend erstellen wir das Server-Zertifikat, das wir mit dem Key der Root-CA signieren und auf unseren Server ``sdi1b.mi.hdm-stuttgart.de`` laden. Dort erstellen wir einen passenden ``VirtualHost``, der SSL-faehig ist und starten den Webserver neu. Anschliessend kann mit dem Browser, der das Root-CA geladen hat, problemlos die HTTPS-Version der Seite angesurfed werden.
+
+Die eigentliche Erstellung der Keys und Zertifikate sowie die Apache-Konfiguration erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird.
+
+Erstellen des Root-Keys und des Root-Zertifikats
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 Das Tool, das zur Generierung von den Keys/Zertifikaten verwendet wird ist ``OpenSSL``. Diese freie Software wird zunaechst verwendet, um eine eigene private CA zu erstellen.
 
@@ -574,9 +581,15 @@ Der Inhalt des Zertifikats ``rootCA.pem``:
     4oM5/b2j0o/6npgN8BvcQZkRlJAcr7HRMkjLmA4eFL89d/ioFQxq
     -----END CERTIFICATE-----
 
+Import des Root-Zertifikats in den Browser
+++++++++++++++++++++++++++++++++++++++++++
+
 Dieses Zertifikat muss nun in den Browser des Clients, der die HTTPS-Verbindung speater aufbauen soll, importiert werden. Dazu wurde ``rootCA.pem`` unter Windows ueber das GUI-Took ``WinSCP`` auf den Client geladen und unter Linux folgender ``scp``-Command ausgefuert: ``scp root@141.62.75.106:rootCA.key``. Voraussetzung fuer den Linux-Command ist, dass das Zertifikat im Home-Verzeichnis des Users ``root`` liegt.
 
 (3 screenshots zu zertifikat import bei windows+firefox)
+
+Erstellen des Server-Keys und des Server-Zertifikats
+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Nun brauchen wir noch ein Zertifikat, mit dem sich unser Server beim Client identifizieren kann. Dieses neue Zertifikat wird mit dem zuvor erstellten Root-Key signiert, sodass der Client beim Aufruf der HTTPS-Seite den Server als vertrauenswuerdig einstuft, da sein Zertifikat von einem im Browser eingetragenen und damit glaubwuerdigem Root-CA signiert wurde.
 
@@ -668,6 +681,9 @@ Exemplarisch der Inhalt der aktuellen ``rootCA.srl``:
 
 *Bemerkung*: Das Root-Zertifikat ist 1024 Tage gueltig, es macht also keinen Sinn das Device-Zertifikat ueber einen laengeren Zeitraum auszustellen. Nach Ablauf des Root-Zertifikats wird auch dieses ungueltig werden.
 
+zugehoeriger ``VirtualHost`` unter Apache
++++++++++++++++++++++++++++++++++++++++++
+
 Der private Device-Key und das Device-Zertifikat muessen nun auf dem Server ``sdi1b.mi.hdm-stuttgart.de`` in das richtige Verzeichnis kopiert werden. Common sense ist, dass man die beiden Files unter ``/etc/ssl/certs/`` zu den anderen Zertifikaten packt.
 
 Folgende Commands kopieren die beiden Files in das gewuenschte Verzeichnis.
@@ -696,6 +712,9 @@ Ein passender ``VirtualHost`` sieht z.B. folgendermassen aussehen:
 
 
 Neu sind die 3 Zeilen in der Mitte: sie sagen aus, dass die ``SSLEngine`` fuer diesen Host aktiv sein soll und gibt die Pfade zum ``SSLCertificateFile`` und zum ``SSLCertificateKeyFile`` an, die im letzten Schritt jeweils in das Verzeichnis ``/etc/ssl/certs`` kopiert wurden.
+
+Praxistest
+++++++++++
 
 Der Aufruf von ``https://sdi1b.mi.hdm-stuttgart.de`` funktioniert nun. Der Firefox gibt auch die Zusatzinfo aus, dass dieser Seite vertraut wird.
 
