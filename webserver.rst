@@ -578,6 +578,102 @@ Dieses Zertifikat muss nun in den Browser des Clients, der die HTTPS-Verbindung 
 
 (3 screenshots zu zertifikat import bei windows+firefox)
 
+Nun brauchen wir noch ein Zertifikat, mit dem sich unser Server beim Client identifizieren kann. Dieses neue Zertifikat wird mit dem zuvor erstellten Root-Key signiert, sodass der Client beim Aufruf der HTTPS-Seite den Server als vertrauenswuerdig einstuft, da sein Zertifikat von einem im Browser eingetragenen und damit glaubwuerdigem Root-CA signiert wurde.
+
+Jeder neue Server (Device) braucht ein eigenes Zertifikat.
+
+Um dieses zu erstellen wird zunaechst wieder ein privater Schluessel erstellt:
+
+::
+
+    openssl genrsa -out device.key 2048
+
+Aus diesem Key wird ein "Certificate Signing Request" (CSR) erstellt:
+
+::
+
+    opensll req -new -key device.key -out device.csr
+
+Wieder werden einige User-Eingaben verlangt. Wichtig ist hierbei nur, dass unter der Eingabe "common name" der Hostname oder die IP-Adresse des Servers eingetragen werden soll, der das Zertifikat speater verwenden soll.
+
+(screenshot CSR request eingaben)
+
+Der erstellte CSR hat folgenden Inhalt:
+
+::
+
+    -----BEGIN CERTIFICATE REQUEST-----
+    MIIDBDCCAewCAQAwgaUxCzAJBgNVBAYTAkRFMRswGQYDVQQIDBJCYWRlbi1XdWVy
+    dHRlbWJlcmcxEjAQBgNVBAcMCVN0dXR0Z2FydDEMMAoGA1UECgwDSGRNMQwwCgYD
+    VQQLDANNTUIxIjAgBgNVBAMMGXNkaTFiLm1pLmhkbS1zdHV0dGdhcnQuZGUxJTAj
+    BgkqhkiG9w0BCQEWFm1oMjAzQGhkbS1zdHV0dGdhcnQuZGUwggEiMA0GCSqGSIb3
+    DQEBAQUAA4IBDwAwggEKAoIBAQDkPj4mC7tyGfSIQZ7n4dI4LfQP/xwS4n73jUne
+    TVYVeejFMSz5AIJyoAsyfyw98st5ceHGtQkyc4PhFxCWJvMwAsH1zmYJzu0jkPTb
+    AWRVANVyHwGNVudqUToCXujTPZqmJHtWp2kLF5vO63ic7sra5xRGtLyUDZD1i4Gd
+    LMWxe6wOE3TjNRAPW2xjzUisXsvs0ls3H4n4JZysZM6+JuD+JUaT5ZlPWP3l4u8q
+    LicSXH0EeykhTVyJKdvD60hr9nsX/ULkXUltrz0oB+kRw4xtPlzmpzxofKNfKd/h
+    yjNOVLI7kdf/HQHBOE1fYxOeVDJJB9GfjAdhqRZWCfKNkT3BAgMBAAGgGTAXBgkq
+    hkiG9w0BCQcxCgwIcGFzc3dvcmQwDQYJKoZIhvcNAQELBQADggEBACD3IAC675wA
+    PIL68HbsY4OPFnrPrlb0P1rYQOYR4fEHCQY+P3EHj+1XwtM/TvtMUtUn227UF5hs
+    2zO/xVbeDfxDITrMBP+rHy997EEofxB8f7y2zYDFtrgw5a0j0PgpK2cx6Hffa29p
+    JqGHlUTZ+Xx1m6rfQupm4ooz3uffCciJOCftJ0G181H6i3+62MYBrPmYRfimLaWd
+    Im4kOJtHjXtF6n18wCM83/5DcScxx722pFHK8hAJcbyEuc2caH1ii2hD7zwNMPZK
+    T4b2AMnWdAYtyqwSsTsqdAcIeaL1Zjs0LSySUPTKvI1s8+HuLJVyxQMA/lW8DfBP
+    ncLhvKcJ+0E=
+    -----END CERTIFICATE REQUEST-----
+
+Nun wir der CSR mit dem ganz zu Beginn erstelltem privaten Schluessel der Root-CA signiert:
+
+::
+
+    openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 500
+
+Mit dem Input des Root-Zertifikats und des Root-Keys, erstellt dieser Command ein Zertifikat (``device.crt``), dass nun unser Server verwenden kann. Es ist 500 Tage gueltig.
+
+``device.crt`` sieht nun folgendermassen aus:
+
+::
+
+    -----BEGIN CERTIFICATE-----
+    MIID2jCCAsICCQC0dnZBTZ061TANBgkqhkiG9w0BAQsFADCBtzELMAkGA1UEBhMC
+    REUxGzAZBgNVBAgMEkJhZGVuLVd1ZXJ0dGVtYmVyZzESMBAGA1UEBwwJU3R1dHRn
+    YXJ0MR4wHAYDVQQKDBVIb2Noc2NodWxlIGRlciBNZWRpZW4xDDAKBgNVBAsMA01N
+    QjEiMCAGA1UEAwwZc2RpMWIubWkuaGRtLXN0dXR0Z2FydC5kZTElMCMGCSqGSIb3
+    DQEJARYWbWgyMDNAaGRtLXN0dXR0Z2FydC5kZTAeFw0xNTA2MjkxMzQ3MjZaFw0x
+    NjExMTAxMzQ3MjZaMIGlMQswCQYDVQQGEwJERTEbMBkGA1UECAwSQmFkZW4tV3Vl
+    cnR0ZW1iZXJnMRIwEAYDVQQHDAlTdHV0dGdhcnQxDDAKBgNVBAoMA0hkTTEMMAoG
+    A1UECwwDTU1CMSIwIAYDVQQDDBlzZGkxYi5taS5oZG0tc3R1dHRnYXJ0LmRlMSUw
+    IwYJKoZIhvcNAQkBFhZtaDIwM0BoZG0tc3R1dHRnYXJ0LmRlMIIBIjANBgkqhkiG
+    9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5D4+Jgu7chn0iEGe5+HSOC30D/8cEuJ+941J
+    3k1WFXnoxTEs+QCCcqALMn8sPfLLeXHhxrUJMnOD4RcQlibzMALB9c5mCc7tI5D0
+    2wFkVQDVch8BjVbnalE6Al7o0z2apiR7VqdpCxebzut4nO7K2ucURrS8lA2Q9YuB
+    nSzFsXusDhN04zUQD1tsY81IrF7L7NJbNx+J+CWcrGTOvibg/iVGk+WZT1j95eLv
+    Ki4nElx9BHspIU1ciSnbw+tIa/Z7F/1C5F1Jba89KAfpEcOMbT5c5qc8aHyjXynf
+    4cozTlSyO5HX/x0BwThNX2MTnlQySQfRn4wHYakWVgnyjZE9wQIDAQABMA0GCSqG
+    SIb3DQEBCwUAA4IBAQBzvOBWGJII6p3SNGdlYBXXP04OG/J/p24PQtnNL7ZhTF6R
+    WXVv1MPJArCqc3L1LS+45tvW38rGaDyZWeyRmt2reh/fMffLSHtmuH20mPi/JD7g
+    25engjxcW0EYJe5lmWLW3bxgbcZ0iDGGoMZgnOqi8tPlKiLNestWPrIvX/Mj2By7
+    MnhJYmjKZuCg5O1DVvJkH+wzSKt7H0wUvnJyaMZ7FN4MWH7zc2cyMgED436QDgfv
+    x3LhYXKRVSGquhYUiVhy+S/gi+d0xOKA6W3+7HH76gfPAxL9CjyBoTQQSUOZMxaJ
+    CTK3zfXlxAM11PYQhGJw35ACS3n0rohvHNN/kx/D
+    -----END CERTIFICATE-----
+
+Bei der Erstellung wird gleichzeitig eine ``rootCA.srl``-Datei erstellt. Diese Datei wird durch den Parameter ``-CAcreateserial`` erstellt und enthaelt initial eine zufaellige gerade Zahl in Hexadezimaldarstellung. Diese Seriennummer fliesst in das erstellte Zertifikat mit ein und wir bei jeder neuen Erstellung eines Zertifikats inkrementiert und wieder in das ``.srl``-File geschrieben.
+
+Exemplarisch der Inhalt der aktuellen ``rootCA.srl``:
+
+::
+
+    B47676414D9D3AD5
+
+*Bemerkung*: Das Root-Zertifikat ist 1024 Tage gueltig, es macht also keinen Sinn das Device-Zertifikat ueber einen laengeren Zeitraum auszustellen. Nach Ablauf des Root-Zertifikats wird auch dieses ungueltig werden.
+
+Der private Device-Key und das Device-Zertifikat muessen nun auf dem Server ``sdi1b.mi.hdm-stuttgart.de`` installiert werden.
+
+...
+
+
+
 LDAP Authentifizierung
 **********************
 
