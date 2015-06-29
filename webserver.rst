@@ -602,9 +602,20 @@ Import des Root-Zertifikats in den Browser
 
 Dieses Zertifikat muss nun in den Browser des Clients, der die HTTPS-Verbindung speater aufbauen soll, importiert werden. Dazu wurde ``rootCA.pem`` unter Windows ueber das GUI-Took ``WinSCP`` auf den Client geladen und unter Linux folgender ``scp``-Command ausgefuert: ``scp root@141.62.75.106:rootCA.key``. Voraussetzung fuer den Linux-Command ist, dass das Zertifikat im Home-Verzeichnis des Users ``root`` liegt.
 
+Unter dem Firefox unter Windows kann man Zertifikate ueber folgendes Fenster importieren:
+
 .. image:: images/Apache/07_zertifikatManager.png
+
+Es erscheint ein Popup, in welchem man auswaehlen muss, fuer welche Art von Identifikation das zu importierende Zertifikat gueltig sein soll:
+
 .. image:: images/Apache/08_zertifikatVertrauenPopup.png
+
+Nach erfolgreichem Import kann man die Details des Zertifikats anschauen. Dass als "common name" dort ``sdi1b.mi.hdm-stuttgart.de`` steht ist Zufall und ist im Gegensatz zu einem spaeteren Zeitpunkt unerheblich.
+
 .. image:: images/Apache/09_zertifikatDetails.png
+
+Das Zertifikat ist nun auch in der Zertifikatliste sichtbar:
+
 .. image:: images/Apache/10_zertifikatListe.png
 
 Erstellen des Server-Keys und des Server-Zertifikats
@@ -627,6 +638,10 @@ Aus diesem Key wird ein "Certificate Signing Request" (CSR) erstellt:
     opensll req -new -key device.key -out device.csr
 
 Wieder werden einige User-Eingaben verlangt. Wichtig ist hierbei nur, dass unter der Eingabe "common name" der Hostname oder die IP-Adresse des Servers eingetragen werden soll, der das Zertifikat speater verwenden soll.
+
+.. topic:: Bemerkung
+
+    Einem Zertifikat vertraut der Browser nur, wenn angesurfter Domainname mit dem des im Zertifikat definierten "common name"s uebereinstimmt. Alternativ kann auch in den Browser ``https://<IP-Address>`` eingegeben werden, vorausgesetzt der "common name" ist auch auf die IP-Adresse gesetzt. Sind diese beiden Kombinationen nicht gegeben, kommt der Warnhinweis des Browsers ("Nicht vertrauenswuerdige Seite ...").
 
 .. image:: images/Apache/11_CSRRequest.png
 
