@@ -481,6 +481,102 @@ Wie zu sehen ist, steht unser DNS-Server an erster Stelle, gefolgt von Nameserve
 
 SSL-Einrichtung
 ***************
+Damit SSL genutzt werden kann, muss das entsprechende Modul zuerst aktiviert und der Apache neu gestartet werden:
+
+::
+
+    sudo a2enmod ssl
+    sudo service apache2 force-reload 
+
+Das Tool, das zur Generierung von den Keys/Zertifikaten verwendet wird ist ``OpenSSL``. Diese freie Software wird zunaechst verwendet, um eine eigene private CA zu erstellen.
+
+Erstellen des Root-Keys (ohne Passwortschutz) mit:
+
+::
+
+    openssl genrsa -out rootCA.key 2048 [-des3]
+    
+Der erstellte private Key wird dadurch in dem File ``rootCA.key`` im aktuellen Verzeichnis gespeichert. Als Schluessellaenge sind die Werte 1024, 2048 und 4096 moeglich, wobei 2048 Bits state-of-the-art ist.
+
+In der Praxis ist dieser Key strengstens geheim zu halten, da die gesamte CA-Sicherheit darauf beruht. In unserem Fall ist der Key neu generiert und wird nicht verwendet, daher ist es unbedenklich ihn hier exemplarisch auszugeben.
+
+Der Inhalt der ``rootCA.key``:
+
+::
+
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIEpAIBAAKCAQEAswErEDIhF2XuSMX6t2BS/d7pN7RnoZjdmkREDqUbhv9qdbED
+    6614h5NIoE9Q7C//08tR3FRe1qNdAJwbd5Q/M8pWOu9bLjPI9EO9MD2VnEfaw/3a
+    HOzNT+aaaKuGulrC1ysvrUmddxigzS/qXhO/7GJ4nQKLuIiyvQM5hSMHoM6UbUy2
+    oOlFp8SJRDqb5RpGph4BdOqGwlE7FW47B6/8Ewr031uKkHtPF/i0O24m29xTPUcd
+    DpVqhrm46983drBl/08gPAfXRyFeWmGsaSNykwUZSVe35uRjRv7K3JemKg6Nj+RK
+    3Gsn7Xmc40ABW2ONuiy/kZ0Qe3trryjvsPBM8wIDAQABAoIBADAA5TJ/rv4eWKtt
+    ZFHe5AKuz64flBby7qKbIgEnZ91pC3yqTtnZ+FOrPLO48YOVT67VfItwmMpInv01
+    3+vOdrCF12AQpkwamQ5gSBDywvdZEaKzpdVR77E4rznYndXF1zBqpWt8LV0t3pmH
+    +vrlovdaZOv+Lcf76KrlfXxlq3sE2FT151R80t+UJLGTt/rPGBKmZRziwjheY73H
+    dcz4QuSw/w9hX9aCSZdQ31vP7d06v+egVxRluCJDNovvX8kYqFabun4RJofNai1/
+    Zl9YL9ShM+XsB8wqvZIW+sdxPBRUGADxy4j0+9r5CxmWB+p8ym33DUkOQVPhvBUx
+    9LKPJTkCgYEA2j9FHPtsYLVsKdLJHETH/0d4NwTSedFn3i6lajGQHVrLGZfGnujs
+    4NeTF50pcoLQnwDaSgji9EjvBTykPY+E7yvJvUQn4eIgrKh2p2uFGRYnr/zwwkPD
+    zZr+S7l0dSoM2m30gMgqeKoGitIy1e9bM5++P7t4+j4idlZh6+NUIt0CgYEA0fga
+    NiOvzDjYWNWM6yGcA6uFWvz6xWPqvr1mKlbQw2Tyf9ep6DuxNpIqHSPSOCPXWfMY
+    diNE8iQqNwK9PstE56bYf+KR3FskaRz4hjI1cQ72fI2WM50AbSp4xW1lPcQuU1hU
+    YE2qNFrfkp5EsD49rgl0fzkf5ps5szA5hVjSKg8CgYEAj3LutnH7dkVI5uSJE2+S
+    FRSgy2j7/t3I65y1VOtm0iSPQi8keeaXa+HF6MuAJqgc/6XL1MWqhu45TLPjMCNZ
+    OOsLGr/lhu7ekx3Xf4uIXEjXpTEX/lgUJtwtMRCgnzIYaKnE/7CRWeZHjo9CoqNE
+    ytXAcpuClNiqRiXZDvbIonECgYAxV5WJTX+dhWpKDf0ssFxCfIc9J6AizOU4Z7ff
+    kUFD+bAHHP4/pe9yPI0LBgT7zmhoKfmAoa8tHBSTkuA4JnqN2aac/vh6CS0YSoeY
+    uanXZMXF5Vv7yxRzkvyIoLme90BPs704WGf8H7LUeL75j9bc1Dn9P8ZgYfAATP/n
+    d0UEPwKBgQC2kmrYF5wnrN3aIj9f84XbVHSWfH3SgDrOqEVQn+/Q4Sr20shxjJ9y
+    DpNmGADk4IwGnTY/4fwks4EDtu2bQ5hSH1AmNre+df2gTwuwRMu3WIfxeSL2eNiN
+    czOMahif2jBhoGTDPcauwRyjqHoqeNNy71T1JDI3X2yBh2Squ/u1Aw==
+    -----END RSA PRIVATE KEY-----
+
+Im naechsten Schritt wird das selbst-signierte Zertifikat erstellt. Auch hier wieder mit dem Tool ``OpenSSL``:
+
+::
+
+    openssl req -x509 -new -nodes -key rootCA.key -days 1024 -out rootCA.pem
+
+Dadurch wird ein Skript gestartet, das ein paar Nutzereingaben erwartet:
+
+(screenshot rootCApem erstellen.png)
+
+Nach den Eingaben wird ein Zertifikat namens ``rootCA.pem`` erstellt (selbst-signiert), das 1024 Tage gueltig ist. Dieses dient nun als Root-Zertifikat der eigenen Root-CA. Auch offizielle Root-Zertifikate sind selbst-signiert.
+
+Der Inhalt des Zertifikats ``rootCA.pem``:
+
+::
+
+    -----BEGIN CERTIFICATE-----
+    MIIEQzCCAyugAwIBAgIJAKvcnpp5Bln4MA0GCSqGSIb3DQEBCwUAMIG3MQswCQYD
+    VQQGEwJERTEbMBkGA1UECAwSQmFkZW4tV3VlcnR0ZW1iZXJnMRIwEAYDVQQHDAlT
+    dHV0dGdhcnQxHjAcBgNVBAoMFUhvY2hzY2h1bGUgZGVyIE1lZGllbjEMMAoGA1UE
+    CwwDTU1CMSIwIAYDVQQDDBlzZGkxYi5taS5oZG0tc3R1dHRnYXJ0LmRlMSUwIwYJ
+    KoZIhvcNAQkBFhZtaDIwM0BoZG0tc3R1dHRnYXJ0LmRlMB4XDTE1MDYyOTEyMzYy
+    MFoXDTE4MDQxODEyMzYyMFowgbcxCzAJBgNVBAYTAkRFMRswGQYDVQQIDBJCYWRl
+    bi1XdWVydHRlbWJlcmcxEjAQBgNVBAcMCVN0dXR0Z2FydDEeMBwGA1UECgwVSG9j
+    aHNjaHVsZSBkZXIgTWVkaWVuMQwwCgYDVQQLDANNTUIxIjAgBgNVBAMMGXNkaTFi
+    Lm1pLmhkbS1zdHV0dGdhcnQuZGUxJTAjBgkqhkiG9w0BCQEWFm1oMjAzQGhkbS1z
+    dHV0dGdhcnQuZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCzASsQ
+    MiEXZe5Ixfq3YFL93uk3tGehmN2aREQOpRuG/2p1sQPrrXiHk0igT1DsL//Ty1Hc
+    VF7Wo10AnBt3lD8zylY671suM8j0Q70wPZWcR9rD/doc7M1P5ppoq4a6WsLXKy+t
+    SZ13GKDNL+peE7/sYnidAou4iLK9AzmFIwegzpRtTLag6UWnxIlEOpvlGkamHgF0
+    6obCUTsVbjsHr/wTCvTfW4qQe08X+LQ7bibb3FM9Rx0OlWqGubjr3zd2sGX/TyA8
+    B9dHIV5aYaxpI3KTBRlJV7fm5GNG/srcl6YqDo2P5ErcayfteZzjQAFbY426LL+R
+    nRB7e2uvKO+w8EzzAgMBAAGjUDBOMB0GA1UdDgQWBBRtaQgcy2MVQ9RBFe6kaWzc
+    lEQGejAfBgNVHSMEGDAWgBRtaQgcy2MVQ9RBFe6kaWzclEQGejAMBgNVHRMEBTAD
+    AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAP92HfSg8uhzF1XMDDoLzCxtbR2j3e4Zx7
+    vXOO8Ocr0pRPw/xf9PEIeA5HGGkI3AlouyJR+4nTIaTeSrKTdhN75KxC5kpHXfq3
+    AetQJXjrmf8WDYIdgrnhI7LsfXrL7lqMvoTu/l8JxaFZS1Pel43Rlq+YccqIhk/i
+    eqD27WTRx8rSdk+wF2szVVSN9/A46Hu1AyAIV4VILKp+jptKyM+9SqsVVpxHrDw0
+    u/MIgqXhYda/I6WJ1y4uSSqpDafqOQe9yWaegJUjug00r32o62d8EYJBhFbRrMFH
+    4oM5/b2j0o/6npgN8BvcQZkRlJAcr7HRMkjLmA4eFL89d/ioFQxq
+    -----END CERTIFICATE-----
+
+Dieses Zertifikat muss nun in den Browser des Clients, der die HTTPS-Verbindung speater aufbauen soll, importiert werden. Dazu wurde ``rootCA.pem`` unter Windows ueber das GUI-Took ``WinSCP`` auf den Client geladen und unter Linux folgender ``scp``-Command ausgefuert: ``scp root@141.62.75.106:rootCA.key``. Voraussetzung fuer den Linux-Command ist, dass das Zertifikat im Home-Verzeichnis des Users ``root`` liegt.
+
+(3 screenshots zu zertifikat import bei windows+firefox)
 
 LDAP Authentifizierung
 **********************
