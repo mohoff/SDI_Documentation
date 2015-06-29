@@ -183,10 +183,6 @@ Die Datei wird von dem Modul ``mime_magic`` verwendet.
     # xml
     0       string          \<?xml                  text/xml
 
-``conf-available`` und ``conf-enabled``
-***************************************
-bla
-
 ``mods-available`` und ``mods-enabled``
 ***************************************
 Der Apache ist modular aufgebaut. Das bedeutet, dass nur Basisfunktionen im Kern enthalten sind. Erweiterte Funkionen werden durch Module bereitgestellt, die in Apache geladen werden können. Standardmäßig werden einige Basismodule bei der Installation hinzugefügt, im Nachhinein lassen sich aber weitere Module jederzeit integrieren.
@@ -235,15 +231,23 @@ Erklaerung der verwendeten Attribute:
 * ``ErrorLog``: Legt den Namen und Ort des ErrorLog-Files fest.
 * ``CustomLog``: Legt eine neue Logdatei an, die mit einem individuellen ``LogFormat`` kommt. Das ``LogFormat`` wird als letzter Parameter (standardmaessig ``combined``) angegeben.
 
+``conf-available`` und ``conf-enabled``
+***************************************
+Enthaelt wie ``mods-...`` auch Konfigurationsdateien. Nur erweitern diese das Funktionsspektrum des Apaches nicht direkt (wie es bei den Modulen der Fall ist), sondern kommen von externen, auf Apache beruhenden Anwendungen. Z.B. existieren Konfigurationsdateien in diesem Ordner fuer den LDAP-Account-Manager, Nagios, phpMyAdmin und die Apache-Dokumentation. Alle Tools kommen mit einer Weboberflaeche, die vom Apache verwaltet wird und fuer die die Speicherorte z.B. ueber ``Directory``-Direktiven freigegeben werden muessen.
+
+Wie eine solche Konfigurationsdatei aussieht, steht im Aufgabenkapitel.
+
 Apache Befehle
 ##############
-* a2ensite, a2dissite
-* a2enmod, a2dismod (?)
-* a2enconf, a2disconf (?)
-* apache2 -v (gibt versionsnummer und built-timestamp aus)
-* apache2 -t (checked syntax von config-files)
-* service apache restart,reload,start,stop,force-reload
-https://wiki.ubuntuusers.de/apache#Apache-steuern
+Der Apache-Webserver laesst sich mit einigen Commands steuern. Einige sind Skripte, deren Ausfuehrung dem User Zeit spart im Vergleich nur manuellen Variante (die ``a2enXXX`` bzw. ``a2disXXX``-Commands).
+* ``a2ensite`` und ``a2dissite``: Aktiviert bzw. deaktiviert eine Seite aus dem ``/etc/apache2/sites-available``-Verzeichnis und erstellt bei Aktivierung einen symbolischen Link in ``sites-enabled``. Bei Deaktivierung wird der symbolische Link wieder geloescht. Die ausfuehrliche, manuelle Variante zur Aktivierung einer Seite, die das gleiche bewirkt aber mehr Tipparbeit ist, waere ``ln -s /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf``.
+* ``a2enmod`` und ``a2dismod``: Das gleiche wie Obiges nur fuer Module und deren zwei spezifischen Ordnern.
+* ``a2enconf`` und ``a2disconf``: Das gleiche wie Obiges nur fuer Konfigurationsdateien und deren zwei spezifschen Ordnern.
+* ``apache2 -v``: Gibt die Versionsnummer und den Built-Timestamp aus.
+* ``apache2 -t``: Checked Syntax von den Konfigurationsdateien und gibt etwaige Fehler in der Konsole aus.
+* ``service apache [restart|reload|start|stop|force-reload]``: Kontrolliert den Status des Webservers. Er laesst sich mit diesen Parametern starten, stoppen, neu laden (Konfigurationsdateien werden neu geladen und aktuelle Verbindungen werden aufrecht erhalten), neu starten (bricht aktuelle Verbindungen ab) und "zwanghaft neu laden" (wie ``reload``, nur bricht aktuelle Verbindungen ab wenn das die Konfigurationsdateien erfordern).
+
+*Quelle: https://wiki.ubuntuusers.de/apache#Apache-steuern*
 
 Apache Prozesse
 ###############
