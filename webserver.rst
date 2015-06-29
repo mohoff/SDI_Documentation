@@ -490,7 +490,7 @@ Damit SSL genutzt werden kann, muss das entsprechende Modul zuerst aktiviert und
 
 Der folgende prinzipielle Ablauf ist: Wir erstellen uns eine eigene Root-CA, die wir in den Browser importieren. Anschliessend erstellen wir das Server-Zertifikat, das wir mit dem Key der Root-CA signieren und auf unseren Server ``sdi1b.mi.hdm-stuttgart.de`` laden. Dort erstellen wir einen passenden ``VirtualHost``, der SSL-faehig ist und starten den Webserver neu. Anschliessend kann mit dem Browser, der das Root-CA geladen hat, problemlos die HTTPS-Version der Seite angesurfed werden.
 
-Die eigentliche Erstellung der Keys und Zertifikate sowie die Apache-Konfiguration erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird.
+Die eigentliche Erstellung der Keys und Zertifikate sowie die Apache-Konfiguration erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird (*Vorgehensweise ist auf http://datacenteroverlords.com/2012/03/01/creating-your-own-ssl-certificate-authority/*).
 
 Erstellen des Root-Keys und des Root-Zertifikats
 ++++++++++++++++++++++++++++++++++++++++++++++++
