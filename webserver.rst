@@ -255,7 +255,9 @@ Wie in folgendem Auszug aus der Konsole zu sehen ist, existieren mehrere zu Apac
 
 .. image:: images/Apache/00_apacheProzessePsAux.png
 
-**Bemerkung**: Der User ``www-data`` wird bei der Apache-Installation erstellt und ist ein Systemuser, sprich ohne Homeverzeichnis. Der Vorteil von einen neuen User ist, dass die Rechte individuell pro Service/Daemon anpassbar sind und kein Service ausserhalb seiner Berichtigungsgrenzen arbeitet.
+.. topic:: Bemerkung
+
+    Der User ``www-data`` wird bei der Apache-Installation erstellt und ist ein Systemuser, sprich ohne Homeverzeichnis. Der Vorteil von einen neuen User ist, dass die Rechte individuell pro Service/Daemon anpassbar sind und kein Service ausserhalb seiner Berichtigungsgrenzen arbeitet.
 
 TLS
 ###
