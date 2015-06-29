@@ -127,14 +127,61 @@ Im Folgenden wird auf die vier Dateien ``apache2.conf``, ``envvars``, ``magic`` 
 
 ``ports.conf``
 **************
-``ports.conf`` wird immer von ``apache2.conf`` eingebunden. Es enthält Direktiven, die festlegen, auf welchen TCP-Ports Apache lauschen soll.
+``ports.conf`` wird immer von ``apache2.conf`` eingebunden. Es enthält Direktiven, die festlegen, auf welchen TCP-Ports Apache lauschen soll. Ueblicherweise sind das die Ports 80 fuer HTTP und Port 443 fuer HTTPS. Die Datei kann z.B. wie folgt aussehen:
+
+::
+
+    # If you just change the port or add more ports here, you will likely also
+    # have to change the VirtualHost statement in
+    # /etc/apache2/sites-enabled/000-default.conf
+    
+    Listen 80
+    
+    <IfModule ssl_module>
+            Listen 443
+    </IfModule>
+    
+    <IfModule mod_gnutls.c>
+            Listen 443
+    </IfModule>
+
+Wenn der Webserver nur auf Anfragen vom localhost antworten soll, kann anstatt ``Listen 80`` folgende Ergaenzung gemacht werden:
+
+::
+
+    Listen localhost:80
+    ...
 
 ``envvars`` und ``magic``
 *************************
-In ``envvars`` werden, wie der Name schon erahnen laesst, Apache-Umgebungsvariablen gesetzt.
+In ``envvars`` werden, wie der Name schon erahnen laesst, Apache-Umgebungsvariablen gesetzt. Z.B. die beiden folgenden fuer den User und die Gruppe ``www-data``:
 
-``magic`` enthaelt Regeln, um anhand der führenden Bytes einer Datei dem MIME-Typ zu erkennen.
+::
 
+    ...
+    export APACHE_RUN_USER=www-data
+    export APACHE_RUN_GROUP=www-data
+    ...
+
+``magic`` enthaelt Regeln, um anhand der führenden Bytes einer Datei einen MIME-Typ, also den Inhalt eines Dokuments, zu erkennen. Wenn man sich die Datei anschaut (s.u.), ist sie vierspalitig aufgebaut und enthaelt pro Zeile eine Matching-Regel:
+* der Byteoffset, an dem das Pattern beginnt
+* Typ der Daten, der gematched werden soll
+* das Pattern selbst
+* die Erkenntnis in Form eines MIME-Typs nach dem Schema ``<Hauptgruppe>/<Untergruppe>``.
+
+Die Datei wird von dem Modul ``mime_magic`` verwendet.
+
+::
+
+    # xml based formats!
+    
+    # svg
+    0       string          \<?xml
+    #                       text/xml
+    >38     string          \<\!DOCTYPE\040svg      image/svg+xml
+
+    # xml
+    0       string          \<?xml                  text/xml
 
 ``conf-available`` und ``conf-enabled``
 ***************************************
@@ -142,11 +189,51 @@ bla
 
 ``mods-available`` und ``mods-enabled``
 ***************************************
-bla
+Der Apache ist modular aufgebaut. Das bedeutet, dass nur Basisfunktionen im Kern enthalten sind. Erweiterte Funkionen werden durch Module bereitgestellt, die in Apache geladen werden können. Standardmäßig werden einige Basismodule bei der Installation hinzugefügt, im Nachhinein lassen sich aber weitere Module jederzeit integrieren.
+
+Im Ordner ``mods-available`` werden alle lokal vorhandenen Konfigurationsdateien fuer Module gelistet. In meiner Umgebung sind das bereits 130 Module, die ueberwiegend bei der Installation von Apache zur Verfuegung gestellt werden. Allerdings besitzt nicht jedes Modul eine eigene Konfigurationsdatei.
+
+Im Ordner ``mods-enabled`` werden die aktuell verwendeten Module aufgelistet. Der Ordner enthält symbolische Verweise zu Dateien in ``/etc/apache2/mods-available``. Wenn eine Modul-Konfigurationsdatei einen symbolischen Verweis besitzt, wird sie beim nächsten Neustart von apache2 mitgeladen. Aktuell sind in meiner Umgebung 37 Stueck von den verfuegbaren 130 in Verwendung.
+
+Mit folgendem Befehl kann z.B. das MySQL Authentication-Modul installiert werden:
+
+::
+
+    sudo apt-get install libapache2-mod-auth-mysql
+
+Aktiviert werden kann das Modul mit folgendem Command. Anschliessend wird der Apache neu gestartet, damit er das Modul laden kann.
+
+::
+
+    sudo a2enmod auth_mysql
+    sudo service apache2 restart
+
+Mit ``a2dismod auth_mysql`` laesst sich das Modul wieder deaktivieren.
 
 ``sites-available`` und ``sites-enabled``
 *****************************************
-bla
+Der systematische Aufbau von ``sites`` ist der selbe wie bei ``mods`` - es gibt *verfuegbare* und *aktivierte* Seiten. Damit gleich nach der Apache-Installation eine Standardseite ueber den Browser erreichbar ist, existiert eine Standardseite, die in der Datei ``000-default.conf`` definiert ist. In dieser Art von Dateien muss mindestens eine ``VirtualHost``-Direktive stehen, mehrere sind aber auch moeglich. Wichtig ist, dass pro aktivierter ``site`` dann mehrere Hosts gestartet werden koennen (vgl. Kapitel "namebased und IP-based virtual hosting").
+
+Eine einfache Seite koennte wie folgt in einer ``VirtualHost``-Direktive definiert sein:
+
+::
+
+    <VirtualHost *:80>
+        ServerAdmin admin@example.com
+        ServerName example.com
+        ServerAlias www.example.com
+        DocumentRoot /var/www/html
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+    </VirtualHost>
+
+Erklaerung der verwendeten Attribute:
+* ``ServerAdmin``: Diese Direktive legt fest, welche E-Mail-Adresse als Adresse des Server-Administrators angegeben wird. Der vorgegebene Wert ist ``webmaster@localhost``. Dieser Wert sollte in eine E-Mail-Adresse geändert werden, über die man den Webmaster erreichen kann. Falls auf der Website ein Problem auftritt, wird ein Fehlerhinweis mit dieser E-Mail-Adresse angezeigt, um das Problem zu melden. Um global fuer alle Hosts die gleiche E-Mail-Adresse festzulegen, kann die Direktive auch in das bereits erklaerten ``apache.conf`-File geschrieben werden.
+* ``ServerName``: Diese Direktive ist optional und gibt den FQDN an, auf den der VirtualHost reagieren soll. Sobald mehr als ein VirtualHost angegeben ist, sind fuer die zusaetzlichen Eintraege jedoch eindeutige ``ServerName``s Voraussetzung.  Bsp.: ``Servername www.example.com``.
+* ``ServerAlias``: Mit dem ``ServerAlias`` lassen sich alternative Nutzungs-URLs einrichten. Normalerweise ist es wuenschenswert wenn ein VirtualHost, der auf ``example.com`` reagiert, auch auf ``www.example.com`` antwortet. Oder man will alle Subdomains auf die Hauptdomain leiten. Mit einer Wildcard koennen VirtualHost so konfiguriert werden, dass sie auf jede Anfrage, die auf ``.sdi1b.mi.hdm-stuttgart.de`` endet, reagiert. Der Eintrag fuer Letzteres ist dann z.B. ``ServerAlias *.sdi1b.mi.hdm-stuttgart.de``.
+* ``DocumentRoot``: Diese Direktive gibt an, wo sich die Webinhalte fuer einen VirtualHost befinden. Der Standardwert ist ``/var/www/html``. Wenn andere Pfade angegeben werden, muss sichergestellt werden, dass eine Zugriffsberechtigung mittel der ``Directory``-Direktive vorliegt.
+* ``ErrorLog``: Legt den Namen und Ort des ErrorLog-Files fest.
+* ``CustomLog``: Legt eine neue Logdatei an, die mit einem individuellen ``LogFormat`` kommt. Das ``LogFormat`` wird als letzter Parameter (standardmaessig ``combined``) angegeben.
 
 Apache Befehle
 ##############
