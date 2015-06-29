@@ -495,6 +495,15 @@ Damit SSL genutzt werden kann, muss das entsprechende Modul zuerst aktiviert und
     sudo a2enmod ssl
     sudo service apache2 force-reload
 
+Ausserdem muss sichergestellt werden, dass in der bereits behandelten ``ports.conf``-Datei auf dem HTTPS-Port gelauscht wird:
+
+::
+
+    <IfModule ssl_module>
+            Listen 443
+    </IfModule>
+
+
 Der folgende prinzipielle Ablauf ist: Wir erstellen uns eine eigene Root-CA, die wir in den Browser importieren. Anschliessend erstellen wir das Server-Zertifikat, das wir mit dem Key der Root-CA signieren und auf unseren Server ``sdi1b.mi.hdm-stuttgart.de`` laden. Dort erstellen wir einen passenden ``VirtualHost``, der SSL-faehig ist und starten den Webserver neu. Anschliessend kann mit dem Browser, der das Root-CA geladen hat, problemlos die HTTPS-Version der Seite angesurfed werden.
 
 Die eigentliche Erstellung der Keys und Zertifikate sowie die Apache-Konfiguration erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird (*Vorgehensweise ist auf http://datacenteroverlords.com/2012/03/01/creating-your-own-ssl-certificate-authority/*).
