@@ -766,3 +766,38 @@ Wenn das Root-Zertifikat nicht im Browser integriert ist, kommt folgender bekann
 LDAP Authentifizierung
 **********************
 
+Der LDAP-User ``tuser`` mit SMD5-hashed Passwort wurde mittels Apache Directory Studio erstellt:
+
+(1-2 screenshots zu apache directory studio, smd5 hash passwort)
+
+Auch die Bind-Operation ist nach Anlegen des Users erfolgreich:
+
+(1 screenshot successful tsuer bind)
+
+Seitens Apache muessen zuerst zwei (**WIRKLICH 2?**) LDAP-Module aktiviert werden:
+
+::
+
+    a2enmod authnz_ldap
+    a2enmod ldap
+ 
+Das wichtige Modul ist ``authnz_ldap``. Es stellt Authentifizierung- und Authorisierungsmoeglichkeiten gegenueber einem LDAP-Server zur Verfuegung. Die beiden Phasen Authentifizierung (das *n* in ``authnz``) und Authorisierung (das *z* in ``authnz``) werden nacheinander in dieser Reihenfolge ausgefuehrt:
+
+1. Authentifizierungsphase: Es wird sichergestellt, dass die User-Credentials valide sind. Wird durch die Zeile ``AuthBasicProvider ldap`` (s.u.) aufgerufen. Dieser Schritt wird auch die *search/bind*-Phase genannt, da erst nach dem User gesucht wird und bei einem eindeutigen Treffer anschliessend ein Bind mit dem DN des Suchtreffers und Passwort des Users (ueber HTTP vom Client erhalten) gegen den LDAP-Server.
+2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsaechlich Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Im Fall von ``valid-user`` ist jeder authentifizierte User gleichzeitig auch authorisiert. Der Wert ``ldap-user tuser`` sieht z.B. vor, dass nur der User *tuser* authorisiert ist, alle anderen Authorisierungsversuche werden abgelehnt.
+
+.. topic:: Bemerkung
+
+    Das Modul ``authz_user`` muss aktiviert sein, wenn ``valid-user`` in der ``Require``-Direktive angegeben wird.
+
+*(Quellen: http://httpd.apache.org/docs/2.4/mod/mod_authnz_ldap.html, http://httpd.apache.org/docs/2.4/mod/mod_authz_user.html)*
+
+Das Modul ``ldap`` dient zur Performanceverbesserung gegenueber einem LDAP-Server und bringt im Wesentlichen zwei Verbesserungen mit sich: es fuegt dem standardmaessigem Funktionsumfang von ``authnz_ldap`` sog. *Connection-Pools* und Caching-Strategien hinzu.
+  * *Connections-Pools* erlauben dem LDAP-Server dauerhaft an den Apache-Server gebunden zu sein, ohne staendige Unbinds/Connects/Rebinds durchfuehren zu muessen.
+  * Caching reduziert die Anzahl der Anfragen an den LDAP-Server und senkt somit gleichzeitig die Last des LDAP-Servers. Ueber Apache-Direktiven wie ``LDAPCacheEntries`` (z.B. 1024) und ``LDAPCacheTTL`` (z.B. 600) koennen das Verhalten des Cache angepasst werden. Beide Verfahren machen v.a. bei grosser Last Sinn.
+
+*(Quelle: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html)*
+
+
+
+
