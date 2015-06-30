@@ -798,7 +798,7 @@ Seitens Apache muessen zuerst min. ein LDAP-Modul aktiviert werden:
 
 *(Quelle: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html)*
 
-Jetzt, wo der Apache faehig ist LDAP-AuthNZ zu vollziehen, koennen wir einen (oder mehrere) ``VirtualHost``s einrichten:
+Jetzt, wo der Apache faehig ist LDAP-AuthNZ zu vollziehen, koennen wir einen (oder mehrere) ``VirtualHost`` einrichten:
 
 ...
 
