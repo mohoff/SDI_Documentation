@@ -47,8 +47,10 @@ Zur Erstellung des Samba-Users:
   Added user testuser0.
 
 Man muss ein Passwort angeben, da Samba nicht die Standard-Linux-Passwörter nutzt, sondern eigene Passwörter.
-Diese werden unter  ``/etc/samba/smbpasswd`` gespeichert.
+Diese werden unter  ``/var/lib/samba/private/passdb`` gespeichert.
 
+Wenn in der Datei ``/etc/samba/smb.conf`` der Parameter ``unix password sync = yes`` gesetzt ist, so werden die Unix-Passwörter mit den Samba-Passwörtern synchronisiert.
+Das heißt, dass wenn das Samba-Passwort mittels smbpasswd geändert wird, dann wird auch das Unix-Passwort geändert.
 Auf die gleiche Weise wurden mehrere Samba-Benutzer für verschiedene Linux-User angelegt.
 
 
@@ -123,7 +125,6 @@ Der Bezeichner innerhalb der eckigen Klammern ist der Name des Shares. In diesem
 Die Parameter im Detail: 
 
 .. glossary::
-
 	path
   		Der Freizugebende Pfad
   		
@@ -244,13 +245,11 @@ Zunächst müssen diverse Packages installiert werden:
 Samba LDAP Schema
 +++++++++++++++++
 
-Nun muss ein Samba LDAP Schema eingerichtet werden, so dass OpenLDAP als Backend von Samba  verwendet werden kann.
+Nun muss das Samba LDAP Schema auf den LDAP-Server angewendet werden, so dass OpenLDAP als Backend von Samba verwendet werden kann, da der Samba-Server nach spezifischen Einträgen im DIT sucht.
 
-Der DIT braucht hierbei Attribute zum Beschreiben der Samba-Daten.
-Diese Attribute sind im Samba LDAP Schema hinterlegt.
+Der DIT braucht hierbei neue objectClasses, welche die nötigen Samba-Attribute beinhalten.
+Diese objectClasses sind im Samba LDAP Schema beschrieben.
 
-
-//TODO: was ist das überhaupt?
 
 Entpacken des Schemas:
 ::
@@ -279,7 +278,7 @@ Erstellen einer Output-Directory:
 ::
   mkdir ldif_output
 
-Ermitteln des korrekten Index:
+Ermitteln des korrekten Index des Schemas:
 ::
   slapcat -f schema_convert.conf -F ldif_output -n 0 | grep samba,cn=schema
 
@@ -289,6 +288,19 @@ Konvertieren des Schemas ins LDIF-Format:
 ::
   slapcat -f schema_convert.conf -F ldif_output -n0 -H \
   ldap:///cn={14}samba,cn=schema,cn=config -l cn=samba.ldif
+
+
+.. glossary::
+	slapcat
+		Kommando, welches benutzt werden kann um die Inhalte einer slapd-Datenbank in das LDIF-Format umzuwandeln.
+	-f
+		Definiert Konfigurationsdatei
+	-F
+		Definiert Konfigurations-Directory. Die mit -f definierte Datei wird in eine Verzeichnisstruktur umgewandelt und das Zielverzeichnis gespeichert
+	-H
+		Hier wird die LDAP-URI definiert.
+	-l
+		Ziel-LDIF-Datei
 
 Anschließend muss noch die Index- Information aus der generierten LDIF- Datei entfernt werden.
 
@@ -303,16 +315,15 @@ Am Ende der Datei müssen die Zeilen
   modifyTimestamp: 20080827045234Z
 ebenfalls gelöscht werden.
 
-Das Schema kann nun zu LDAP-Server hinzugefügt werden:
+Diese zwei Änderungen müssen gemacht werden, da das Output-LDIF nicht kompatibel mit dem Kommando ldapadd ist.
+
+Erweitern des bestehenden Schemas auf dem LDAP-Server durch das generierte Schema
 ::
   sudo ldapadd -Q -Y EXTERNAL -H ldapi:/// -f cn\=samba.ldif
 
 
 Samba Indizes
 +++++++++++++
-
-
-//TODO: Was ist das überhaupt?
 
 OpenLDAP kennt nun Samba-Attribute, nun können noch Indizes für diese hinzugefügt werden, um die Performanz zu verbessern.
 
@@ -342,7 +353,6 @@ geladen werden.
 
 Hinzufügen von Samba LDAP Objekten
 ++++++++++++++++++++++++++++++++++
-
 
 Nun sollen die für Samba notwendigen Objekte in den DIT eingefügt werden.
 Dies wird mithilfe des Packages "smbldap-tools" realisiert.
@@ -411,4 +421,69 @@ Die Samba-Benutzer befinden sich nun im korrekten LDAP-User-Verzeichnis:
 
 
 Nun erfolgt die Authentifizierung beim mounten wie in Kapitel 6.2.3
-gezeigt mithilfe von LDAP! 
+gezeigt mithilfe von LDAP!
+
+
+
+Bonus: Möglichkeiten zur Fehlerbehandlung in Samba
+##################################################
+
+Logdateien
+++++++++++
+
+Alle Logdateien werden unter ``/var/log/samba/`` gespeichert.
+Die Logging-Einstellungen befinden sich in der Datei ``/etc/samba/smb.conf`` in der Section Debugging:
+::
+  #### Debugging/Accounting ####
+
+  # This tells Samba to use a separate log file for each machine
+  # that connects
+    log file = /var/log/samba/log.%m
+  
+  # Cap the size of the individual log files (in KiB).
+     max log size = 1000
+  
+  # If you want Samba to only log through syslog then set the following
+  # parameter to 'yes'.
+  #   syslog only = no
+  
+  # We want Samba to log a minimum amount of information to syslog. Everything
+  # should go to /var/log/samba/log.{smbd,nmbd} instead. If you want to log
+  # through syslog you should set the following parameter to something higher.
+     syslog = 0
+  
+  # Do something sensible when Samba crashes: mail the admin a backtrace
+     panic action = /usr/share/samba/panic-action %d
+
+Mit diesen Einstellungen wird für jeden Klienten eine Logdatei erstellt. 
+Welche Logging-Informationen in dieser Datei gespeichert werden, hängt vom Log-Level ab.
+Dieser wurde in der obigen Konfiguration nicht explizit gesetzt, ist daher per default auf 1 gestellt. Das heißt, dass nur sehr wenige Informationen geloggt werden. In diesem Fall lediglich die Verbindungselbst.
+
+Wenn Fehler auftreten kann der Log-Level höher gestellt werden, damit mehr Informationen gespeichert werden, z.B.: ``log level = 3``
+
+Der Log-Level sollte dabei 3 nicht überschreiten, da ansonsten sehr viele Informationen gespeichert werden.
+
+
+
+smbcontrol
+++++++++++
+
+Mithilfe des Tools smbcontrol können bereits bestehende Samba-Verbindungen beeinflusst werden (z.B. Log-Level ändern)
+
+Dazu wird zunächst die PID des smbd benötigt:
+::
+  #Aussschnitt aus root@sdi1a:~# smbstatus :
+  Samba version 4.1.6-Ubuntu
+  PID     Username      Group         Machine                        
+  -------------------------------------------------------------------
+  21420     testuser0     testuser0     192.168.222.126 (ipv4:192.168.222.126:57135)
+
+  Service      pid     machine       Connected at
+  -------------------------------------------------------
+  testshare0   21420   192.168.222.126  Sat Jun 27 10:13:56 2015
+  IPC$         21420   192.168.222.126  Sat Jun 27 10:13:56 2015
+
+
+Nun kann der Log-Level angepasst werden:
+
+``smbcontrol 21420 debug 3``
