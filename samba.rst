@@ -290,9 +290,12 @@ Konvertieren des Schemas ins LDIF-Format:
   ldap:///cn={14}samba,cn=schema,cn=config -l cn=samba.ldif
 
 
+slapcat ist das Kommando, welches benutzt werden kann um die Inhalte einer slapd-Datenbank in das LDIF-Format umzuwandeln.
+
+Parameter:
+
 .. glossary::
-	slapcat
-		Kommando, welches benutzt werden kann um die Inhalte einer slapd-Datenbank in das LDIF-Format umzuwandeln.
+
 	-f
 		Definiert Konfigurationsdatei
 	-F
@@ -303,7 +306,6 @@ Konvertieren des Schemas ins LDIF-Format:
 		Ziel-LDIF-Datei
 
 Anschließend muss noch die Index- Information aus der generierten LDIF- Datei entfernt werden.
-
 Am Ende der Datei müssen die Zeilen
 ::
   structuralObjectClass: olcSchemaConfig
@@ -316,8 +318,7 @@ Am Ende der Datei müssen die Zeilen
 ebenfalls gelöscht werden.
 
 Diese zwei Änderungen müssen gemacht werden, da das Output-LDIF nicht kompatibel mit dem Kommando ldapadd ist.
-
-Erweitern des bestehenden Schemas auf dem LDAP-Server durch das generierte Schema
+Erweitern des bestehenden Schemas auf dem LDAP-Server durch das generierte Schema:
 ::
   sudo ldapadd -Q -Y EXTERNAL -H ldapi:/// -f cn\=samba.ldif
 
@@ -455,15 +456,23 @@ Die Logging-Einstellungen befinden sich in der Datei ``/etc/samba/smb.conf`` in 
   # Do something sensible when Samba crashes: mail the admin a backtrace
      panic action = /usr/share/samba/panic-action %d
 
-Mit diesen Einstellungen wird für jeden Klienten eine Logdatei erstellt. 
+Mit diesen Einstellungen wird für jeden Klienten eine Logdatei erstellt:
+::
+  root@sdi1a:/var/log/samba# ls
+  cores                log.192.168.222.234  log.smbd
+  log.                 log.nmbd             log.smbd.1.gz
+  log.%m               log.nmbd.1.gz        log.smbd.2.gz
+  log.127.0.0.1        log.nmbd.2.gz        log.smbd.3.gz
+  log.192.168.222.102  log.nmbd.3.gz        log.smbd.4.gz
+  log.192.168.222.126  log.paul-pc          log.smbd.old
+  log.192.168.222.226  log.sdi1a            log.win-1gp29bt5kvn
+ 
 Welche Logging-Informationen in dieser Datei gespeichert werden, hängt vom Log-Level ab.
-Dieser wurde in der obigen Konfiguration nicht explizit gesetzt, ist daher per default auf 1 gestellt. Das heißt, dass nur sehr wenige Informationen geloggt werden. In diesem Fall lediglich die Verbindungselbst.
+Dieser wurde in der obigen Konfiguration nicht explizit gesetzt, ist daher per default auf 1 gestellt. Das heißt, dass nur sehr wenige Informationen geloggt werden. In diesem Fall lediglich die Verbindung selbst.
 
 Wenn Fehler auftreten kann der Log-Level höher gestellt werden, damit mehr Informationen gespeichert werden, z.B.: ``log level = 3``
 
 Der Log-Level sollte dabei 3 nicht überschreiten, da ansonsten sehr viele Informationen gespeichert werden.
-
-
 
 smbcontrol
 ++++++++++
@@ -487,3 +496,5 @@ Dazu wird zunächst die PID des smbd benötigt:
 Nun kann der Log-Level angepasst werden:
 
 ``smbcontrol 21420 debug 3``
+
+
