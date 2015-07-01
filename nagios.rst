@@ -44,8 +44,8 @@ Falls diese Kriterien nicht gegeben sind, können die jeweiligen Programme mit d
 
 Einrichtung des Nagios Servers
 *******************************
-Der Nagios Server wird mit dem Befehl ``apt-get install nagios3 nagios-nrpe-plugin`` auf dem überwachenden System installiert. ``nagios-nrpe-plugin`` installiert das Plugin mit dem später der NRPE Daemon auf dem remote Host angesprochen wird.
-Während der Installation müssen ein paar Einstellungen getroffen werden. Hierzu erscheint zunächst die Nachricht
+Der Nagios Server wird mit dem Befehl ``apt-get install nagios3 nagios-nrpe-plugin`` auf dem überwachenden System installiert. ``nagios-nrpe-plugin`` ist das Plugin mit dem später der NRPE Daemon auf dem remote Host angesprochen wird.
+Das Installationsskript fordert einen während der Installation zur Einstellung einiger Konfigurationswerte auf. Zunächst müssen die Mail-Einstellungen getroffen werden:
 
 :: 
 
@@ -67,7 +67,7 @@ Während der Installation müssen ein paar Einstellungen getroffen werden. Hierz
 
   General type of mail configuration: 2
 
-Hier wurde die Option **2** (Internet Site) gewählt.
+In diesem Fall war Option **2. Internet Site** zutreffend.
 Anschließend muss der FQDN der Mail-Adressen angegeben werden, an die Mails gesendet werden.
 
 ::
@@ -208,6 +208,12 @@ Wird der laufende Webserver auf dem remote host gestoppt, spiegelt sich die Änd
 und Nagios sendet die Mail:
 
 .. image:: images/Nagios/05-mail.png
+
+
+.. topic:: Tip
+
+    Zum Testen kann es hilfreich sein, die sog. **Flap-Detection** entweder global- oder für einzelne Services zu deaktivieren.  Mit Flap-Detection können häufige Statusschwankungen erkannt werden. Ändert sich der Status eines Statuses zu oft, werden die Benachrichtigungen für den Service temporär deaktiviert. Dies kann in der Praxis hilfreich sein, um unnötige Spamnachrichten bei einer Fehlkonfiguration zu vermeiden. Da beim Testen Fehler provoziert werden sollen, ist dieser Schutzmechanismus für unsere Zwecke eher nachteilig. Um Flap Detection zu deaktivieren, muss der Parameter ``flap_detection_enabled    0`` in die betreffende Servicekonfiguration eingefügt werden, bzw. der Wert von ``1`` auf ``0`` geändert werden, falls der Parameter schon vorhanden war. Soll Flap-Detection standardmäßig deaktiviert werden, muss diese Einstellung in ``/etc/nagios3/conf.d/generic-service_nagios2.cfg`` vorgenommen werden.
+
 
 Einrichtung des NRPE Servers
 *****************************
