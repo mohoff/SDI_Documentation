@@ -225,12 +225,13 @@ pre {
     border: 1px solid #ac9;
     border-left: none;
     border-right: none;
+    font-size: 1.2em;
 }
 
 tt {
-    background-color: #ecf0f3;
-    padding: 0 1px 0 1px;
-    font-size: 0.95em;
+    background-color: #DDDDDD;
+    padding: 3px;
+    font-size: 1.3em;
 }
 
 th {
@@ -253,4 +254,8 @@ div.viewcode-block:target {
     background-color: #f4debf;
     border-top: 1px solid #ac9;
     border-bottom: 1px solid #ac9;
+}
+
+div.topic > dl{
+    margin-left: 20px;
 }
