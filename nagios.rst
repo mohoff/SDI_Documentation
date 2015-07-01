@@ -31,6 +31,9 @@ Quelle: http://wiki.monitoring-portal.org/nagios/howtos/nrpe
 
 Exercises
 #########
+
+Voraussetzungen
+***************
 In diesem Beispiel wird ein Nagios Server aufgesetzt, der einen Remote Host überwacht. Die Überwachung des remote Hosts erfolgt mittels NRPE. 
 Das *überwachende* System, auf dem Nagios läuft, hat den Hostnamen **sdi2a**. Die Adresse lautet ``141.62.75.2``.
 Das *überwachte* System, also der Remote Host, hat den Hostnamen **sdi2b** und hat die Adresse ``141.62.75.2``.
@@ -42,10 +45,26 @@ Die Voraussetzungen für das überwachende System sind
 
 Falls diese Kriterien nicht gegeben sind, können die jeweiligen Programme mit den Befehlen ``apt-get install apache2`` (für den Webserver) und ``apt-get install posix`` (für den Mailserver) installiert werden.
 
+
+.. topic:: Relevante Konfigurationsdateien
+
+  .. glossary::
+    Nagios allgemein
+      ``/etc/nagios3/conf.d/nagios.cfg/``
+    Services
+      ``/etc/nagios3/conf.d/[service XYZ]``
+    Standardeinstellungen für Services
+      ``/etc/nagios3/conf.d/generic-service_nagios2.cfg``
+    Standardeinstellungen für Hosts
+      ``/etc/nagios3/conf.d/generic-host_nagios2.cfg``
+    NRPE allgemein
+      ``/etc/nagios/nrpe.cfg`` (Auf dem remote Host)
+  
+
 Einrichtung des Nagios Servers
 *******************************
 Der Nagios Server wird mit dem Befehl ``apt-get install nagios3 nagios-nrpe-plugin`` auf dem überwachenden System installiert. ``nagios-nrpe-plugin`` ist das Plugin mit dem später der NRPE Daemon auf dem remote Host angesprochen wird.
-Das Installationsskript fordert einen während der Installation zur Einstellung einiger Konfigurationswerte auf. Zunächst müssen die Mail-Einstellungen getroffen werden:
+Das Installationsskript fordert während der Installation zur Einstellung einiger Konfigurationswerte auf. Zunächst müssen die Mail-Einstellungen getroffen werden:
 
 :: 
 
@@ -84,7 +103,9 @@ Anschließend muss der FQDN der Mail-Adressen angegeben werden, an die Mails ges
   
   System mail name: hdm-stuttgart.de
   
-Hier wurde **hdm-stuttgart.de** gewählt, da die Mails später an ``dh055@hdm-stuttgart`` gesendet werden sollen.
+Hier wurde **hdm-stuttgart.de** gewählt, da die Mails später an ``dh055@hdm-stuttgart.de`` gesendet werden sollen.
+
+
 Anschließnd muss noch ein Passwort für den Nagios-Admin eingegeben werden:
 
 ::
@@ -100,7 +121,7 @@ Anschließnd muss noch ein Passwort für den Nagios-Admin eingegeben werden:
 Nach der Eingabe des Passworts ist die initale Konfiguration des Nagios Servers abgeschlossen.
 Das Admin-Passwort kann auch nachträglich mit dem Befehl ``htpasswd /etc/nagios3/htpasswd.users nagiosadmin`` geändert werden.
 
-Über die URL sdi2a.mi.hdm-stuttgart.de/nagios3 kann nun auf das Nagios-Webinterface zugegriffen werden. Beim ersten Aufruf wird man zur Eingabe der Logindaten aufgefordert. Der Benutzername lautet **nagiosadmin** (sofern dies nicht geändert wurde) und das Passwort ist dsa Passwort, das in der eben durgeführten Konfiguration eingegeben wurde.
+Über die URL sdi2a.mi.hdm-stuttgart.de/nagios3 kann nun auf das Nagios-Webinterface zugegriffen werden. Beim ersten Aufruf wird man zur Eingabe der Logindaten aufgefordert. Der Benutzername lautet **nagiosadmin** (sofern dies nicht geändert wurde) und das Passwort ist das Passwort, das in der eben durgeführten Konfiguration eingegeben wurde.
 
 .. image:: images/Nagios/01-webinterface.png
 
