@@ -57,6 +57,10 @@ Falls diese Kriterien nicht gegeben sind, können die jeweiligen Programme mit d
       ``/etc/nagios3/conf.d/generic-service_nagios2.cfg``
     Standardkonfiguration für Hosts
       ``/etc/nagios3/conf.d/generic-host_nagios2.cfg``
+    Konfiguration von Kontakten und Kontaktgruppen
+      ``/etc/nagios3/conf.d/contacts_nagios2.cfg``
+    Konfiguration von Zeitperioden
+      ``/etc/nagios3/conf.d/timeperiods_nagios2.cfg``
     Verzeichnis der Überwachungsprogramme
       ``/usr/lib/nagios/plugins/``
     allgemeine NRPE-Konfiguration
@@ -170,7 +174,7 @@ Navigiert man auf die Serviceübersichtsseite vom sdi2b, wird auch der korrekte 
 
 E-Mail-Benachrichtigungen einrichten
 ************************************
-Um E-Mail Benachrichtigungen zu aktivieren muss zunächst sichergestellt sein, dass der installierte Mailserver Mails an die angegebenen E-Mail-Adressen senden kann. In unserem Fall war dieses Kriterium nicht gegeben, sodass folgende Einstellungen in der ``/etc/postfix/main.cf`` gemacht werden mussten:
+Um E-Mail-Benachrichtigungen zu aktivieren, muss zunächst sichergestellt sein, dass der installierte Mailserver Mails an die angegebenen E-Mail-Adressen senden kann. In unserem Fall war dieses Kriterium nicht gegeben, sodass folgende Einstellungen in der ``/etc/postfix/main.cf`` gemacht werden mussten:
 Die Zeile 
 
 ::
@@ -191,15 +195,15 @@ ersetzt und die Zeile
     
 eingefügt.
 
-Sobald der Mailserver Mails senden kann, kann die eigentliche Einstellung zum Versenden von Mails in Nagios getroffen werden.
+Sobald der Mailserver Mails senden kann, können die eigentliche Einstellungen zum Versenden von Mails in Nagios getroffen werden.
 Dazu muss ein Kontakt, sowie eine Kontaktgruppe in der Datei ``/etc/nagios3/conf.d/contacts_nagios2.cfg`` angelegt werden:
 
 ::
 
     define contact{
         contact_name                    root
-        contactgroups         admins
-        alias               Root
+        contactgroups                   admins
+        alias                           Root
         service_notification_period     24x7
         host_notification_period        24x7
         service_notification_options    w,u,c,r
@@ -209,8 +213,30 @@ Dazu muss ein Kontakt, sowie eine Kontaktgruppe in der Datei ``/etc/nagios3/conf
         email                           dh055@hdm-stuttgart.de
     }
 
-* **service_notification_options**: wann Mails gesendet werden sollen... w = warning, u = unknown, c = critical, r = recovery (Nachricht, sobald der Service wieder läuft)
-Die weiteren Parameter sind weitestgehend selbsterklärend. Eine volle Auflistung dieser befindet sich auf http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contact
+.. glossary::
+
+  contact_name
+    der Name des Kontakts, mit welcher der Kontakt künftig referenziert wird
+  contactgroups
+    Liste der Gruppen, welchen der Kontakt angehört
+  alias
+    optionaler Alias 
+  service_notification_period
+    Zeitperiode, in der Mails bzgl. Services empfangen werden sollen. Die Zeitperiode ist in ``/etc/nagios3/conf.d/timeperiods_nagios2.cfg`` definiert.
+  service_notification_period
+    Zeitperiode, in der Mails bzgl. Hosts empfangen werden sollen. Die Zeitperiode ist in ``/etc/nagios3/conf.d/timeperiods_nagios2.cfg`` definiert.
+  service_notification_options 
+    wann Mails bzgl. Services gesendet werden sollen... w = warning, u = unknown, c = critical, r = recovery (wenn der Service wieder läuft)
+  host_notification_options 
+    wann Mails bzgl. Hosts gesendet werden sollen... d = down (wenn der Host down ist), r = recovery (wenn der Host wieder erreichbar ist)
+  service_notification_commands
+    welche Befehle ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Services versendet werden soll
+  notify-host-by-email
+    welche Befehle ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Hosts versendet werden soll
+  email
+    Die E-Mail-Addresse des Kontakts, an welche Benachrichtigungen gesendet werden.
+
+Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contact>`_.
 
 Die Kontaktgruppe:
 
@@ -218,11 +244,9 @@ Die Kontaktgruppe:
 
     define contactgroup{
             contactgroup_name       admins
-            alias           Nagios Administrators
+            alias                   Nagios Administrators
             members                 root
     }
-    
-
 
 .. topic:: Tipp
 
