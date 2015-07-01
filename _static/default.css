@@ -218,20 +218,20 @@ p.admonition-title:after {
 }
 
 pre {
-    padding: 5px;
-    background-color: #eeffcc;
+    padding: 10px 30px;
+    background-color: #E3F1F9;
     color: #333333;
     line-height: 120%;
-    border: 1px solid #ac9;
+    border: 1px solid #B6D8FE;
     border-left: none;
     border-right: none;
     font-size: 1.2em;
 }
 
 tt {
-    background-color: #DDDDDD;
-    padding: 3px;
-    font-size: 1.3em;
+    background-color: #EEEEEE;
+    padding: 2px;
+    font-size: 1.2em;
 }
 
 th {
