@@ -199,6 +199,13 @@ Die Kontaktgruppe:
             members                 root
     }
     
+
+
+.. topic:: Tip
+
+    Zum Testen kann es hilfreich sein, die Zeit zwischen Serverausfall und der gesendeten Benachrichtigung zu verringern. Diese beträgt in den Standardeinstellungen nämlich einige Minuten. Die Einstellung kann pro Service in seiner Konfigurationsdatei getroffen werden oder global in der Definition des generic Service (``/etc/nagios3/conf.d/generic-service_nagios2.cfg``). Der Parameter lautet ``first_notification_delay 1``. Der darauffolgende Wert gibt die Zeit an, die gewartet wird, bevor die erste Nachricht gesendet wird. Die Zeiteinheit kann in ``/etc/nagios3/`` mit dem Parameter ``interval_length=5`` verändert werden, wobei der angegebene Wert den Sekunden entspricht. In diesem Fall ist ein Intervall also 5 Sekunden lang. Zusammen mit der Einstellung ``first_notification_delay 1`` bedeutet dies, dass 5 Sekunden gewartet wird, bevor die erste Statusnachricht gesendet wird.
+
+
 Anschließend muss der Server neu gestartet werden: ``service nagios3 restart``
 
 Wird der laufende Webserver auf dem remote host gestoppt, spiegelt sich die Änderung sogleich auf der Weboberfläche wider:
