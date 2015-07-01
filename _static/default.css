@@ -201,7 +201,7 @@ div.seealso {
 }
 
 div.topic {
-    background-color: #eee;
+    background-color: #F8F8F8;
 }
 
 div.warning {
@@ -225,13 +225,13 @@ pre {
     border: 1px solid #B6D8FE;
     border-left: none;
     border-right: none;
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 tt {
     background-color: #EEEEEE;
     padding: 2px;
-    font-size: 1.2em;
+    font-size: 1em;
 }
 
 th {
