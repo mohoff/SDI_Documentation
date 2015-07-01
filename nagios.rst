@@ -46,18 +46,20 @@ Die Voraussetzungen für das überwachende System sind
 Falls diese Kriterien nicht gegeben sind, können die jeweiligen Programme mit den Befehlen ``apt-get install apache2`` (für den Webserver) und ``apt-get install posix`` (für den Mailserver) installiert werden.
 
 
-.. topic:: Relevante Konfigurationsdateien
+.. topic:: Relevante Dateien und Verzeichnisse
 
   .. glossary::
-    Nagios allgemein
+    allgemeine Nagios-Konfiguration
       ``/etc/nagios3/conf.d/nagios.cfg/``
-    Services
+    Konfiguration einzelner Services
       ``/etc/nagios3/conf.d/[service XYZ]``
-    Standardeinstellungen für Services
+    Standardkonfiguration für Services
       ``/etc/nagios3/conf.d/generic-service_nagios2.cfg``
-    Standardeinstellungen für Hosts
+    Standardkonfiguration für Hosts
       ``/etc/nagios3/conf.d/generic-host_nagios2.cfg``
-    NRPE allgemein
+    Verzeichnis der Überwachungsprogramme
+      ``/usr/lib/nagios/plugins/``
+    allgemeine NRPE-Konfiguration
       ``/etc/nagios/nrpe.cfg`` (Auf dem remote Host)
   
 
@@ -132,10 +134,10 @@ In Nagios müssen alle Services, die überwacht werden sollen, explizit in einer
 ::
 
     define host{
-      use       generic-host
-      host_name   sdi2b
-      alias     sdi2b
-      address     141.62.75.107
+      use           generic-host
+      host_name     sdi2b
+      alias         sdi2b
+      address       141.62.75.107
     }
 
 Außerdem soll der Festplattenspeicher auf sdi2b überwacht werden. Hierfür wird die ``sdi2b.conf`` um folgende Servicedefinition erweitert:
@@ -143,10 +145,10 @@ Außerdem soll der Festplattenspeicher auf sdi2b überwacht werden. Hierfür wir
 ::
 
     define service{
-      use           generic-service
-      host_name       sdi2b
+      use                   generic-service
+      host_name             sdi2b
       service_description   HTTP Server
-      check_command     check_http
+      check_command         check_http
     }
 
 * **host_name**: Der Name des überwachten Hosts. Es ist der gleiche wie der in der Hostdefinition (weiter oben) angegebene **host_name**
@@ -248,7 +250,7 @@ Einrichtung des NRPE Servers
 Auf dem überwachten System wird der NRPE Server mit dem Befehl ``apt-get install nagios-nrpe-server`` installiert.
 Standardmäßig ist der Aufruf von Nagios-Plugins auf dem Remote System aus Sicherheitsgründen nur ohne Argumente erlaubt. Um Argumente zu aktivieren, muss in der Konfigurationsdatei ``/etc/nagios/nrpe.cfg`` die Option ``dont_blame_nrpe=1`` gesetzt werden. Zustäzlich muss der Zugriff des überwachenden Systems explizit gestattet werden. Dies wird durch die Option ``allowed_hosts=141.62.75.102`` erreicht.
 
-Ebenfalls in dieser Datei sind die Befehle definiert, wie sie vom überwachenden System aufgerufen werden. Standardmäßig sind nur Befehle ohne Argumente definiert:
+Ebenfalls in dieser Datei sind die Befehle definiert, wie sie vom überwachenden System aufgerufen werden. Standardmäßig sind nur Befehle definiert, die von dem überwachenden System ohne Argumente aufgerufen werden. Bei diesen sind die Argumente hartcodiert:
 
 ::
 
@@ -268,11 +270,11 @@ Eine Befehlsdefinition für einen Befehl mit Argumenten sieht ähnlich aus. Der 
   command[check_disk]=/usr/lib/nagios/plugins/check_disk -w $ARG1$ -c $ARG2$
   command[check_procs]=/usr/lib/nagios/plugins/check_procs -w $ARG1$ -c $ARG2$
   
-Der Service muss nun neu gestartet werden: ``service nagios-nrpe-server restart``
+Nachdem die Befehle definiert wurden muss der NRPE-Daemon neugestartet werden, damit die Änderungen übernommen werden: ``service nagios-nrpe-server restart``
 
 Auf der Seite des überwachenden Systems müssen zur Überwachung dieser Dienste folgende Einträge in die Datei ``/etc/nagios3/conf.d/sdi2b.cfg`` eingefügt werden:
 
-Benutzer:
+**Anzahl der Benutzer:**
 
 ::
 
@@ -283,7 +285,7 @@ Benutzer:
     check_command                   check_nrpe!check_users!20 50
   }
 
-Prozessorauslastung:
+**Prozessorauslastung:**
 
 ::
 
@@ -294,7 +296,7 @@ Prozessorauslastung:
     check_command                   check_nrpe!check_load!5.0,4.0,3.0 10.0,6.0,4.0
   }
 
-Festplattenspeicher:
+**Festplattenspeicher:**
 
 ::
 
@@ -305,7 +307,7 @@ Festplattenspeicher:
     check_command                   check_nrpe!check_disk!20% 10%
   }
   
-Anzahl der Prozesse:
+**Anzahl der ausgeführten Prozesse:**
 
 ::
 
@@ -316,7 +318,13 @@ Anzahl der Prozesse:
     check_command                   check_nrpe!check_procs!250 400
   }
   
-An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befehl **check_nrpe**. Damit dieser zur Verfügung steht, muss das entsprechende Plugin mit dem Befehl ``apt-get install nagios-nrpe-plugin`` installiert werden. Zu beachten ist hier, dass die einzelnen Argumente NICHT, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem Leerzeichen.
+An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befehl **check_nrpe**. Damit dieser zur Verfügung steht, muss das entsprechende Plugin mit dem Befehl ``apt-get install nagios-nrpe-plugin`` installiert werden. 
+
+.. topic:: Hinweis
+
+  Zu beachten ist hier, dass die einzelnen Argumente NICHT, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem Leerzeichen.
+
+
 Nach einem Neustart des Servers mit ``service nagios3 restart`` zeigt die Übersichtsseite nun die per NRPE überwachten Services an.
 
 .. image:: images/Nagios/09-nrpe-services.png
