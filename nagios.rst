@@ -322,7 +322,7 @@ An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befeh
 
 .. topic:: Hinweis
 
-  Zu beachten ist hier, dass die einzelnen Argumente NICHT, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem Leerzeichen.
+  Zu beachten ist hier, dass die einzelnen Argumente *NICHT*, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem Leerzeichen.
 
 
 Nach einem Neustart des Servers mit ``service nagios3 restart`` zeigt die Übersichtsseite nun die per NRPE überwachten Services an.
@@ -365,6 +365,7 @@ Um zu überprüfen, ob der Test funktioniert, ändern wir das Passwort zu einem 
 ::
 
   command[check_http_auth]=/usr/lib/nagios/plugins/check_http --ssl -I localhost -a beam:bad_credentials
+  # man beachte das fehlerhafte Passwort
   
 Nach einem Neustart zeigt die Weboberfläche die Änderung korrekt an:
 
@@ -373,13 +374,13 @@ Nach einem Neustart zeigt die Weboberfläche die Änderung korrekt an:
 Überwachung des LDAP-Servers
 ****************************
 Analog zum vorherigen Abschnitt kann der LDAP-Server auf dem remote Host überwacht werden.
-Zunächst wird der Befehl ``check_ldap`` auf der NRPE-Seite in ``/etc/nagios/nrpe.cfg`` definiert:
+Zunächst wird der Befehl **check_ldap** auf der NRPE-Seite in ``/etc/nagios/nrpe.cfg`` definiert:
 
 ::
 
   command[check_ldap]=/usr/lib/nagios/plugins/check_ldap -H localhost -b dc=betrayer,dc=com -3
   
-Mit dem Argument ``-b [base-dn]`` gibt man den Basis-DN des DIT an. In diesem Fall lautet dieser **dc=betrayer,dc=com**. Mit dem Argument ``-3`` wird angegeben, dass es sich um einen LDAP-Server nach der LDAP-Protokollversion **3** handelt.
+Mit dem Argument ``-b [base-dn]`` wird der Basis-DN des DIT angegeben. In diesem Fall lautet dieser **dc=betrayer,dc=com**. Mit dem Argument ``-3`` wird angegeben, dass es sich um einen LDAP-Server nach der LDAP-Protokollversion **3** handelt. Dieses Argument ist zwingend notwendig.
 
 Der NRPE-Server muss nun neu gestartet werden: ``service nagios-nrpe-server restart``
 
@@ -422,8 +423,8 @@ Eine solche Abhängigkeit kann in unserer Konfigurationsdatei ``/etc/nagios3/con
     notification_failure_criteria   o,w,u,c
   }
 
-Diese Definition sagt aus, dass der Service mit dem Bezeichner **HTTPS Auth**, der auf dem Host **sdi2b** läuft, vom Service **LDAP**, der ebenfalls auf **sdi2b** läuft, abhängig ist. ``notification_failure_criteria`` bestimmt, in welchen Fällen KEINE Benachrichtigungen gesendet werden sollen. Die Werte ``o,w,u,c`` geben an, dass keine Benachrichtigungen gesendet werden sollen, wenn sich der **Masterservice** in einer der Zustände **OK** (o), **Warning** (w), **Unknown** (u) oder **Critical** (c) befindet.
+Diese Definition sagt aus, dass der Service mit dem Bezeichner **HTTPS Auth**, der auf dem Host **sdi2b** läuft, vom Service **LDAP**, der ebenfalls auf **sdi2b** läuft, abhängig ist. ``notification_failure_criteria`` bestimmt, in welchen Fällen *KEINE* Benachrichtigungen gesendet werden sollen. Die Werte ``o,w,u,c`` geben an, dass keine Benachrichtigungen gesendet werden sollen, wenn sich der **Masterservice** in einem der Zustände **OK** (o), **Warning** (w), **Unknown** (u) oder **Critical** (c) befindet.
 
-Wird der LDAP-Server nun gestoppt, wird nur eine Mail versendet:
+Wird der LDAP-Server nun gestoppt, wird nur *eine* Mail für den **LDAP**-Service versendet, auch wenn der Zustand des **HTTP-Auth**-Services ebenfalls kritisch ist:
 
 .. image:: images/Nagios/14-one-mail.png
