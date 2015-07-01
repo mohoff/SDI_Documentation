@@ -155,11 +155,16 @@ Außerdem soll der Festplattenspeicher auf sdi2b überwacht werden. Hierfür wir
       check_command         check_http
     }
 
-* **host_name**: Der Name des überwachten Hosts. Es ist der gleiche wie der in der Hostdefinition (weiter oben) angegebene **host_name**
+.. topic:: Optionen
 
-* **check_command**: Das auszuführende Überwachungsprogramm gefolgt von den mit ``!`` getrennten Argumenten (in diesem Fall ohne Argumente). Die verfügbaren Programme befinden sich im Verzeichnis ``/usr/lib/nagios/plugins``. Hinweise zur Benutzung der Programme können abgerufen werden, indem das jeweilige Programm mit dem Argument ``-h`` aufgerufen wird.
+  .. glossary:: 
+  
+    host_name
+      Der Name des überwachten Hosts. Es ist der gleiche wie der in der Hostdefinition (s.o.) angegebene
+    check_command
+      Das auszuführende Überwachungsprogramm gefolgt von den mit ``!`` getrennten Argumenten (in diesem Fall ohne Argumente). Die verfügbaren Programme befinden sich im Verzeichnis ``/usr/lib/nagios/plugins``. Hinweise zur Benutzung der Programme können abgerufen werden, indem das jeweilige Programm mit dem Argument ``-h`` aufgerufen wird.
 
-Eine Auflistung aller verfügbarer Paramter befindet sich auf: http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#service
+Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#service>`_.
 
 Die Konfiguration kann anschließend mit dem Befehl ``nagios3 -v /etc/nagios3/nagios.cfg`` überprüft werden.
 Sollten keine Fehler aufgetreten sein, muss der Server neu gestart werden: ``service nagios3 restart``
@@ -213,28 +218,30 @@ Dazu muss ein Kontakt, sowie eine Kontaktgruppe in der Datei ``/etc/nagios3/conf
         email                           dh055@hdm-stuttgart.de
     }
 
-.. glossary::
-
-  contact_name
-    der Name des Kontakts, mit welcher der Kontakt künftig referenziert wird
-  contactgroups
-    Liste der Gruppen, welchen der Kontakt angehört
-  alias
-    optionaler Alias 
-  service_notification_period
-    Zeitperiode, in der Mails bzgl. Services empfangen werden sollen. Die Zeitperiode ist in ``/etc/nagios3/conf.d/timeperiods_nagios2.cfg`` definiert.
-  service_notification_period
-    Zeitperiode, in der Mails bzgl. Hosts empfangen werden sollen. Die Zeitperiode ist in ``/etc/nagios3/conf.d/timeperiods_nagios2.cfg`` definiert.
-  service_notification_options 
-    wann Mails bzgl. Services gesendet werden sollen... w = warning, u = unknown, c = critical, r = recovery (wenn der Service wieder läuft)
-  host_notification_options 
-    wann Mails bzgl. Hosts gesendet werden sollen... d = down (wenn der Host down ist), r = recovery (wenn der Host wieder erreichbar ist)
-  service_notification_commands
-    welche Befehle ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Services versendet werden soll
-  notify-host-by-email
-    welche Befehle ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Hosts versendet werden soll
-  email
-    Die E-Mail-Addresse des Kontakts, an welche Benachrichtigungen gesendet werden.
+.. topic:: Optionen
+  
+  .. glossary::
+  
+    contact_name
+      der Name des Kontakts, mit welcher der Kontakt künftig referenziert wird
+    contactgroups
+      Liste der Gruppen, welchen der Kontakt angehört
+    alias
+      optionaler Alias 
+    service_notification_period
+      Zeitperiode, in der Mails bzgl. Services empfangen werden sollen. Die Zeitperiode ist in ``/etc/nagios3/conf.d/timeperiods_nagios2.cfg`` definiert.
+    service_notification_period
+      Zeitperiode, in der Mails bzgl. Hosts empfangen werden sollen. Die Zeitperiode ist in ``/etc/nagios3/conf.d/timeperiods_nagios2.cfg`` definiert.
+    service_notification_options 
+      wann Mails bzgl. Services gesendet werden sollen... w = warning, u = unknown, c = critical, r = recovery (wenn der Service wieder läuft)
+    host_notification_options 
+      wann Mails bzgl. Hosts gesendet werden sollen... d = down (wenn der Host down ist), r = recovery (wenn der Host wieder erreichbar ist)
+    service_notification_commands
+      welche Befehle ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Services versendet werden soll
+    notify-host-by-email
+      welche Befehle ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Hosts versendet werden soll
+    email
+      Die E-Mail-Addresse des Kontakts, an welche Benachrichtigungen gesendet werden.
 
 Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contact>`_.
 
@@ -247,6 +254,19 @@ Die Kontaktgruppe:
             alias                   Nagios Administrators
             members                 root
     }
+    
+.. topic:: Optionen
+
+  .. glossary:: 
+    
+    contactgroup_name
+      Name der Kontaktgruppe, mit dem der die Gruppe künftig referenziert wird
+    alias
+      optionaler Anzeigename der Kontaktgruppe
+    members
+      optionale Liste aller Benutzer in der Kontaktgruppe
+
+Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contactgroup>`_.
 
 .. topic:: Tipp
 
