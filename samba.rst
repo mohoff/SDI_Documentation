@@ -47,7 +47,23 @@ Zur Erstellung des Samba-Users:
   Added user testuser0.
 
 Man muss ein Passwort angeben, da Samba nicht die Standard-Linux-Passwörter nutzt, sondern eigene Passwörter.
-Diese werden unter  ``/var/lib/samba/private/passdb`` gespeichert.
+Das Passwort-Backend steht in der Samba-Konfigurationsdatei smb.conf:
+``passdb backend = tdbsam``
+
+Erklärung zu tdbsam:
+:: 
+  This backend provides a rich database backend for local servers.
+  This backend is not suitable for multiple domain controllers (i.e., PDC + one or more BDC) installations.
+   The tdbsam password backend stores the old smbpasswd information plus the extended MS Windows NT/200x SAM information into a binary format TDB (trivial database) file.
+  The inclusion of the extended information makes it possible for Samba-3 to implement the same account and system access controls that are possible with MS Windows NT4/200x-based systems.
+
+Diese werden unter  ``/var/lib/samba/private/passdb`` gespeichert:
+::
+  root@sdi1a:~# pdbedit -Lw
+  testuser0:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:BD2A15934DF3DD824C3AC7B2E0546EBC:[U          ]:LCT-558970F7:
+  testuser1:1001:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:1120ACB74670C7DD46F1D3F5038A5CE8:[U          ]:LCT-5589712E:
+  testuser2:1002:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:4F597A08786530135E227AC1A579A54C:[U          ]:LCT-55897136:
+
 
 Wenn in der Datei ``/etc/samba/smb.conf`` der Parameter ``unix password sync = yes`` gesetzt ist, so werden die Unix-Passwörter mit den Samba-Passwörtern synchronisiert.
 Das heißt, dass wenn das Samba-Passwort mittels smbpasswd geändert wird, dann wird auch das Unix-Passwort geändert.
@@ -426,8 +442,8 @@ gezeigt mithilfe von LDAP!
 
 
 
-Bonus: Möglichkeiten zur Fehlerbehandlung in Samba
-##################################################
+Bonus: Möglichkeiten zur Fehlerbehandlung in Samba/LDAP
+#######################################################
 
 Logdateien
 ++++++++++
@@ -497,4 +513,31 @@ Nun kann der Log-Level angepasst werden:
 
 ``smbcontrol 21420 debug 3``
 
+Logging in LDAP
++++++++++++++++
 
+Auch der LDAP-Server kann Logdateien erstellen.
+Dazu muss zunächst der Loglevel mittels einer .ldif-Datei eingestellt werden:
+::
+  dn: cn=config
+  changetype: modify
+  replace: olcLogLevel
+  olcLogLevel: stats
+
+LDIF-Datei auf LDAP-Datenbank anwenden:
+``ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f loglevel.ldif``
+
+Anschließend können die LDAP-Logs auf der Konsole angezeigt werden: 
+::
+  root@sdi1a:~# cd /var/log
+  root@sdi1a:/var/log# tail /var/log -n0 -f `find . -type f`
+  [...]
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=27 SRCH base="dc=mi,dc=hdm-stuttgart,dc=de" scope=2 deref=0 filter="(&(uid=testuser0)(objectClass=sambaSamAccount))"
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=27 SRCH attr=uid uidNumber gidNumber homeDirectory sambaPwdLastSet sambaPwdCanChange sambaPwdMustChange sambaLogonTime sambaLogoffTime sambaKickoffTime cn sn displayName sambaHomeDrive sambaHomePath sambaLogonScript sambaProfilePath description sambaUserWorkstations sambaSID sambaPrimaryGroupSID sambaLMPassword sambaNTPassword sambaDomainName objectClass sambaAcctFlags sambaMungedDial sambaBadPasswordCount sambaBadPasswordTime sambaPasswordHistory modifyTimestamp sambaLogonHours modifyTimestamp uidNumber gidNumber homeDirectory loginShell gecos
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=27 SEARCH RESULT tag=101 err=0 nentries=1 text=
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=28 SRCH base="dc=mi,dc=hdm-stuttgart,dc=de" scope=2 deref=0 filter="(&(objectClass=sambaGroupMapping)(gidNumber=1000))"
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=28 SRCH attr=gidNumber sambaSID sambaGroupType sambaSIDList description displayName cn objectClass
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=28 SEARCH RESULT tag=101 err=0 nentries=1 text=
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=29 SRCH base="dc=mi,dc=hdm-stuttgart,dc=de" scope=2 deref=0 filter="(&(sambaSID=s-1-5-21-191455238-2906638316-4037938886-1002)(objectClass=sambaSamAccount))"
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=29 SRCH attr=uid uidNumber gidNumber homeDirectory sambaPwdLastSet sambaPwdCanChange sambaPwdMustChange sambaLogonTime sambaLogoffTime sambaKickoffTime cn sn displayName sambaHomeDrive sambaHomePath sambaLogonScript sambaProfilePath description sambaUserWorkstations sambaSID sambaPrimaryGroupSID sambaLMPassword sambaNTPassword sambaDomainName objectClass sambaAcctFlags sambaMungedDial sambaBadPasswordCount sambaBadPasswordTime sambaPasswordHistory modifyTimestamp sambaLogonHours modifyTimestamp uidNumber gidNumber homeDirectory loginShell gecos
+  [...]
