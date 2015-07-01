@@ -224,7 +224,7 @@ Die Kontaktgruppe:
     
 
 
-.. topic:: Tip
+.. topic:: Tipp
 
     Zum Testen kann es hilfreich sein, die Zeit zwischen Serverausfall und der gesendeten Benachrichtigung zu verringern. Diese beträgt in den Standardeinstellungen nämlich einige Minuten. Die Einstellung kann pro Service in seiner Konfigurationsdatei getroffen werden oder global in der Definition des generic Service (``/etc/nagios3/conf.d/generic-service_nagios2.cfg``). Der Parameter lautet ``first_notification_delay 1``. Der darauffolgende Wert gibt die Zeit an, die gewartet wird, bevor die erste Nachricht gesendet wird. Die Zeiteinheit kann in ``/etc/nagios3/`` mit dem Parameter ``interval_length=5`` verändert werden, wobei der angegebene Wert den Sekunden entspricht. In diesem Fall ist ein Intervall also 5 Sekunden lang. Zusammen mit der Einstellung ``first_notification_delay 1`` bedeutet dies, dass 5 Sekunden gewartet wird, bevor die erste Statusnachricht gesendet wird.
 
@@ -240,7 +240,7 @@ und Nagios sendet die Mail:
 .. image:: images/Nagios/05-mail.png
 
 
-.. topic:: Tip
+.. topic:: Tipp
 
     Zum Testen kann es hilfreich sein, die sog. **Flap-Detection** entweder global- oder für einzelne Services zu deaktivieren.  Mit Flap-Detection können häufige Statusschwankungen erkannt werden. Ändert sich der Status eines Statuses zu oft, werden die Benachrichtigungen für den Service temporär deaktiviert. Dies kann in der Praxis hilfreich sein, um unnötige Spamnachrichten bei einer Fehlkonfiguration zu vermeiden. Da beim Testen Fehler provoziert werden sollen, ist dieser Schutzmechanismus für unsere Zwecke eher nachteilig. Um Flap Detection zu deaktivieren, muss der Parameter ``flap_detection_enabled    0`` in die betreffende Servicekonfiguration eingefügt werden, bzw. der Wert von ``1`` auf ``0`` geändert werden, falls der Parameter schon vorhanden war. Soll Flap-Detection standardmäßig deaktiviert werden, muss diese Einstellung in ``/etc/nagios3/conf.d/generic-service_nagios2.cfg`` vorgenommen werden.
 
@@ -270,7 +270,7 @@ Eine Befehlsdefinition für einen Befehl mit Argumenten sieht ähnlich aus. Der 
   command[check_disk]=/usr/lib/nagios/plugins/check_disk -w $ARG1$ -c $ARG2$
   command[check_procs]=/usr/lib/nagios/plugins/check_procs -w $ARG1$ -c $ARG2$
   
-Nachdem die Befehle definiert wurden muss der NRPE-Daemon neugestartet werden, damit die Änderungen übernommen werden: ``service nagios-nrpe-server restart``
+Nachdem die Befehle definiert wurden, muss der NRPE-Daemon neugestartet werden, damit die Änderungen übernommen werden: ``service nagios-nrpe-server restart``
 
 Auf der Seite des überwachenden Systems müssen zur Überwachung dieser Dienste folgende Einträge in die Datei ``/etc/nagios3/conf.d/sdi2b.cfg`` eingefügt werden:
 
@@ -329,9 +329,9 @@ Nach einem Neustart des Servers mit ``service nagios3 restart`` zeigt die Übers
 
 .. image:: images/Nagios/09-nrpe-services.png
 
-Überwachung der HTTPS Authentifizierung
+Überwachung der HTTPS-Authentifizierung
 ***************************************
-HTTPS Authentifizierung lässt sich mit dem Programm ``check_http --ssl -I [IP] -a [username:password]`` überwachen. Da der Befehl die Kenntnis über die Credentials von mindestens einem authorisierten Benutzer auf dem remote Host voraussetzt, bietet sich hier die Überwachung per NRPE an. Zusätzlich will man die Credentials evtl nicht über das Netzwerk schicken. Die Idee ist, auf dem überwachten System einen Befehl ohne Argumente zur Verfügung zustellen, welcher von dem überwachenden System aufgerufen wird. Die Credentials sind in der Definition des Befehls auf der überwachten Seite angegeben. Somit muss die überwachende Seite keine Credentials wissen und übers Netzwerk schicken.
+HTTPS-Authentifizierung lässt sich mit dem Programm ``check_http --ssl -I [IP] -a [username:password]`` überwachen. Da der Befehl die Kenntnis über die Credentials von mindestens einem authorisierten Benutzer auf dem remote Host voraussetzt, bietet sich hier die Überwachung per NRPE an. Zusätzlich will man die Credentials evtl. nicht über das Netzwerk schicken. Die Idee ist, auf dem überwachten System einen Befehl ohne Argumente zur Verfügung zustellen, welcher von dem überwachenden System aufgerufen wird. Die Credentials sind in der Definition des Befehls auf der überwachten Seite angegeben. Somit muss die überwachende Seite keine Credentials wissen und übers Netzwerk schicken.
 
 Auf der überwachten Seite wird der Befehl in der Datei ``/etc/nagios/nrpe.cfg`` folgenermaßen definiert:
 
@@ -339,7 +339,8 @@ Auf der überwachten Seite wird der Befehl in der Datei ``/etc/nagios/nrpe.cfg``
 
   command[check_http_auth]=/usr/lib/nagios/plugins/check_http --ssl -I localhost -a beam:password
 
-Die Credentials sind in diesem Fall die des Beispielbenutzers **beam**. Sein Passwort ist **password**.
+Diese Zeile definiert einen neuen Befehl mit der Bezeichnung **check_http_auth**, welcher das **check_http**-Programm mit den Argumenten **--ssl**, **-I** und **-a** aufruft. In letzterem Argument werden die Credentials angegeben. Diese sind in diesem Fall die des Beispielbenutzers **beam**. Sein Passwort ist **password**.
+
 Anschließend wird der Daemon neu gestartet: ``service nagios-nrpe-server restart``.
 
 Auf dem Nagios-Server auf der überwachenden Seite wird der Befehl in ``/etc/nagios3/conf.d/sdi2b.cfg`` aufgerufen:
