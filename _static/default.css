@@ -201,7 +201,7 @@ div.seealso {
 }
 
 div.topic {
-    background-color: #eee;
+    background-color: #F8F8F8;
 }
 
 div.warning {
@@ -218,19 +218,20 @@ p.admonition-title:after {
 }
 
 pre {
-    padding: 5px;
-    background-color: #eeffcc;
+    padding: 10px 30px;
+    background-color: #E3F1F9;
     color: #333333;
     line-height: 120%;
-    border: 1px solid #ac9;
+    border: 1px solid #B6D8FE;
     border-left: none;
     border-right: none;
+    font-size: 1.1em;
 }
 
 tt {
-    background-color: #ecf0f3;
-    padding: 0 1px 0 1px;
-    font-size: 0.95em;
+    background-color: #EEEEEE;
+    padding: 2px;
+    font-size: 1em;
 }
 
 th {
@@ -253,4 +254,8 @@ div.viewcode-block:target {
     background-color: #f4debf;
     border-top: 1px solid #ac9;
     border-bottom: 1px solid #ac9;
+}
+
+div.topic > dl{
+    margin-left: 20px;
 }
