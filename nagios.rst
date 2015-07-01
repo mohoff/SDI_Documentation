@@ -144,6 +144,21 @@ In Nagios müssen alle Services, die überwacht werden sollen, explizit in einer
       address       141.62.75.107
     }
 
+.. topic:: Optionen
+
+  .. glossary:: 
+  
+    use
+      gibt die Vorlage für den Host an
+    host_name
+      der Name des überwachten Hosts
+    alias
+      der Anzeigename des Hosts
+    address
+      die IP-Adresse des Hosts
+  
+  Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#host>`_.
+
 Außerdem soll der Festplattenspeicher auf sdi2b überwacht werden. Hierfür wird die ``sdi2b.conf`` um folgende Servicedefinition erweitert:
 
 ::
@@ -159,12 +174,16 @@ Außerdem soll der Festplattenspeicher auf sdi2b überwacht werden. Hierfür wir
 
   .. glossary:: 
   
+    use
+      gibt die Vorlage für den Service an
     host_name
-      Der Name des überwachten Hosts. Es ist der gleiche wie der in der Hostdefinition (s.o.) angegebene
+      der Name des überwachten Hosts. Es ist der Name, der in der Hostdefinition (s.o.) angegeben wurde
+    service_description
+      die Beschreibung des Services, der auf dem Webinterface angezeigt wird.
     check_command
-      Das auszuführende Überwachungsprogramm gefolgt von den mit ``!`` getrennten Argumenten (in diesem Fall ohne Argumente). Die verfügbaren Programme befinden sich im Verzeichnis ``/usr/lib/nagios/plugins``. Hinweise zur Benutzung der Programme können abgerufen werden, indem das jeweilige Programm mit dem Argument ``-h`` aufgerufen wird.
+      das auszuführende Überwachungsprogramm gefolgt von den mit ``!`` getrennten Argumenten (in diesem Fall ohne Argumente). Die verfügbaren Programme befinden sich im Verzeichnis ``/usr/lib/nagios/plugins``. Hinweise zur Benutzung der Programme können abgerufen werden, indem das jeweilige Programm mit dem Argument ``-h`` aufgerufen wird.
 
-Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#service>`_.
+  Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#service>`_.
 
 Die Konfiguration kann anschließend mit dem Befehl ``nagios3 -v /etc/nagios3/nagios.cfg`` überprüft werden.
 Sollten keine Fehler aufgetreten sein, muss der Server neu gestart werden: ``service nagios3 restart``
@@ -243,7 +262,7 @@ Dazu muss ein Kontakt, sowie eine Kontaktgruppe in der Datei ``/etc/nagios3/conf
     email
       Die E-Mail-Addresse des Kontakts, an welche Benachrichtigungen gesendet werden.
 
-Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contact>`_.
+  Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contact>`_.
 
 Die Kontaktgruppe:
 
@@ -266,7 +285,7 @@ Die Kontaktgruppe:
     members
       optionale Liste aller Benutzer in der Kontaktgruppe
 
-Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contactgroup>`_.
+  Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contactgroup>`_.
 
 .. topic:: Tipp
 
