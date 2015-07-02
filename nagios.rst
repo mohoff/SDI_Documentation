@@ -131,17 +131,18 @@ Das Admin-Passwort kann auch nachträglich mit dem Befehl ``htpasswd /etc/nagios
 
 .. image:: images/Nagios/01-webinterface.png
 
-Überwachung eines Services auf eienm remote Host
+Überwachung eines Services auf einem remote Host
 ************************************************
 In Nagios müssen alle Services, die überwacht werden sollen, explizit in einer Konfigurationsdatei definiert werden. Hierfür wird auf dem überwachenden System die Datei ``/etc/nagios3/conf.d/sdi2b.conf`` angelegt. In dieser muss zunächst der überwachte Host definiert werden:
 
 ::
 
     define host{
-      use           generic-host
-      host_name     sdi2b
-      alias         sdi2b
-      address       141.62.75.107
+      use                         generic-host
+      host_name                   sdi2b
+      alias                       sdi2b
+      address                     141.62.75.107
+      check_command               check-host-alive
     }
 
 .. topic:: Optionen
@@ -149,17 +150,20 @@ In Nagios müssen alle Services, die überwacht werden sollen, explizit in einer
   .. glossary:: 
   
     use
-      gibt die Vorlage für den Host an
+      optionale Vorlage für den Host - alle nicht spezifizierten Optionen werden aus der Vorlage entnommen.
     host_name
-      der Name des überwachten Hosts
+      der Name des Hosts, mit dem er in anderen Definitionen referenziert wird
     alias
       der Anzeigename des Hosts
     address
       die IP-Adresse des Hosts
+    check_command
+      der auszuführende Befehl zur Überprüfung des Hoststatuses
+
   
   Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#host>`_.
 
-Außerdem soll der Festplattenspeicher auf sdi2b überwacht werden. Hierfür wird die ``sdi2b.conf`` um folgende Servicedefinition erweitert:
+Außerdem soll der Webserver auf sdi2b überwacht werden. Hierfür wird die ``sdi2b.conf`` um folgende Servicedefinition erweitert:
 
 ::
 
@@ -175,7 +179,7 @@ Außerdem soll der Festplattenspeicher auf sdi2b überwacht werden. Hierfür wir
   .. glossary:: 
   
     use
-      gibt die Vorlage für den Service an
+      optionale Vorlage für den Service - alle nicht spezifizierten Optionen werden aus der Vorlage entnommen.
     host_name
       der Name des überwachten Hosts. Es ist der Name, der in der Hostdefinition (s.o.) angegeben wurde
     service_description
@@ -188,11 +192,11 @@ Außerdem soll der Festplattenspeicher auf sdi2b überwacht werden. Hierfür wir
 Die Konfiguration kann anschließend mit dem Befehl ``nagios3 -v /etc/nagios3/nagios.cfg`` überprüft werden.
 Sollten keine Fehler aufgetreten sein, muss der Server neu gestart werden: ``service nagios3 restart``
 
-Das Webinterface zeigt nun beide Hosts an. Der überwachende Rechner wird ebenfalls angezeigt, da Nagios standardmäßig eine Kofigurationsdatei für den eigenen Host mitliefert (``/etc/nagios3/conf.d/localhost_nagios2.cfg``).
+Das Webinterface zeigt nach einer kurzen Wartezeit beide Hosts an. Der überwachende Rechner wird ebenfalls angezeigt, da Nagios standardmäßig eine Kofigurationsdatei für den eigenen Host mitliefert (``/etc/nagios3/conf.d/localhost_nagios2.cfg``).
 
 .. image:: images/Nagios/02-hostuebersicht.png
 
-Navigiert man auf die Serviceübersichtsseite vom sdi2b, wird auch der korrekte Status der Festplatte angezeigt:
+Navigiert man auf die Serviceübersichtsseite vom sdi2b, wird auch der korrekte Status des Webservers angezeigt:
 
 .. image:: images/Nagios/07-http-up.png
 
