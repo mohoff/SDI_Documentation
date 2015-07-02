@@ -907,6 +907,7 @@ Wenn wir eine eigene Datenbank ``hdm`` anlegen mit der Tabelle ``studenten`` und
 
 .. image:: images/Apache/23_phpmyadminTabelleAnlegen.png
 
+
 .. image:: images/Apache/24_phpmyadminTabelleAnzeigen.png
 
 ... werden folgenden Dateien im Filesystem gespeichert:
