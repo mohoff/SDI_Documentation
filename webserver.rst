@@ -784,7 +784,7 @@ Seitens Apache muessen zuerst min. ein LDAP-Modul aktiviert werden:
 * Das wichtige Modul ist ``authnz_ldap``: es stellt Authentifizierung- und Authorisierungsmoeglichkeiten gegenueber einem LDAP-Server zur Verfuegung. Die beiden Phasen Authentifizierung (das *n* in ``authnz``) und Authorisierung (das *z* in ``authnz``) werden nacheinander in dieser Reihenfolge ausgefuehrt:
 
   1. Authentifizierungsphase: Es wird sichergestellt, dass die User-Credentials valide sind. Wird durch die Zeile ``AuthBasicProvider ldap`` (s.u.) aufgerufen. Dieser Schritt wird auch die *search/bind*-Phase genannt, da erst nach dem User gesucht wird und bei einem eindeutigen Treffer anschliessend ein Bind mit dem DN des Suchtreffers und Passwort des Users (ueber HTTP vom Client erhalten) gegen den LDAP-Server.
-  2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsaechlich Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Im Fall von ``valid-user`` ist jeder authentifizierte User gleichzeitig auch authorisiert. Der Wert ``ldap-user tuser`` sieht z.B. vor, dass nur der User *tuser* authorisiert ist, alle anderen Authorisierungsversuche werden abgelehnt.
+  2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsaechlich Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Details s.u.
 
   .. topic:: Bemerkung
 
@@ -800,6 +800,35 @@ Seitens Apache muessen zuerst min. ein LDAP-Modul aktiviert werden:
 
 Jetzt, wo der Apache faehig ist LDAP-AuthNZ zu vollziehen, koennen wir einen (oder mehrere) ``VirtualHost`` einrichten:
 
-...
+::
 
+    <VirtualHost *:80>
+            ServerName manual.mi.hdm-stuttgart.de
+            DocumentRoot /usr/share/doc/apache2-doc/manual/
+    
+            <Directory "/usr/share/doc/apache2-doc/manual">
+                    AuthName "Top Secret"
+                    AuthType Basic
+                    AuthBasicProvider ldap
+                    AuthLDAPURL ldap://localhost:389/ou=Peope,dc=mi,dc=hdm-stuttgart,dc=de?uid?sub
+                      # AuthBasicProvider file ldap  --> we only want ldap authentication, no "file" authentication
+                      # AuthUserFile "/usr/local/apache/passwd/passwords" --> no file needed in ldap-only authentication
+                    Require valid-user
+            </Directory>
+     </VirtualHost>
 
+Die Resource, fuer die in obigem Beispiel authentifiziert und authorisiert wird, ist ``/usr/share/doc/apache2-doc/manual``, das Verzeichnis, in dem die Apache-Doku liegt.
+
+Erklaerung der verwendeten Direktiven:
+
+* ``AuthName``: Gibt den Namen des Authorisierungs-Realms an. Dieser Name wird dem Client gesendet, sodass der User weiss welche Credentials er eingeben muss. Der Name wird in den meisten Browsern in den Eingabedialogen angezeigt. Wenn der Realm ein Leerzeichen enthalten soll, muss der gesamte Name in Hochkommata eingeschlossen werden. Bsp.: ``AuthName "Top Secret"``.
+* ``AuthType``: Gibt die Art der User-Authentifizierung fuer ein Verzeichnis an. Kann die Werte ``None``, ``Basic`` (HTTP-Basic Authentifizierung), ``Digest`` (HTTP-Digest Authentifizierung) und ``Form`` annehmen. Je nach Wert werden verschiedene Apache-Module verwendet (z.B. ``mod_auth_basic`` fuer HTTP-Basic-Authentifizierung). Sofern nicht explizit anders definiert, wird die Art der Authentifizierung fuer Subsektionen (Unterordner des authentifizierten Resource) vererbt. Bsp.: ``AuthType Basic``.
+* ``AuthBasicProvider``: Diese Direktive setzt den Provider, der fuer die Resource zur Authentifizierung gilt. Mehrere Provider werden nacheinander ausgewertet bis ein Match fuer den Usernamen gefunden wurde. Bei einem Match wird das eingegebene Passwort gecheckt. Schlaegt die Passwort-Verfikation fehl, werden nachfolgend augelistete Provider nicht mehr genutzt. Moegliche Werte sind ``dbm`` (dbm-Passwortdateien), ``file`` (Passwortdateien in Klartext), ``dbd`` (ueber SQL-Tabellen), ``ldap`` (ueber LDAP-Dienste) und ``socache`` (keine stand-alone Authentifizierung. Verwaltung der Credentials im Cache, v.a. fuer ``dbd`` sinnvoll, da SQL-Lookups teuer werden koennen und LDAP mit eigenem Caching-Modul ``mod_ldap`` kommt).
+* ``AuthLDAPURL``: Erwartet eine URL fuer den LDAP-Dienst inklusive Filter. Die allgemeine Syntax ist ``ldap://host:port/basedn?attribute?scope?filter``. Wobei einige Eigenschaften selbsterklaerend sind, erklaeren wir die LDAP-spezifischen:
+  * ``basedn``: Gibt den Startpunkt der Suche an, also eine Node im Tree von der gestartet werden soll.
+  * ``attribute``: Gibt das Attribut an, nach dem gesucht werden soll. Ueblicherweise macht ``uid`` Sinn, was auch dem Standardwert entspricht.
+  * ``scope``: Gibt den LDAP-Scope an, kann also die Werte ``own`` (nur eigene Node), ``base`` (ein Level unterhalb der eigenen Node) und ``sub`` (alle Nodes unterhalb der eigenen Node) annehmen. Wenn nicht anders spezifiziert, wird standardmaessig ``sub`` verwendet.
+  * ``filter``: Hier kann ein valider LDAP-Suchfilter angegeben werden. Der Default-Wert ist ``(objectClass=*)``, was alle Objekte im Baum anspricht.
+* ``Require``: Wie oben bereits erwaehnt setzt diese Direktive ob und wenn ja wie ein authentifizierte User authorisiert wird. Wenn der Wert ``valid-user`` ist, ist jeder authentifizierte User gleichzeitig auch authorisiert. Der Wert ``ldap-user tuser`` sieht z.B. vor, dass nur der User *tuser* authorisiert ist, alle anderen Authorisierungsversuche werden abgelehnt. ``all granted`` gibt die Resource ohne Bedingung frei.
+
+In der Aufgabe war gefordert, die Authentifizierung nur ueber LDAP durchzufuehren, d.h. ``AuthBasicProvider`` muss auf ``ldap`` gesetzt werden.
