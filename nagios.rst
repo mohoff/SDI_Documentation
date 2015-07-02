@@ -9,23 +9,22 @@ Nagios Introduction
 Was ist Nagios
 **************
 
-Nagios ist eine Software, mit deren Hilfe Hosts in einer Infrastruktur überwacht werden können.
+Nagios ist eine quelloffene Software zur Überwachung von IT-Infrastrukturen. Es können einzelne **"Hosts"** überwacht werden, sowie die verschiednen Dienste (**"Services"**), die auf diesen laufen. Unter dem Begriff "Service" sind sowohl Programme wie Webserver, DNS-Server, LDAP-Server, etc... zusammengefasst als auch interne Eigenschaften wie CPU-Auslastung, freier Festplattenspeicher, angemeldete Benutzer etc. Die Überwachung der Services erfolgt mithilfe eigenständiger Programme (**"Plugins"**). Für die wichtigsten Services stellt Nagios die entsprechenden Plug-ins im Paket ``nagios-plugins`` zur Verfügung. Sollte für einen Service kein vorgefertigtes Plug-in vorhanden sein (oder für den Fall, dass das mitgelieferte Plug-in nicht den eigenen Anforderungen entspricht), bietet sich die Möglichkeit, dieses selbst zu programmieren. Dabei ist nur zu beachten, dass die Ausgaben den Nagios-Richtlinien entsprechen.
 
-Nagios hat eine Sammlung von Modulen, mit deren spezielle Dienste eines Hosts überwacht werden können, zB. DNS, LDAP, etc...
+Die Informationen über die überwachten Systeme werden über ein Webinterface zur Verfügung gestellt. Damit dieses nicht laufend vom Adminstrator abgefragt werden muss, bietet Nagios die Option, bei bestimmten Ereignissen Benachrichtigungen an ausgewählte Addressen zu senden. Der Benachrichtigungsservice kann dabei beliebig konfiguriert werden. Administratoren werden als Kontakte (**"Contact"**) hinterlegt, welche wiederum bestimmten Kontaktgruppen (**"Contact Groups"**) zugeordnet werden. Für jeden Kontakt kann individuell eingestellt werden, für welche Services auf welchen Hosts in welchem Zeitraum Benachrichtigungen verschickt werden sollen. Benachrichtigungen können wahlweise über E-Mail, SMS, IM-Messages, etc. empfangen werden.
 
-Außerdem verfügt Nagios über einen Web-Schnittstelle mit der die gesammeltenabgefragt werden können.
 
-Überwachung mittels NRPE
-************************
+NRPE
+****
 
-Zur Überwachung von internen Eigenschaften von Remote-Hosts müssen die nötigen Plug-ins direkt auf dem Host ausgeführt werden.
-Mittels NRPE ist es möglich, Plugins zur Überwachung interner Eigenschaften auf dem Remote-Hosts auszuführen.
+Oftmals ist es nicht ohne weiteres möglich, Zustände von bestimmten Services auf dem remote Host zu überprüfen; etwa wenn es sich um interne Services handelt, die von Außen nicht sichtbar sind. Für diesen Zweck gibt es NRPE (Nagios Remote Plugin Executor). NRPE erlaubt das Ausführen von internen Checks auf dem remote Host und besteht aus zwei Teilen: Einem NRPE-Dienst auf der remote Seite und dem NRPE-Plug-in auf der überwachenden Seite. Die Aufgabe des ersteren ist es, interne Befehle für die Außenwelt verfügbar zu machen. Bei letzterem handelt es sich um ein gewöhnliches Nagios-Plug-in, das den Status des NRPE-Dienstes abfragt. Die Kommunikation erfolgt dabei über eine verschlüsselte SSL-Verbindung. 
 
-Soll zum Beispiel der verfügbare Speicherplatz auf einem entfernten Rechner überprüft werden, wird das Plugin check_nrpe (Client) auf dem Nagios-Rechner ausgeführt.
-check_nrpe sendet nun einen String an den zu überwachenden Rechner.
-Der dort (auf Port 5666) hörende NRPE-Dienst (Server) vergleicht den ankommenden String mit den in seiner Konfigurationsdatei hinterlegten.
-Jedem dieser Strings ist ein Kommando zugeordnet. Findet er den vomNagios Gesendeten in seiner Konfiguration, führt er das zugehörige Kommando aus und schickt das Ergebnis (Exitcode und Ausgabe) an check_nrpe der Nagiosmaschine zurück. 
-check_nrpe wiederum reicht das Ergebnis an Nagios weiter, wo es, wie die Ergebnisse anderer Plugins auch dargestellt wird.
+.. image:: images/Nagios/15-nrpe.png
+
+Die Funktionsweise ist dabei die folgende:
+
+Soll zum Beispiel der verfügbare Speicherplatz auf dem remote Host überprüft werden, wird das Plugin **check_nrpe** mit dem Parameter **check_disk** auf dem überwachenden System ausgeführt. check_nrpe sendet hierfür den String **check_disk** an den überwachten Host. In der Konfigurationsdatei des NRPE-Dienstes sind mehrere solcher Strings definiert, die jeweils einem Kommando zugeordnet sind. Der auf Port 5666 hörende NRPE-Dienst vergleicht den ankommenden String mit denen in seiner Konfigurationsdatei hinterlegten. Findet er nun den String **check_disk** in seiner Konfiguration, führt er das zugehörige Kommando aus und schickt das Ergebnis (Exitcode und Ausgabe) an die Nagiosmaschine zurück. 
+check_nrpe wiederum reicht das Ergebnis an Nagios weiter, wo es, wie die Ergebnisse anderer Plug-ins auch, dargestellt wird.
 
 Quelle: http://wiki.monitoring-portal.org/nagios/howtos/nrpe
 
