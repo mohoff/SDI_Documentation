@@ -775,6 +775,8 @@ Der LDAP-User ``tuser`` mit SMD5-hashed Passwort wurde mittels Apache Directory 
 
 .. image:: images/Apache/14_ldapNewPassword.png
 
+Das Attribut ``userPassword`` ist nun richtig fuer diesen User eingetragen:
+
 .. image:: images/Apache/15_ldapTuserListed.png
 
 Auch die Bind-Operation ist nach Anlegen des Users erfolgreich:
@@ -889,9 +891,11 @@ Zu guter letzt muss der Apache neu gestartet werden, damit die Aenderungen wirks
 
     service apache2 restart
 
-Nun ist die ``phpMyAdmin``-Weboberflaeche ueber die URL ``sdi1b.mi.hdm-stuttgart.de/phpmyadmin`` erreichbar. Einer initialer Login ist mit ``root / *<Installationspasswort>*`` moeglich:
+Nun ist die ``phpMyAdmin``-Weboberflaeche ueber die URL ``sdi1b.mi.hdm-stuttgart.de/phpmyadmin`` erreichbar. Einer initialer Login ist mit ``root / <Installationspasswort>`` moeglich:
 
 .. image:: images/Apache/20_phpmyadminLogin.png
+
+Nach dem Login sieht man die eigentliche GUI von ``phpMyAdmin``.
 
 .. image:: images/Apache/21_phpmyadminUI.png
 
@@ -902,6 +906,7 @@ Wie zu sehen ist, werden bei der Installation schon Datenbanken zur internen Ver
 Wenn wir eine eigene Datenbank ``hdm`` anlegen mit der Tabelle ``studenten`` und den drei Feldern ``vorname``, ``nachname`` und ``matrikelnr``, sowie einen Testdatensatz anlegen...
 
 .. image:: images/Apache/22_phpymadminTabelleAnlegen.png
+
 
 .. image:: images/Apache/24_phpymadminTabelleAnzeigen.png
 
