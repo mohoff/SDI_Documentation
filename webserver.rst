@@ -404,7 +404,10 @@ Wie folgender Screenshot zeigt, funktioniert dieser Ansatz:
 
 Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf einen anderen Host, also wie in diesem Beispiel auf ``sdidoc.mi.hdm-stuttgart.de``, weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
 
-**Bemerkung**: Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgeloest werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgeloest wird. Vergleiche auch mit naechster Aufgabe.
+.. topic:: Bemerkung
+
+    Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgeloest werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgeloest wird. Vergleiche auch mit naechster Aufgabe.
+
 
 ::
 
@@ -455,7 +458,9 @@ Die Konfigurationsdatei, mit der das Verhalten erzielt werden kann sieht folgend
 
 Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin ueber ``sdi1b.mi.hdm-stuttgart.de`` erreichbar (erster VirtualHost-Eintrag). Ein ServerName muss nicht zwangsweise mit angegeben werden, denn so wird dieser VirtualHost fuer alle Anfragen verwendet, die nicht einen anderen ServerName anfragen (s. folgende VirtualHosts), eine Art Fallback also. Der zweite VirtualHost-Eintrag ermoeglicht den Zugriff auf die SDI-Doku ueber ``mh203.mi.hdm-stuttgart.de``, der dritte Eintrag auf die Apache-Doku ueber ``manual.mi.hdm-stuttgart.de``. Ersteren muss man wieder ueber die ``Directory``-Direktive erweitern, sodass das Verzeichnis ``/home/sdidoc`` zugaenglich ist.
 
-**Bemerkung**: Auch hier wieder: die beiden Subdomains muessen in die Zonesfile des DNS-Servers aufgenommen werden, damit diese Namen auf die IP des Servers (141.62.75.106) verweisen. DNS-Serverneustart mit ``service bind9 restart``. 
+.. topic:: Bemerkung
+
+    Auch hier wieder: die beiden Subdomains muessen in die Zonesfile des DNS-Servers aufgenommen werden, damit diese Namen auf die IP des Servers (141.62.75.106) verweisen. DNS-Serverneustart mit ``service bind9 restart``. 
 
 Damit auch der eigene DNS-Server zur Aufloesung verwendet wird, muss unter Ubuntu dieser manuell eingetragen werden. Das Ziel ist, dass in der Datei ``/etc/resolv.conf`` unser eigener DNS-Server an erster Stelle steht. Dazu kann der Eintrag in ``/etc/resolvconf/resolv.conf.d/head`` hinzugefuegt werden. Hintergrund ist, dass die ``/etc/resolv.conf`` aus den beiden ``head``- und ``base``-Dateien generiert wird. Der Inhalt von ``head`` wird bei der Generierung immer vor dem von ``base`` in das resultierende File eingefuegt.
 
@@ -489,6 +494,15 @@ Damit SSL genutzt werden kann, muss das entsprechende Modul zuerst aktiviert und
 
     sudo a2enmod ssl
     sudo service apache2 force-reload
+
+Ausserdem muss sichergestellt werden, dass in der bereits behandelten ``ports.conf``-Datei auf dem HTTPS-Port gelauscht wird:
+
+::
+
+    <IfModule ssl_module>
+            Listen 443
+    </IfModule>
+
 
 Der folgende prinzipielle Ablauf ist: Wir erstellen uns eine eigene Root-CA, die wir in den Browser importieren. Anschliessend erstellen wir das Server-Zertifikat, das wir mit dem Key der Root-CA signieren und auf unseren Server ``sdi1b.mi.hdm-stuttgart.de`` laden. Dort erstellen wir einen passenden ``VirtualHost``, der SSL-faehig ist und starten den Webserver neu. Anschliessend kann mit dem Browser, der das Root-CA geladen hat, problemlos die HTTPS-Version der Seite angesurfed werden.
 
@@ -588,9 +602,20 @@ Import des Root-Zertifikats in den Browser
 
 Dieses Zertifikat muss nun in den Browser des Clients, der die HTTPS-Verbindung speater aufbauen soll, importiert werden. Dazu wurde ``rootCA.pem`` unter Windows ueber das GUI-Took ``WinSCP`` auf den Client geladen und unter Linux folgender ``scp``-Command ausgefuert: ``scp root@141.62.75.106:rootCA.key``. Voraussetzung fuer den Linux-Command ist, dass das Zertifikat im Home-Verzeichnis des Users ``root`` liegt.
 
+Unter dem Firefox unter Windows kann man Zertifikate ueber folgendes Fenster importieren:
+
 .. image:: images/Apache/07_zertifikatManager.png
+
+Es erscheint ein Popup, in welchem man auswaehlen muss, fuer welche Art von Identifikation das zu importierende Zertifikat gueltig sein soll:
+
 .. image:: images/Apache/08_zertifikatVertrauenPopup.png
+
+Nach erfolgreichem Import kann man die Details des Zertifikats anschauen. Dass als "common name" dort ``sdi1b.mi.hdm-stuttgart.de`` steht ist Zufall und ist im Gegensatz zu einem spaeteren Zeitpunkt unerheblich.
+
 .. image:: images/Apache/09_zertifikatDetails.png
+
+Das Zertifikat ist nun auch in der Zertifikatliste sichtbar:
+
 .. image:: images/Apache/10_zertifikatListe.png
 
 Erstellen des Server-Keys und des Server-Zertifikats
@@ -613,6 +638,10 @@ Aus diesem Key wird ein "Certificate Signing Request" (CSR) erstellt:
     opensll req -new -key device.key -out device.csr
 
 Wieder werden einige User-Eingaben verlangt. Wichtig ist hierbei nur, dass unter der Eingabe "common name" der Hostname oder die IP-Adresse des Servers eingetragen werden soll, der das Zertifikat speater verwenden soll.
+
+.. topic:: Bemerkung
+
+    Einem Zertifikat vertraut der Browser nur, wenn angesurfter Domainname mit dem des im Zertifikat definierten "common name"s uebereinstimmt. Alternativ kann auch in den Browser ``https://<IP-Address>`` eingegeben werden, vorausgesetzt der "common name" ist auch auf die IP-Adresse gesetzt. Sind diese beiden Kombinationen nicht gegeben, kommt der Warnhinweis des Browsers ("Nicht vertrauenswuerdige Seite ...").
 
 .. image:: images/Apache/11_CSRRequest.png
 
@@ -684,7 +713,9 @@ Exemplarisch der Inhalt der aktuellen ``rootCA.srl``:
 
     B47676414D9D3AD5
 
-*Bemerkung*: Das Root-Zertifikat ist 1024 Tage gueltig, es macht also keinen Sinn das Device-Zertifikat ueber einen laengeren Zeitraum auszustellen. Nach Ablauf des Root-Zertifikats wird auch dieses ungueltig werden.
+.. topic:: Bemerkung
+
+    Das Root-Zertifikat ist 1024 Tage gueltig, es macht also keinen Sinn das Device-Zertifikat ueber einen laengeren Zeitraum auszustellen. Nach Ablauf des Root-Zertifikats wird auch dieses ungueltig werden.
 
 zugehoeriger ``VirtualHost`` unter Apache
 +++++++++++++++++++++++++++++++++++++++++
@@ -735,3 +766,141 @@ Wenn das Root-Zertifikat nicht im Browser integriert ist, kommt folgender bekann
 LDAP Authentifizierung
 **********************
 
+Der LDAP-User ``tuser`` mit SMD5-hashed Passwort wurde mittels Apache Directory Studio erstellt:
+
+.. image:: images/Apache/14_ldapNewPassword.png
+
+.. image:: images/Apache/15_ldapTuserListed.png
+
+Auch die Bind-Operation ist nach Anlegen des Users erfolgreich:
+
+.. image:: images/Apache/16_ldapTuserBindSuccess.png
+
+Seitens Apache muessen zuerst min. ein LDAP-Modul aktiviert werden:
+
+::
+
+    a2enmod authnz_ldap    // mandatory
+    a2enmod ldap           // optional
+ 
+* Das wichtige Modul ist ``authnz_ldap``: es stellt Authentifizierung- und Authorisierungsmoeglichkeiten gegenueber einem LDAP-Server zur Verfuegung. Die beiden Phasen Authentifizierung (das *n* in ``authnz``) und Authorisierung (das *z* in ``authnz``) werden nacheinander in dieser Reihenfolge ausgefuehrt:
+
+  1. Authentifizierungsphase: Es wird sichergestellt, dass die User-Credentials valide sind. Wird durch die Zeile ``AuthBasicProvider ldap`` (s.u.) aufgerufen. Dieser Schritt wird auch die *search/bind*-Phase genannt, da erst nach dem User gesucht wird und bei einem eindeutigen Treffer anschliessend ein Bind mit dem DN des Suchtreffers und Passwort des Users (ueber HTTP vom Client erhalten) gegen den LDAP-Server.
+  2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsaechlich Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Details s.u.
+
+  .. topic:: Bemerkung
+
+      Das Modul ``authz_user`` muss aktiviert sein, wenn ``valid-user`` in der ``Require``-Direktive angegeben wird.
+
+*(Quellen: http://httpd.apache.org/docs/2.4/mod/mod_authnz_ldap.html, http://httpd.apache.org/docs/2.4/mod/mod_authz_user.html)*
+
+* Das optionale Modul ``ldap`` dient zur Performanceverbesserung gegenueber einem LDAP-Server und bringt im Wesentlichen zwei Verbesserungen mit sich: es fuegt dem standardmaessigem Funktionsumfang von ``authnz_ldap`` sog. *Connection-Pools* und Caching-Strategien hinzu.
+  * *Connections-Pools* erlauben dem LDAP-Server dauerhaft an den Apache-Server gebunden zu sein, ohne staendige Unbinds/Connects/Rebinds durchfuehren zu muessen.
+  * Caching reduziert die Anzahl der Anfragen an den LDAP-Server und senkt somit gleichzeitig die Last des LDAP-Servers. Ueber Apache-Direktiven wie ``LDAPCacheEntries`` (z.B. 1024) und ``LDAPCacheTTL`` (z.B. 600) koennen das Verhalten des Cache angepasst werden. Beide Verfahren machen v.a. bei grosser Last Sinn.
+
+*(Quelle: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html)*
+
+Jetzt, wo der Apache faehig ist LDAP-AuthNZ zu vollziehen, koennen wir einen (oder mehrere) ``VirtualHost`` einrichten:
+
+::
+
+    <VirtualHost *:80>
+            ServerName manual.mi.hdm-stuttgart.de
+            DocumentRoot /usr/share/doc/apache2-doc/manual/
+    
+            <Directory "/usr/share/doc/apache2-doc/manual">
+                    AuthName "Top Secret"
+                    AuthType Basic
+                    AuthBasicProvider ldap
+                    AuthLDAPURL ldap://localhost:389/ou=Peope,dc=mi,dc=hdm-stuttgart,dc=de?uid?sub
+                      # AuthBasicProvider file ldap  --> we only want ldap authentication, no "file" authentication
+                      # AuthUserFile "/usr/local/apache/passwd/passwords" --> no file needed in ldap-only authentication
+                    Require valid-user
+            </Directory>
+     </VirtualHost>
+
+Die Resource, fuer die in obigem Beispiel authentifiziert und authorisiert wird, ist ``/usr/share/doc/apache2-doc/manual``, das Verzeichnis, in dem die Apache-Doku liegt.
+
+Erklaerung der verwendeten Direktiven:
+
+* ``AuthName``: Gibt den Namen des Authorisierungs-Realms an. Dieser Name wird dem Client gesendet, sodass der User weiss welche Credentials er eingeben muss. Der Name wird in den meisten Browsern in den Eingabedialogen angezeigt. Wenn der Realm ein Leerzeichen enthalten soll, muss der gesamte Name in Hochkommata eingeschlossen werden. Bsp.: ``AuthName "Top Secret"``.
+* ``AuthType``: Gibt die Art der User-Authentifizierung fuer ein Verzeichnis an. Kann die Werte ``None``, ``Basic`` (HTTP-Basic Authentifizierung), ``Digest`` (HTTP-Digest Authentifizierung) und ``Form`` annehmen. Je nach Wert werden verschiedene Apache-Module verwendet (z.B. ``mod_auth_basic`` fuer HTTP-Basic-Authentifizierung). Sofern nicht explizit anders definiert, wird die Art der Authentifizierung fuer Subsektionen (Unterordner des authentifizierten Resource) vererbt. Bsp.: ``AuthType Basic``.
+* ``AuthBasicProvider``: Diese Direktive setzt den Provider, der fuer die Resource zur Authentifizierung gilt. Mehrere Provider werden nacheinander ausgewertet bis ein Match fuer den Usernamen gefunden wurde. Bei einem Match wird das eingegebene Passwort gecheckt. Schlaegt die Passwort-Verfikation fehl, werden nachfolgend augelistete Provider nicht mehr genutzt. Moegliche Werte sind ``dbm`` (dbm-Passwortdateien), ``file`` (Passwortdateien in Klartext), ``dbd`` (ueber SQL-Tabellen), ``ldap`` (ueber LDAP-Dienste) und ``socache`` (keine stand-alone Authentifizierung. Verwaltung der Credentials im Cache, v.a. fuer ``dbd`` sinnvoll, da SQL-Lookups teuer werden koennen und LDAP mit eigenem Caching-Modul ``mod_ldap`` kommt).
+* ``AuthLDAPURL``: Erwartet eine URL fuer den LDAP-Dienst inklusive Filter. Die allgemeine Syntax ist ``ldap://host:port/basedn?attribute?scope?filter``. Wobei einige Eigenschaften selbsterklaerend sind, erklaeren wir die LDAP-spezifischen:
+  * ``basedn``: Gibt den Startpunkt der Suche an, also eine Node im Tree von der gestartet werden soll.
+  * ``attribute``: Gibt das Attribut an, nach dem gesucht werden soll. Ueblicherweise macht ``uid`` Sinn, was auch dem Standardwert entspricht.
+  * ``scope``: Gibt den LDAP-Scope an, kann also die Werte ``own`` (nur eigene Node), ``base`` (ein Level unterhalb der eigenen Node) und ``sub`` (alle Nodes unterhalb der eigenen Node) annehmen. Wenn nicht anders spezifiziert, wird standardmaessig ``sub`` verwendet.
+  * ``filter``: Hier kann ein valider LDAP-Suchfilter angegeben werden. Der Default-Wert ist ``(objectClass=*)``, was alle Objekte im Baum anspricht.
+* ``Require``: Wie oben bereits erwaehnt setzt diese Direktive ob und wenn ja wie ein authentifizierte User authorisiert wird. Wenn der Wert ``valid-user`` ist, ist jeder authentifizierte User gleichzeitig auch authorisiert. Der Wert ``ldap-user tuser`` sieht z.B. vor, dass nur der User *tuser* authorisiert ist, alle anderen Authorisierungsversuche werden abgelehnt. ``all granted`` gibt die Resource ohne Bedingung frei.
+
+In der Aufgabe war gefordert, die Authentifizierung nur ueber LDAP durchzufuehren, d.h. ``AuthBasicProvider`` muss wie im Codebeispiel oben auf ``ldap`` gesetzt werden.
+
+Wenn man den Host im Browser mit ``manual.mi.hdm-stuttgart.de`` aufruft, kommt erwartungsgemaess ein Popup zur Eingabe von Credentials:
+
+.. image:: images/Apache/17_ldapTuserBrowserAuth.png
+
+Die 2-Phasen-Authentifizierung in LDAP ist sehr gut im Log zu sehen, wenn man das Log-Level als ``olcLogLevel: Stats`` in ``/etc/ldap/slapd.d/cn=config.ldif`` definiert:
+
+.. image:: images/Apache/18_ldapTuserBindSuccessLog.png
+
+(**genauere ERKLAERUNGEN zu dem Log**)
+
+MySQL
+*****
+
+Die Installation des MySQL-Datenbankservers kann mit dem Befehl
+
+::
+
+    sudo apt-get install mysql-server 
+    
+durchgefuehrt werden. Waehrend der Installation wird man nach einem Passwort fuer den root-User gefragt. Dieser User hat nichts mit dem UNI-User zu tun, sondern gilt isoliert fuer MySQL. Da wir eine auf PHP basierende Webanwendung unter Apache zum Laufen bringen wollen, muess noch folgendes Package installiert werden:
+
+::
+
+    sudo apt-get install php5-mysql
+
+Optional kann die MySQL-Installation in der Datei ``/etc/mysql/my.cnf`` konfiguriert werden. Die Datenbanken selbst werden im Verzeichnis ``/var/lib/mysql`` abgelegt. 
+
+Die Installation des MySQL-Frontends ``phpMyAdmin`` geschieht folgendermassen:
+
+::
+    sudo apt-get install phpmyadmin
+
+Waehrend dem Installationsprozess wird eine Apache-Konfigurationsdatei ``phpmyadmin.conf`` in das Verzeichnis ``/etc/apache2/conf-enabled/`` geschoben. Genauer gesagt wird ein symbolischer Link in auf das ``/etc/apache2/conf-available/phpmyadmin.conf``-File gesetzt, was selbst wiederum ein symbolischer Link auf das File ``/etc/phpmyadmin/apache2.conf`` ist. Falls die Konfiguration nicht aktiviert sein sollte, kann dies mit ``a2enconf phpmyadmin`` erledigt werden. Sollte das ``phpMyAdmin``-Package jemals neu konfiguriert werden muessen, geht das ueber den Befehl ``sudo dpkg-reconfigure phpmyadmin``:
+
+.. image:: images/Apache/19_phpmyadminReconfigure.png
+
+Ausserdem muss noch die PHP-Erweiterung ``mcrypt`` explizit aktiviert werden:
+
+::
+
+    sudo php5enmod mcrypt
+
+Zu guter letzt muss der Apache neu gestartet werden, damit die Aenderungen wirksam werden:
+
+::
+
+    service apache2 restart
+
+Nun ist die ``phpMyAdmin``-Weboberflaeche ueber die URL ``sdi1b.mi.hdm-stuttgart.de/phpmyadmin`` erreichbar. Einer initialer Login ist mit ``root / *<Installationspasswort>*`` moeglich:
+
+.. image:: images/Apache/20_phpmyadminLogin.png
+
+.. image:: images/Apache/21_phpmyadminUI.png
+
+Wie zu sehen ist, werden bei der Installation schon Datenbanken zur internen Verwaltung angelegt. Diese sind erwartungsgemaess unter oben erwaehntem Verzeichnis auch als Ordner verfuegbar:
+
+.. image:: images/Apache/22_mysqlFS.png
+
+Wenn wir eine eigene Datenbank ``hdm`` anlegen mit der Tabelle ``studenten`` und den drei Feldern ``vorname``, ``nachname`` und ``matrikelnr``, sowie einen Testdatensatz anlegen...
+
+.. image:: images/Apache/22_phpymadminTabelleAnlegen.png
+
+.. image:: images/Apache/24_phpymadminTabelleAnzeigen.png
+
+... werden folgenden Dateien im Filesystem gespeichert:
+
+.. image:: images/Apache/25_mysqlFSCustomTable.png
+
+Die ``.frm``-Datei enthaelt die Tabellendefinitionen und die ``.ibd``-Datei die Daten an sich sowie Indizes sofern vorhanden. Diese Variante nennt sich *file-per-table*, da fuer jede Tabelle neue Dateien angelegt werden.
