@@ -387,53 +387,53 @@ Es gibt 2 Moeglichkeiten:  Eine Redirect-Directive oder einen Alias. Vorraussetz
 
 1. ``Alias``-Direktive:
 
-Alias wurden im Prinzip schon in der letzten Aufgabe rund um ``apache2-doc`` behandelt. Die Alias-Direktive nimmt einen relativen Pfad (relativ zum ServerName), also ``/mh203``, entgegen und mappt diesen auf einen anderen Pfad, in unserem Fall also ``/home/sdidoc``.
-::
+  Alias wurden im Prinzip schon in der letzten Aufgabe rund um ``apache2-doc`` behandelt. Die Alias-Direktive nimmt einen relativen Pfad (relativ zum ServerName), also ``/mh203``, entgegen und mappt diesen auf einen anderen Pfad, in unserem Fall also ``/home/sdidoc``.
+  ::
 
-    <VirtualHost *:80>
-            ServerName sdi1b.mi.hdm-stuttgart.de
-            DocumentRoot /var/www/html
-            Alias /mh203 /home/sdidoc
-            <Directory /home/sdidoc>
-                    Options Indexes FollowSymLinks
-                    AllowOverride None
-                    Require all granted
-            </Directory>
-    </VirtualHost>
+      <VirtualHost *:80>
+              ServerName sdi1b.mi.hdm-stuttgart.de
+              DocumentRoot /var/www/html
+              Alias /mh203 /home/sdidoc
+              <Directory /home/sdidoc>
+                      Options Indexes FollowSymLinks
+                      AllowOverride None
+                      Require all granted
+              </Directory>
+      </VirtualHost>
 
-Wie folgender Screenshot zeigt, funktioniert dieser Ansatz:
+  Wie folgender Screenshot zeigt, funktioniert dieser Ansatz:
 
-.. image:: images/Apache/04_sdiDocSlashMH203.png
+  .. image:: images/Apache/04_sdiDocSlashMH203.png
 
 2. ``Redirect``-Direktive:
 
-Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf einen anderen Host, also wie in diesem Beispiel auf ``sdidoc.mi.hdm-stuttgart.de``, weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
+  Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf einen anderen Host, also wie in diesem Beispiel auf ``sdidoc.mi.hdm-stuttgart.de``, weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
 
-.. topic:: Bemerkung
+  .. topic:: Bemerkung
 
-    Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgeloest werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgeloest wird. Vergleiche auch mit naechster Aufgabe.
+      Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgeloest werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgeloest wird. Vergleiche auch mit naechster Aufgabe.
 
 
-::
+  ::
 
-    <VirtualHost *:80>
-            ServerName sdi1b.mi.hdm-stuttgart.de
-            DocumentRoot /var/www/html
-            Redirect /mh203 http://sdidoc.mi.hdm-stuttgart.de
-    </VirtualHost>
-    <VirtualHost *:80>
-            ServerName sdidoc.mi.hdm-stuttgart.de
-            DocumentRoot /home/sdidoc/
-            <Directory /home/sdidoc>
-                    Options Indexes FollowSymLinks
-                    AllowOverride None
-                    Require all granted
-            </Directory>
-    </VirtualHost>
+      <VirtualHost *:80>
+              ServerName sdi1b.mi.hdm-stuttgart.de
+              DocumentRoot /var/www/html
+              Redirect /mh203 http://sdidoc.mi.hdm-stuttgart.de
+      </VirtualHost>
+      <VirtualHost *:80>
+              ServerName sdidoc.mi.hdm-stuttgart.de
+              DocumentRoot /home/sdidoc/
+              <Directory /home/sdidoc>
+                      Options Indexes FollowSymLinks
+                      AllowOverride None
+                      Require all granted
+              </Directory>
+      </VirtualHost>
 
-Auch dieser Ansatz funktioniert, wenn der DNS-Eintrag fuer ``sdidoc.mi.hdm-stuttgart.de`` eingetragen ist:
+  Auch dieser Ansatz funktioniert, wenn der DNS-Eintrag fuer ``sdidoc.mi.hdm-stuttgart.de`` eingetragen ist:
 
-.. image:: images/Apache/05_sdiDocSubdomain.png
+  .. image:: images/Apache/05_sdiDocSubdomain.png
 
 Einrichtung von virtuellen Hosts
 ********************************
