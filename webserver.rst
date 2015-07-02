@@ -165,6 +165,7 @@ In ``envvars`` werden, wie der Name schon erahnen laesst, Apache-Umgebungsvariab
     ...
 
 ``magic`` enthaelt Regeln, um anhand der führenden Bytes einer Datei einen MIME-Typ, also den Inhalt eines Dokuments, zu erkennen. Wenn man sich die Datei anschaut (s.u.), ist sie vierspalitig aufgebaut und enthaelt pro Zeile eine Matching-Regel:
+
 * der Byteoffset, an dem das Pattern beginnt
 * Typ der Daten, der gematched werden soll
 * das Pattern selbst
@@ -225,6 +226,7 @@ Eine einfache Seite koennte wie folgt in einer ``VirtualHost``-Direktive definie
     </VirtualHost>
 
 Erklaerung der verwendeten Attribute:
+
 * ``ServerAdmin``: Diese Direktive legt fest, welche E-Mail-Adresse als Adresse des Server-Administrators angegeben wird. Der vorgegebene Wert ist ``webmaster@localhost``. Dieser Wert sollte in eine E-Mail-Adresse geändert werden, über die man den Webmaster erreichen kann. Falls auf der Website ein Problem auftritt, wird ein Fehlerhinweis mit dieser E-Mail-Adresse angezeigt, um das Problem zu melden. Um global fuer alle Hosts die gleiche E-Mail-Adresse festzulegen, kann die Direktive auch in das bereits erklaerten ``apache.conf`-File geschrieben werden.
 * ``ServerName``: Diese Direktive ist optional und gibt den FQDN an, auf den der VirtualHost reagieren soll. Sobald mehr als ein VirtualHost angegeben ist, sind fuer die zusaetzlichen Eintraege jedoch eindeutige ``ServerName``s Voraussetzung.  Bsp.: ``Servername www.example.com``.
 * ``ServerAlias``: Mit dem ``ServerAlias`` lassen sich alternative Nutzungs-URLs einrichten. Normalerweise ist es wuenschenswert wenn ein VirtualHost, der auf ``example.com`` reagiert, auch auf ``www.example.com`` antwortet. Oder man will alle Subdomains auf die Hauptdomain leiten. Mit einer Wildcard koennen VirtualHost so konfiguriert werden, dass sie auf jede Anfrage, die auf ``.sdi1b.mi.hdm-stuttgart.de`` endet, reagiert. Der Eintrag fuer Letzteres ist dann z.B. ``ServerAlias *.sdi1b.mi.hdm-stuttgart.de``.
@@ -241,6 +243,7 @@ Wie eine solche Konfigurationsdatei aussieht, steht im Aufgabenkapitel.
 Apache Befehle
 ##############
 Der Apache-Webserver laesst sich mit einigen Commands steuern. Einige sind Skripte, deren Ausfuehrung dem User Zeit spart im Vergleich nur manuellen Variante (die ``a2enXXX`` bzw. ``a2disXXX``-Commands).
+
 * ``a2ensite`` und ``a2dissite``: Aktiviert bzw. deaktiviert eine Seite aus dem ``/etc/apache2/sites-available``-Verzeichnis und erstellt bei Aktivierung einen symbolischen Link in ``sites-enabled``. Bei Deaktivierung wird der symbolische Link wieder geloescht. Die ausfuehrliche, manuelle Variante zur Aktivierung einer Seite, die das gleiche bewirkt aber mehr Tipparbeit ist, waere ``ln -s /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf``.
 * ``a2enmod`` und ``a2dismod``: Das gleiche wie Obiges nur fuer Module und deren zwei spezifischen Ordnern.
 * ``a2enconf`` und ``a2disconf``: Das gleiche wie Obiges nur fuer Konfigurationsdateien und deren zwei spezifschen Ordnern.
@@ -306,7 +309,7 @@ Installation von ``apache2-doc`` sowie Suche der URL
 ****************************************************
 Installiert werden kann die Apache Doku mit dem Command ``sudo apt-get install apache2-doc``.
 
-Verstaendnis 1:
+**Verstaendnis 1:**
 Die URL des Repositories finden, von dem das Package ``apache2-doc`` heruntergeladen wird. Das geht nicht mit dem in der Aufgabe erwaehnten Tipp "dpkg...", sondern geht ueber den Command ``apt-cache policy apache2-doc``, welcher die URLs wie folgt ausgibt:
 
 ::
@@ -322,7 +325,7 @@ Die URL des Repositories finden, von dem das Package ``apache2-doc`` heruntergel
          2.4.7-1ubuntu4 0
             500 http://archive.ubuntu.com/ubuntu/ trusty/main amd64 Packages
  
-Verstaendnis 2:
+**Verstaendnis 2:**
 Den Pfad finden, ueber den der Apache Webserver die installierte Doku zur Verfuegung stellt. Laut Tipp ist ein Hinweis in einer Datei im ``apache2-doc``-Package zu finden. Mit dem Command ``dpkg -L apache2-doc`` lassen sich nun alle zum Packe zugehoerigen Dateien samt absolutem Pfad ausgeben. Die Ausgabe ist jedoch zu komplex und kann mit dem grep-Filter entsprechend reduziert werden. Eine uebersichtlichere Ausgabe laesst sich mit dem Befehl ``dpkg -L apache2-doc | grep -vE '(manual|examples)'`` erzeugen:
 
 ::
@@ -356,6 +359,7 @@ Die gefundene Datei enthaelt:
     </Directory>
 
 In dieser Datei sind 2 Pfade zu sehen:
+
 * ``/usr/share/doc/apache2-doc-manual``: Der absolute Pfad, auf dem die Apache-Doku auf dem Server liegt.
 * ``/manual``: Ein relativer Pfad als Alias, ueber den die Doku im Browser aufgerufen kann. In unserem Fall waere das also ``sdi1b.mi.hdm-stuttgart.de/manual``.
 
@@ -381,7 +385,7 @@ Nun muss der Apache entsprechend konfiguriert werden, damit die Doku auch ueber 
  
 Es gibt 2 Moeglichkeiten:  Eine Redirect-Directive oder einen Alias. Vorraussetzung fuer beide Varianten ist, dass im SDI-Doku-Verzeichnis eine ``index.html`` als Einstiegspunkt existiert, was bei uns von unserem Doku-Tool Shinx bereits so erstellt wurde.
 
-``Alias``-Direktive:
+1. ``Alias``-Direktive:
 
 Alias wurden im Prinzip schon in der letzten Aufgabe rund um ``apache2-doc`` behandelt. Die Alias-Direktive nimmt einen relativen Pfad (relativ zum ServerName), also ``/mh203``, entgegen und mappt diesen auf einen anderen Pfad, in unserem Fall also ``/home/sdidoc``.
 ::
@@ -401,7 +405,7 @@ Wie folgender Screenshot zeigt, funktioniert dieser Ansatz:
 
 .. image:: images/Apache/04_sdiDocSlashMH203.png
 
-``Redirect``-Direktive:
+2. ``Redirect``-Direktive:
 
 Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf einen anderen Host, also wie in diesem Beispiel auf ``sdidoc.mi.hdm-stuttgart.de``, weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
 
@@ -825,7 +829,7 @@ Die Resource, fuer die in obigem Beispiel authentifiziert und authorisiert wird,
 Erklaerung der verwendeten Direktiven:
 
 * ``AuthName``: Gibt den Namen des Authorisierungs-Realms an. Dieser Name wird dem Client gesendet, sodass der User weiss welche Credentials er eingeben muss. Der Name wird in den meisten Browsern in den Eingabedialogen angezeigt. Wenn der Realm ein Leerzeichen enthalten soll, muss der gesamte Name in Hochkommata eingeschlossen werden. Bsp.: ``AuthName "Top Secret"``.
-* ``AuthType``: Gibt die Art der User-Authentifizierung fuer ein Verzeichnis an. Kann die Werte ``None``, ``Basic`` (HTTP-Basic Authentifizierung), ``Digest`` (HTTP-Digest Authentifizierung) und ``Form`` annehmen. Je nach Wert werden verschiedene Apache-Module verwendet (z.B. ``mod_auth_basic`` fuer HTTP-Basic-Authentifizierung). Sofern nicht explizit anders definiert, wird die Art der Authentifizierung fuer Subsektionen (Unterordner des authentifizierten Resource) vererbt. Bsp.: ``AuthType Basic``.
+* ``AuthType``: Gibt die Art der User-Authentifizierung fuer ein Verzeichnis an. Kann die Werte ``None``, ``Basic`` (HTTP-Basic Authentifizierung), ``Digest``(HTTP-Digest Authentifizierung) und ``Form`` annehmen. Je nach Wert werden verschiedene Apache-Module verwendet (z.B. ``mod_auth_basic`` fuer HTTP-Basic-Authentifizierung). Sofern nicht explizit anders definiert, wird die Art der Authentifizierung fuer Subsektionen (Unterordner des authentifizierten Resource) vererbt. Bsp.: ``AuthType Basic``.
 * ``AuthBasicProvider``: Diese Direktive setzt den Provider, der fuer die Resource zur Authentifizierung gilt. Mehrere Provider werden nacheinander ausgewertet bis ein Match fuer den Usernamen gefunden wurde. Bei einem Match wird das eingegebene Passwort gecheckt. Schlaegt die Passwort-Verfikation fehl, werden nachfolgend augelistete Provider nicht mehr genutzt. Moegliche Werte sind ``dbm`` (dbm-Passwortdateien), ``file`` (Passwortdateien in Klartext), ``dbd`` (ueber SQL-Tabellen), ``ldap`` (ueber LDAP-Dienste) und ``socache`` (keine stand-alone Authentifizierung. Verwaltung der Credentials im Cache, v.a. fuer ``dbd`` sinnvoll, da SQL-Lookups teuer werden koennen und LDAP mit eigenem Caching-Modul ``mod_ldap`` kommt).
 * ``AuthLDAPURL``: Erwartet eine URL fuer den LDAP-Dienst inklusive Filter. Die allgemeine Syntax ist ``ldap://host:port/basedn?attribute?scope?filter``. Wobei einige Eigenschaften selbsterklaerend sind, erklaeren wir die LDAP-spezifischen:
   * ``basedn``: Gibt den Startpunkt der Suche an, also eine Node im Tree von der gestartet werden soll.
