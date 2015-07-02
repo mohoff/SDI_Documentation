@@ -831,4 +831,10 @@ Erklaerung der verwendeten Direktiven:
   * ``filter``: Hier kann ein valider LDAP-Suchfilter angegeben werden. Der Default-Wert ist ``(objectClass=*)``, was alle Objekte im Baum anspricht.
 * ``Require``: Wie oben bereits erwaehnt setzt diese Direktive ob und wenn ja wie ein authentifizierte User authorisiert wird. Wenn der Wert ``valid-user`` ist, ist jeder authentifizierte User gleichzeitig auch authorisiert. Der Wert ``ldap-user tuser`` sieht z.B. vor, dass nur der User *tuser* authorisiert ist, alle anderen Authorisierungsversuche werden abgelehnt. ``all granted`` gibt die Resource ohne Bedingung frei.
 
-In der Aufgabe war gefordert, die Authentifizierung nur ueber LDAP durchzufuehren, d.h. ``AuthBasicProvider`` muss auf ``ldap`` gesetzt werden.
+In der Aufgabe war gefordert, die Authentifizierung nur ueber LDAP durchzufuehren, d.h. ``AuthBasicProvider`` muss wie im Codebeispiel oben auf ``ldap`` gesetzt werden.
+
+Wenn man den Host im Browser mit ``manual.mi.hdm-stuttgart.de`` aufruft, kommt erwartungsgemaess ein Popup zur Eingabe von Credentials:
+
+Die 2-Phasen-Authentifizierung in LDAP ist sehr gut im Log zu sehen, wenn man das Log-Level als ``olcLogLevel: Stats`` in ``/etc/ldap/slapd.d/cn=config.ldif`` definiert:
+
+(**genauere ERKLAERUNGEN zu dem Log**)
