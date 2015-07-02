@@ -768,11 +768,13 @@ LDAP Authentifizierung
 
 Der LDAP-User ``tuser`` mit SMD5-hashed Passwort wurde mittels Apache Directory Studio erstellt:
 
-(1-2 screenshots zu apache directory studio, smd5 hash passwort)
+.. image:: images/Apache/14_ldapNewPassword.png
+
+.. image:: images/Apache/15_ldapTuserListed.png
 
 Auch die Bind-Operation ist nach Anlegen des Users erfolgreich:
 
-(1 screenshot successful tsuer bind)
+.. image:: images/Apache/16_ldapTuserBindSuccess.png
 
 Seitens Apache muessen zuerst min. ein LDAP-Modul aktiviert werden:
 
@@ -835,7 +837,11 @@ In der Aufgabe war gefordert, die Authentifizierung nur ueber LDAP durchzufuehre
 
 Wenn man den Host im Browser mit ``manual.mi.hdm-stuttgart.de`` aufruft, kommt erwartungsgemaess ein Popup zur Eingabe von Credentials:
 
+.. image:: images/Apache/17_ldapTuserBrowserAuth.png
+
 Die 2-Phasen-Authentifizierung in LDAP ist sehr gut im Log zu sehen, wenn man das Log-Level als ``olcLogLevel: Stats`` in ``/etc/ldap/slapd.d/cn=config.ldif`` definiert:
+
+.. image:: images/Apache/18_ldapTuserBindSuccessLog.png
 
 (**genauere ERKLAERUNGEN zu dem Log**)
 
@@ -863,7 +869,7 @@ Die Installation des MySQL-Frontends ``phpMyAdmin`` geschieht folgendermassen:
 
 Waehrend dem Installationsprozess wird eine Apache-Konfigurationsdatei ``phpmyadmin.conf`` in das Verzeichnis ``/etc/apache2/conf-enabled/`` geschoben. Genauer gesagt wird ein symbolischer Link in auf das ``/etc/apache2/conf-available/phpmyadmin.conf``-File gesetzt, was selbst wiederum ein symbolischer Link auf das File ``/etc/phpmyadmin/apache2.conf`` ist. Falls die Konfiguration nicht aktiviert sein sollte, kann dies mit ``a2enconf phpmyadmin`` erledigt werden. Sollte das ``phpMyAdmin``-Package jemals neu konfiguriert werden muessen, geht das ueber den Befehl ``sudo dpkg-reconfigure phpmyadmin``:
 
-(screenshot dpkg-reconfigure (?))
+.. image:: images/Apache/19_phpmyadminReconfigure.png
 
 Ausserdem muss noch die PHP-Erweiterung ``mcrypt`` explizit aktiviert werden:
 
@@ -879,16 +885,22 @@ Zu guter letzt muss der Apache neu gestartet werden, damit die Aenderungen wirks
 
 Nun ist die ``phpMyAdmin``-Weboberflaeche ueber die URL ``sdi1b.mi.hdm-stuttgart.de/phpmyadmin`` erreichbar. Einer initialer Login ist mit ``root / *<Installationspasswort>*`` moeglich:
 
-(screenshot phpmyadmin login screen)
+.. image:: images/Apache/20_phpmyadminLogin.png
 
-(screenshot phpmyadmin webUI)
+.. image:: images/Apache/21_phpmyadminUI.png
 
 Wie zu sehen ist, werden bei der Installation schon Datenbanken zur internen Verwaltung angelegt. Diese sind erwartungsgemaess unter oben erwaehntem Verzeichnis auch als Ordner verfuegbar:
 
-(screenshot ordneruebersicht in /var/../mysql)
+.. image:: images/Apache/22_mysqlFS.png
 
-Wenn wir eine eigene Datenbank ``hdm`` anlegen mit der Tabelle ``studenten`` und den drei Feldern ``vorname``, ``nachname`` und ``matrikelnr``, sowie einen Testdatensatz anlegen, werden folgenden Dateien im Filesystem gespeichert:
+Wenn wir eine eigene Datenbank ``hdm`` anlegen mit der Tabelle ``studenten`` und den drei Feldern ``vorname``, ``nachname`` und ``matrikelnr``, sowie einen Testdatensatz anlegen...
 
-(screenshot anlegen, anzeigen tabellen/datensaetze)
+.. image:: images/Apache/22_phpymadminTabelleAnlegen.png
+
+.. image:: images/Apache/24_phpymadminTabelleAnzeigen.png
+
+... werden folgenden Dateien im Filesystem gespeichert:
+
+.. image:: images/Apache/25_mysqlFSCustomTable.png
 
 Die ``.frm``-Datei enthaelt die Tabellendefinitionen und die ``.ibd``-Datei die Daten an sich sowie Indizes sofern vorhanden. Diese Variante nennt sich *file-per-table*, da fuer jede Tabelle neue Dateien angelegt werden.
