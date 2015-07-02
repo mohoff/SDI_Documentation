@@ -843,7 +843,7 @@ Die 2-Phasen-Authentifizierung in LDAP ist sehr gut im Log zu sehen, wenn man da
 
 .. image:: images/Apache/18_ldapTuserBindSuccessLog.png
 
-(**genauere ERKLAERUNGEN zu dem Log**)
+Wie im Screenshot des Logs zu sehen, findet erst die Suche (``SRCH``) statt mit dem baseDN, dem Scope, dem LDAP-Filter und dem gesuchten Attribut (``attr=uid``). In der naechsten Zeile wird das Suchergebnis geloggt (``nentries=1``). Da ein Treffer gefunden wurde, erfolgt als zweiter Schritt der Bind mit dieser ``uid``. Auch diese Operation ist erfolgreich, da ``err=0`` steht, sprich der Bind fehlerfrei funktioniert hat.
 
 MySQL
 *****
@@ -865,6 +865,7 @@ Optional kann die MySQL-Installation in der Datei ``/etc/mysql/my.cnf`` konfigur
 Die Installation des MySQL-Frontends ``phpMyAdmin`` geschieht folgendermassen:
 
 ::
+
     sudo apt-get install phpmyadmin
 
 Waehrend dem Installationsprozess wird eine Apache-Konfigurationsdatei ``phpmyadmin.conf`` in das Verzeichnis ``/etc/apache2/conf-enabled/`` geschoben. Genauer gesagt wird ein symbolischer Link in auf das ``/etc/apache2/conf-available/phpmyadmin.conf``-File gesetzt, was selbst wiederum ein symbolischer Link auf das File ``/etc/phpmyadmin/apache2.conf`` ist. Falls die Konfiguration nicht aktiviert sein sollte, kann dies mit ``a2enconf phpmyadmin`` erledigt werden. Sollte das ``phpMyAdmin``-Package jemals neu konfiguriert werden muessen, geht das ueber den Befehl ``sudo dpkg-reconfigure phpmyadmin``:
