@@ -838,3 +838,57 @@ Wenn man den Host im Browser mit ``manual.mi.hdm-stuttgart.de`` aufruft, kommt e
 Die 2-Phasen-Authentifizierung in LDAP ist sehr gut im Log zu sehen, wenn man das Log-Level als ``olcLogLevel: Stats`` in ``/etc/ldap/slapd.d/cn=config.ldif`` definiert:
 
 (**genauere ERKLAERUNGEN zu dem Log**)
+
+MySQL
+*****
+
+Die Installation des MySQL-Datenbankservers kann mit dem Befehl
+
+::
+
+    sudo apt-get install mysql-server 
+    
+durchgefuehrt werden. Waehrend der Installation wird man nach einem Passwort fuer den root-User gefragt. Dieser User hat nichts mit dem UNI-User zu tun, sondern gilt isoliert fuer MySQL. Da wir eine auf PHP basierende Webanwendung unter Apache zum Laufen bringen wollen, muess noch folgendes Package installiert werden:
+
+::
+
+    sudo apt-get install php5-mysql
+
+Optional kann die MySQL-Installation in der Datei ``/etc/mysql/my.cnf`` konfiguriert werden. Die Datenbanken selbst werden im Verzeichnis ``/var/lib/mysql`` abgelegt. 
+
+Die Installation des MySQL-Frontends ``phpMyAdmin`` geschieht folgendermassen:
+
+::
+    sudo apt-get install phpmyadmin
+
+Waehrend dem Installationsprozess wird eine Apache-Konfigurationsdatei ``phpmyadmin.conf`` in das Verzeichnis ``/etc/apache2/conf-enabled/`` geschoben. Genauer gesagt wird ein symbolischer Link in auf das ``/etc/apache2/conf-available/phpmyadmin.conf``-File gesetzt, was selbst wiederum ein symbolischer Link auf das File ``/etc/phpmyadmin/apache2.conf`` ist. Falls die Konfiguration nicht aktiviert sein sollte, kann dies mit ``a2enconf phpmyadmin`` erledigt werden. Sollte das ``phpMyAdmin``-Package jemals neu konfiguriert werden muessen, geht das ueber den Befehl ``sudo dpkg-reconfigure phpmyadmin``:
+
+(screenshot dpkg-reconfigure (?))
+
+Ausserdem muss noch die PHP-Erweiterung ``mcrypt`` explizit aktiviert werden:
+
+::
+
+    sudo php5enmod mcrypt
+
+Zu guter letzt muss der Apache neu gestartet werden, damit die Aenderungen wirksam werden:
+
+::
+
+    service apache2 restart
+
+Nun ist die ``phpMyAdmin``-Weboberflaeche ueber die URL ``sdi1b.mi.hdm-stuttgart.de/phpmyadmin`` erreichbar. Einer initialer Login ist mit ``root / *<Installationspasswort>*`` moeglich:
+
+(screenshot phpmyadmin login screen)
+
+(screenshot phpmyadmin webUI)
+
+Wie zu sehen ist, werden bei der Installation schon Datenbanken zur internen Verwaltung angelegt. Diese sind erwartungsgemaess unter oben erwaehntem Verzeichnis auch als Ordner verfuegbar:
+
+(screenshot ordneruebersicht in /var/../mysql)
+
+Wenn wir eine eigene Datenbank ``hdm`` anlegen mit der Tabelle ``studenten`` und den drei Feldern ``vorname``, ``nachname`` und ``matrikelnr``, sowie einen Testdatensatz anlegen, werden folgenden Dateien im Filesystem gespeichert:
+
+(screenshot anlegen, anzeigen tabellen/datensaetze)
+
+Die ``.frm``-Datei enthaelt die Tabellendefinitionen und die ``.ibd``-Datei die Daten an sich sowie Indizes sofern vorhanden. Diese Variante nennt sich *file-per-table*, da fuer jede Tabelle neue Dateien angelegt werden.
