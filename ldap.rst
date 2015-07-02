@@ -25,22 +25,30 @@ SOMETHING AMNOG THOSE LINES:
 - RDN is "cn=John Doe"
 - parent DN is "dc=example,dc=com"
 
-_ Abkuerzungen:
+.. topic:: Abkürzungen
 
-* dc
-* dn (distinguished name)
-* rdn (relative distinguished name)
-* cn
-* ou
+  .. glossary::
+    DIT
+      Directory Information Tree
+    DC
+      Domain Component
+    DN
+      Distinguished Name
+    RDN
+      Relative Distinguished Name
+    CN
+      Common Name
+    OU
+      Organizational Unit
 
 Apache Directory Studio
 #######################
 
-Ein auch als Eclipse-Plugin erhaeltliches Tool, mit dem CRUD-Operations auf LDAP-Datenbaenken
-ausgefuehrt werden koennen.
+Das Apache Directory Studio (ADS) ist ein auf Eclipse basierendes Tool, mit dem CRUD-Operations auf LDAP-Datenbanken
+ausgeführt werden können.
 
-Dient zur Unterstuetzung des Instalationsprozesses sowie der Entwicklung und dem Debugging unter LDAP.
-Fuer die alltaeglichen Administrierungsaufgaben sind jedoch webbasierte Tools geeigneter.
+Dient zur Unterstützung des Installationsprozesses, sowie der Entwicklung und dem Debugging unter LDAP.
+Für die alltäglichen Administrierungsaufgaben sind jedoch webbasierte Tools geeigneter.
 
 
 

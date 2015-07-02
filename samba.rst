@@ -6,6 +6,19 @@ Samba
 Samba Introduction
 ******************
 
+Der Name Samba stammt vom Server Message Block-Protokoll (SMB).
+Mithilfe von Samba können Daten (Verzeichnisse, Laufwerke, Festplatten) sowie Geräte (zb. Drucker) im Netzwerk geteilt werden.
+Diese sogenannten Freigaben tauchen dann zB. in der Windows-Netzwerkumgebung auf und können eingebunden werden.
+Unter Linux diese Freigaben ebenfalls gemountet werden.
+
+Samba kann in gemischten Netzen (Windows & Linux) sowie homogenen Netzwerken zum Datenaustausch eingesetzt werden. 
+Samba ist unter Linux sozusagen das Bindeglied zu anderen Betriebssystemen.
+
+Die Bezeichnung "Samba-Server" bezeichnet den Rechner, der die Freigaben zur Verfügung stellt.
+Der "Samba-Klient" ist der Rechner, welcher die Freigaben einbindet.
+Ein Server kann mehrere Verzeichnisse für verschiedene Benutzer freigeben, so dass jeder Benutzer eine eigene Freigabe hat.
+Falls nun ein Klient eine Freigabe einbinden will, so muss er sich zuerst gegenüber dem Server authentifizieren.
+
 
 Exercises
 *********
@@ -20,68 +33,90 @@ Der Samba Server wird mit dem Befehl
 
 installiert.
 
-Anschließend können Benutzer hinzugefügt werden. Dies geschieht mit dem Befehl ```smbpasswd -a %username%```.
+Anschließend können Benutzer hinzugefügt werden. Dies geschieht mit dem Befehl ``smbpasswd -a %username%``.
 
-Hierfür ist es notwendig, dass auf dem System Linux Benutzer mit dem entsprechenden Benutzernamen angelegt ist. Benutzer können mit dem Befehl ```useradd --create-home %username%``` angelegt werden. Mit dem Parameter ```--create-home``` wird gleichzeitig ein Homeverzeichnis angelegt.
+Hierfür ist es notwendig, dass auf dem System Linux Benutzer mit dem entsprechenden Benutzernamen angelegt ist. Benutzer können mit dem Befehl ``useradd --create-home %username%`` angelegt werden. Mit dem Parameter ``--create-home`` wird gleichzeitig ein Homeverzeichnis angelegt.
 ::
-  root@sdi2b:~# useradd --create-home smbtester
+  root@sdi1a:~# useradd --create-home testuser0 
 
 Zur Erstellung des Samba-Users:
 ::
-  root@sdi2b:~# smbpasswd -a smbtester
+  root@sdi1a:~# smbpasswd -a testuser0
   New SMB password:
   Retype new SMB password:
-  Added user smbtester.
+  Added user testuser0.
 
-Auf die gleiche Weise wurde ein Samba-User für den root-User angelegt.
+Man muss ein Passwort angeben, da Samba nicht die Standard-Linux-Passwörter nutzt, sondern eigene Passwörter.
+Das Passwort-Backend steht in der Samba-Konfigurationsdatei smb.conf:
+``passdb backend = tdbsam``
 
-Samba user können nun mit dem Befehl ```pdbedit -L -v``` aufgelistet werden:
+Erklärung zu tdbsam:
+:: 
+  This backend provides a rich database backend for local servers.
+  This backend is not suitable for multiple domain controllers (i.e., PDC + one or more BDC) installations.
+   The tdbsam password backend stores the old smbpasswd information plus the extended MS Windows NT/200x SAM information into a binary format TDB (trivial database) file.
+  The inclusion of the extended information makes it possible for Samba-3 to implement the same account and system access controls that are possible with MS Windows NT4/200x-based systems.
+
+Diese werden unter  ``/var/lib/samba/private/passdb`` gespeichert:
 ::
-  root@sdi2b:~# pdbedit -L -v
+  root@sdi1a:~# pdbedit -Lw
+  testuser0:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:BD2A15934DF3DD824C3AC7B2E0546EBC:[U          ]:LCT-558970F7:
+  testuser1:1001:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:1120ACB74670C7DD46F1D3F5038A5CE8:[U          ]:LCT-5589712E:
+  testuser2:1002:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:4F597A08786530135E227AC1A579A54C:[U          ]:LCT-55897136:
+
+
+Wenn in der Datei ``/etc/samba/smb.conf`` der Parameter ``unix password sync = yes`` gesetzt ist, so werden die Unix-Passwörter mit den Samba-Passwörtern synchronisiert.
+Das heißt, dass wenn das Samba-Passwort mittels smbpasswd geändert wird, dann wird auch das Unix-Passwort geändert.
+Auf die gleiche Weise wurden mehrere Samba-Benutzer für verschiedene Linux-User angelegt.
+
+
+Samba user können nun mit dem Befehl ``pdbedit -L -v`` aufgelistet werden:
+::
+  root@sdi1a:~# pdbedit -L -v
   ---------------
-  Unix username:        root
-  NT username:
+  Unix username:        testuser0
+  NT username:          testuser0
   Account Flags:        [U          ]
-  User SID:             S-1-5-21-3735746035-584030464-2538432411-1000
-  Primary Group SID:    S-1-5-21-3735746035-584030464-2538432411-513
-  Full Name:            root
-  Home Directory:       \\sdi2b\root
-  HomeDir Drive:
-  Logon Script:
-  Profile Path:         \\sdi2b\root\profile
-  Domain:               SDI2B
-  Account desc:
-  Workstations:
-  Munged dial:
+  User SID:             S-1-5-21-191455238-2906638316-4037938886-1003
+  Primary Group SID:    S-1-5-21-191455238-2906638316-4037938886-1002
+  Full Name:            testuser0
+  Home Directory:       \\PDC-SRV\testuser0
+  HomeDir Drive:        H:
+  Logon Script:         logon.bat
+  Profile Path:         \\PDC-SRV\profiles\testuser0
+  Domain:               SDI1A
+  Account desc:         
+  Workstations:         
+  Munged dial:          
   Logon time:           0
-  Logoff time:          Wed, 06 Feb 2036 15:06:39 UTC
-  Kickoff time:         Wed, 06 Feb 2036 15:06:39 UTC
-  Password last set:    Fri, 05 Jun 2015 08:43:24 UTC
-  Password can change:  Fri, 05 Jun 2015 08:43:24 UTC
+  Logoff time:          Tue, 19 Jan 2038 03:14:07 UTC
+  Kickoff time:         Tue, 19 Jan 2038 03:14:07 UTC
+  Password last set:    Tue, 23 Jun 2015 14:45:11 UTC
+  Password can change:  Tue, 23 Jun 2015 14:45:11 UTC
   Password must change: never
   Last bad password   : 0
   Bad password count  : 0
   Logon hours         : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
   ---------------
-  Unix username:        smbtester
-  NT username:
+  Unix username:        testuser1
+  NT username:          testuser1
   Account Flags:        [U          ]
-  User SID:             S-1-5-21-3735746035-584030464-2538432411-1001
-  Primary Group SID:    S-1-5-21-3735746035-584030464-2538432411-513
-  Full Name:
-  Home Directory:       \\sdi2b\smbtester
-  HomeDir Drive:
-  Logon Script:
-  Profile Path:         \\sdi2b\smbtester\profile
-  Domain:               SDI2B
-  Account desc:
-  Workstations:
-  Munged dial:
+  User SID:             S-1-5-21-191455238-2906638316-4037938886-1004
+  Primary Group SID:    S-1-5-21-191455238-2906638316-4037938886-513
+  Full Name:            testuser1
+  Home Directory:       \\PDC-SRV\testuser1
+  HomeDir Drive:        H:
+  Logon Script:         logon.bat
+  Profile Path:         \\PDC-SRV\profiles\testuser1
+  Domain:               SDI1A
+  Account desc:         
+  Workstations:         
+  Munged dial:          
   Logon time:           0
-  Logoff time:          Wed, 06 Feb 2036 15:06:39 UTC
-  Kickoff time:         Wed, 06 Feb 2036 15:06:39 UTC
-  Password last set:    Fri, 05 Jun 2015 09:30:26 UTC
-  Password can change:  Fri, 05 Jun 2015 09:30:26 UTC
+  Logoff time:          Tue, 19 Jan 2038 03:14:07 UTC
+  Kickoff time:         Tue, 19 Jan 2038 03:14:07 UTC
+  Password last set:    Tue, 23 Jun 2015 14:46:06 UTC
+  Password can change:  Tue, 23 Jun 2015 14:46:06 UTC
   Password must change: never
   Last bad password   : 0
   Bad password count  : 0
@@ -91,80 +126,116 @@ Samba user können nun mit dem Befehl ```pdbedit -L -v``` aufgelistet werden:
 
 Freigabe von Ordnern
 ####################
-Die Konfiguration zur Freigabe von Ordnern befindet sich in der Datei ```/etc/samba/smb.conf```.
-Um beispielsweise das Verzeichnis ```/home/root/shared``` freizugeben, muss in der Konfigurationsdatei folgender Block hinzugefügt werden:
+Die Konfiguration zur Freigabe von Ordnern befindet sich in der Datei ``/etc/samba/smb.conf``.
+Um beispielsweise das Verzeichnis ``/home/testuser0/shared`` freizugeben, muss in der Konfigurationsdatei folgender Block hinzugefügt werden:
 ::
-  [shared]
-  path = /home/root/shared
+  [testshare0]
+  path = /home/testuser0/shared
   available = yes
-  valid users = root
+  valid users = testuser0 #Nur testuser0 kann auf dieses Verzeichnis zugreifen.
   read only = no
   browseable = yes
   public = yes
-  writable = yes
-  
-Nach einem Serverneustart mit ```service smbd restart``` kann auf den Ordner über den Pfad ```\\sdi2b.mi.hdm-stuttgart.de\shared\``` zugegriffen werden.
 
-Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfür muss in der ````smb.conf``` folgender Eintrag auskommentiert werden:
+Der Bezeichner innerhalb der eckigen Klammern ist der Name des Shares. In diesem Fall also **testshare0**.
+Die Parameter im Detail: 
+
+.. glossary::
+	path
+  		Der Freizugebende Pfad
+  		
+	available
+  		dient als "Schalter" für das Share. Wird der Parameter auf **no** gesetzt, schlagen alle Versuche auf das Share zuzugreifen fehl.
+  		
+  	valid users
+  		Eine mit Kommas getrennte Liste an Benutzern, die auf das Share zugreifen dürfen; Andersherum können einzelne Benutzer mit dem Parameter **invalid users** vom Zugriff ausgeschlossen werden.
+  	
+  	read only
+  		Legt fest, ob die zugelassenen Benutzer Schreibzugriff auf das Share haben
+  	
+  	browsesable
+  		Ist diese Option auf "no" gesetzt, wird das Share niemals aufgelistet. Es ist also nur möglich direkt per Pfad auf das Share zuzugreifen.
+  	
+  	public
+  		Legt fest, ob für den Zugriff auf das Share ein Passwort benötigt wird. 
+  		
+  
+Nach einem Serverneustart mit ``service smbd restart`` kann auf den Ordner über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testshare0\`` zugegriffen werden.
+
+Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfür müssen in der ``smb.conf`` die Kommentare vor dem folgendem Eintrag entfernt werden:
 ::
   [homes]
     comment = Home Directories
     browseable = no
 
-Der User ```smbtester``` kann anschließend über den Pfad ```\\sdi2b.mi.hdm-stuttgart.de\smbtester\``` auf sein Homedirectory zugreifen.
+Falls nun ein Klient versucht, sich mit einer Freigabe zu verbinden, die nicht explizit in der smb.conf definiert wurde, zb. "Alice", so durchsucht der Samba-Server das Password-Database-File nach einem User "Alice".
+Falls dieser gefunden wird und das vom Klienten eingegebene Passwort mit dem Unix-PW vom User "Alice" übereinstimmt, so wird eine neue Freigabe mit dem Namen "Alice" erzeugt, welcher auf Alice's Home-Directory zeigt.
 
-Die Konfiguration kann mit dem Befehl ```testparm``` überprüft werden:
+Der User ``testuser0`` kann anschließend über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testuser0\`` auf sein Homedirectory zugreifen.
+
+Die Konfiguration kann mit dem Befehl ``testparm`` überprüft werden:
 ::
-  root@sdi2b:~# testparm
+  root@sdi1a:~# testparm
   Load smb config files from /etc/samba/smb.conf
   rlimit_max: increasing rlimit_max (1024) to minimum Windows limit (16384)
   Processing section "[homes]"
   Processing section "[printers]"
   Processing section "[print$]"
-  Processing section "[shared]"
+  Processing section "[testshare0]"
+  Processing section "[testshare1]"
+  Processing section "[testshare2]"
   Loaded services file OK.
   Server role: ROLE_STANDALONE
   Press enter to see a dump of your service definitions
 
-Informationen zu einzelnen Samba-Usern können mit ```smbclient``` abgerufen werden.
-:: 
-  root@sdi2b:~# smbclient -L localhost --user smbtester
-  Enter smbtester's password:
+Informationen zu einzelnen Samba-Usern können mit ``smbclient`` abgerufen werden.
+::
+  root@sdi1a:/home# smbclient -L localhost --user testuser0
+  Enter testuser0's password: 
   Domain=[WORKGROUP] OS=[Unix] Server=[Samba 4.1.6-Ubuntu]
   
-          Sharename       Type      Comment
-          ---------       ----      -------
-          print$          Disk      Printer Drivers
-          shared          Disk
-          IPC$            IPC       IPC Service (sdi2b server (Samba, Ubuntu))
-          smbtester       Disk      Home Directories
+  	Sharename       Type      Comment
+  	---------       ----      -------
+	print$          Disk      Printer Drivers
+	testshare0      Disk      
+	testshare1      Disk      
+	testshare2      Disk      
+	IPC$            IPC       IPC Service (sdi1a server (Samba, Ubuntu))
+  	testuser0       Disk      Home Directories
   Domain=[WORKGROUP] OS=[Unix] Server=[Samba 4.1.6-Ubuntu]
-  
-          Server               Comment
-          ---------            -------
-          SDI2B                sdi2b server (Samba, Ubuntu)
-  
-          Workgroup            Master
-          ---------            -------
-          WORKGROUP            SDI2B
+
+	Server               Comment
+	---------            -------
+	SDI1A                sdi1a server (Samba, Ubuntu)
+
+	Workgroup            Master
+	---------            -------
+	WORKGROUP            SDI1A
+
+
+
 
 Mounten von shares
 ##################
 
 Windows
 +++++++
-Der freigegebene ```shared```-Ordner kann folgendermaßen in Windows eingebunden werden. 
+Der freigegebene ``shared``-Ordner kann folgendermaßen in Windows eingebunden werden. 
 Im Arbeitsplatz im Reiter "Computer" die Option "Netzwerkaufwerk verbinden" wählen.
 
-.. image:: images/Samba/windows/04.png
+.. image:: images/Samba/windows/01.bmp
 
 Im erscheinenden Dialog den Laufwerkbuchstaben wähen und den Pfad eingeben und mit "Fertig stellen" bestätigen.
 
-.. image:: images/Samba/windows/05.png
+.. image:: images/Samba/windows/02.bmp
+
+Die korrekten Login-Daten angeben.
+
+.. image:: images/Samba/windows/03.bmp
 
 Der Ordner erscheint nun in Form eines Netzwerklauferks im Arbeitsplatz.
 
-.. image:: images/Samba/windows/06.png
+.. image:: images/Samba/windows/04.bmp
 
 
 Linux
@@ -172,8 +243,13 @@ Linux
 
 Mithilfe des mount-Kommandos kann das Dateisystem im Zielverzeichnis /mnt/test/ eingehängt werden:
 ::
-  sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/shared /mnt/test/ -ouser=testuser
+  sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/testshare0 /mnt/test/ -ouser=testuser0
 
+bzw zum Einhängen der Home-Directory von "testuser0":
+::
+  sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/testuser0 /mnt/test/ -ouser=testuser0
+
+  
 Verknüpfung mit einem LDAP-Server
 #################################
 
@@ -185,10 +261,11 @@ Zunächst müssen diverse Packages installiert werden:
 Samba LDAP Schema
 +++++++++++++++++
 
-Nun muss ein Samba LDAP Schema eingerichtet werden, so dass OpenLDAP als Backend von Samba  verwendet werden kann.
+Nun muss das Samba LDAP Schema auf den LDAP-Server angewendet werden, so dass OpenLDAP als Backend von Samba verwendet werden kann, da der Samba-Server nach spezifischen Einträgen im DIT sucht.
 
-Der DIT braucht hierbei Attribute zum Beschreiben der Samba-Daten.
-Diese Attribute sind im Samba LDAP Schema hinterlegt.
+Der DIT braucht hierbei neue objectClasses, welche die nötigen Samba-Attribute beinhalten.
+Diese objectClasses sind im Samba LDAP Schema beschrieben.
+
 
 Entpacken des Schemas:
 ::
@@ -217,7 +294,7 @@ Erstellen einer Output-Directory:
 ::
   mkdir ldif_output
 
-Ermitteln des korrekten Index:
+Ermitteln des korrekten Index des Schemas:
 ::
   slapcat -f schema_convert.conf -F ldif_output -n 0 | grep samba,cn=schema
 
@@ -228,8 +305,23 @@ Konvertieren des Schemas ins LDIF-Format:
   slapcat -f schema_convert.conf -F ldif_output -n0 -H \
   ldap:///cn={14}samba,cn=schema,cn=config -l cn=samba.ldif
 
-Anschließend muss noch die Index- Information aus der generierten LDIF- Datei entfernt werden.
 
+slapcat ist das Kommando, welches benutzt werden kann um die Inhalte einer slapd-Datenbank in das LDIF-Format umzuwandeln.
+
+Parameter:
+
+.. glossary::
+
+	-f
+		Definiert Konfigurationsdatei
+	-F
+		Definiert Konfigurations-Directory. Die mit -f definierte Datei wird in eine Verzeichnisstruktur umgewandelt und das Zielverzeichnis gespeichert
+	-H
+		Hier wird die LDAP-URI definiert.
+	-l
+		Ziel-LDIF-Datei
+
+Anschließend muss noch die Index- Information aus der generierten LDIF- Datei entfernt werden.
 Am Ende der Datei müssen die Zeilen
 ::
   structuralObjectClass: olcSchemaConfig
@@ -241,7 +333,8 @@ Am Ende der Datei müssen die Zeilen
   modifyTimestamp: 20080827045234Z
 ebenfalls gelöscht werden.
 
-Das Schema kann nun zu LDAP-Server hinzugefügt werden:
+Diese zwei Änderungen müssen gemacht werden, da das Output-LDIF nicht kompatibel mit dem Kommando ldapadd ist.
+Erweitern des bestehenden Schemas auf dem LDAP-Server durch das generierte Schema:
 ::
   sudo ldapadd -Q -Y EXTERNAL -H ldapi:/// -f cn\=samba.ldif
 
@@ -277,7 +370,6 @@ geladen werden.
 
 Hinzufügen von Samba LDAP Objekten
 ++++++++++++++++++++++++++++++++++
-
 
 Nun sollen die für Samba notwendigen Objekte in den DIT eingefügt werden.
 Dies wird mithilfe des Packages "smbldap-tools" realisiert.
@@ -332,10 +424,120 @@ Nun muss Samba neu gestartet werden:
   restart smbd
   restart nmbd
 
-Samba benötigt noch das Passwot für den Root-DN:
+Samba benötigt noch das Passwort für den Root-DN:
 ::
   smbpasswd -w test
 
+Außerdem müssen die Samba-User noch in das LDAP-Verzeichnis eingefügt werden:
+::
+  smbldap-useradd -a -P testuser0
+
+Die Samba-Benutzer befinden sich nun im korrekten LDAP-User-Verzeichnis:
+
+.. image:: images/Samba/ADSWitthSamba.png
+
 
 Nun erfolgt die Authentifizierung beim mounten wie in Kapitel 6.2.3
-gezeigt mithilfe von LDAP! 
+gezeigt mithilfe von LDAP!
+
+
+
+Bonus: Möglichkeiten zur Fehlerbehandlung in Samba/LDAP
+#######################################################
+
+Logdateien
+++++++++++
+
+Alle Logdateien werden unter ``/var/log/samba/`` gespeichert.
+Die Logging-Einstellungen befinden sich in der Datei ``/etc/samba/smb.conf`` in der Section Debugging:
+::
+  #### Debugging/Accounting ####
+
+  # This tells Samba to use a separate log file for each machine
+  # that connects
+    log file = /var/log/samba/log.%m
+  
+  # Cap the size of the individual log files (in KiB).
+     max log size = 1000
+  
+  # If you want Samba to only log through syslog then set the following
+  # parameter to 'yes'.
+  #   syslog only = no
+  
+  # We want Samba to log a minimum amount of information to syslog. Everything
+  # should go to /var/log/samba/log.{smbd,nmbd} instead. If you want to log
+  # through syslog you should set the following parameter to something higher.
+     syslog = 0
+  
+  # Do something sensible when Samba crashes: mail the admin a backtrace
+     panic action = /usr/share/samba/panic-action %d
+
+Mit diesen Einstellungen wird für jeden Klienten eine Logdatei erstellt:
+::
+  root@sdi1a:/var/log/samba# ls
+  cores                log.192.168.222.234  log.smbd
+  log.                 log.nmbd             log.smbd.1.gz
+  log.%m               log.nmbd.1.gz        log.smbd.2.gz
+  log.127.0.0.1        log.nmbd.2.gz        log.smbd.3.gz
+  log.192.168.222.102  log.nmbd.3.gz        log.smbd.4.gz
+  log.192.168.222.126  log.paul-pc          log.smbd.old
+  log.192.168.222.226  log.sdi1a            log.win-1gp29bt5kvn
+ 
+Welche Logging-Informationen in dieser Datei gespeichert werden, hängt vom Log-Level ab.
+Dieser wurde in der obigen Konfiguration nicht explizit gesetzt, ist daher per default auf 1 gestellt. Das heißt, dass nur sehr wenige Informationen geloggt werden. In diesem Fall lediglich die Verbindung selbst.
+
+Wenn Fehler auftreten kann der Log-Level höher gestellt werden, damit mehr Informationen gespeichert werden, z.B.: ``log level = 3``
+
+Der Log-Level sollte dabei 3 nicht überschreiten, da ansonsten sehr viele Informationen gespeichert werden.
+
+smbcontrol
+++++++++++
+
+Mithilfe des Tools smbcontrol können bereits bestehende Samba-Verbindungen beeinflusst werden (z.B. Log-Level ändern)
+
+Dazu wird zunächst die PID des smbd benötigt:
+::
+  #Aussschnitt aus root@sdi1a:~# smbstatus :
+  Samba version 4.1.6-Ubuntu
+  PID     Username      Group         Machine                        
+  -------------------------------------------------------------------
+  21420     testuser0     testuser0     192.168.222.126 (ipv4:192.168.222.126:57135)
+
+  Service      pid     machine       Connected at
+  -------------------------------------------------------
+  testshare0   21420   192.168.222.126  Sat Jun 27 10:13:56 2015
+  IPC$         21420   192.168.222.126  Sat Jun 27 10:13:56 2015
+
+
+Nun kann der Log-Level angepasst werden:
+
+``smbcontrol 21420 debug 3``
+
+Logging in LDAP
++++++++++++++++
+
+Auch der LDAP-Server kann Logdateien erstellen.
+Dazu muss zunächst der Loglevel mittels einer .ldif-Datei eingestellt werden:
+::
+  dn: cn=config
+  changetype: modify
+  replace: olcLogLevel
+  olcLogLevel: stats
+
+LDIF-Datei auf LDAP-Datenbank anwenden:
+``ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f loglevel.ldif``
+
+Anschließend können die LDAP-Logs auf der Konsole angezeigt werden: 
+::
+  root@sdi1a:~# cd /var/log
+  root@sdi1a:/var/log# tail /var/log -n0 -f `find . -type f`
+  [...]
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=27 SRCH base="dc=mi,dc=hdm-stuttgart,dc=de" scope=2 deref=0 filter="(&(uid=testuser0)(objectClass=sambaSamAccount))"
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=27 SRCH attr=uid uidNumber gidNumber homeDirectory sambaPwdLastSet sambaPwdCanChange sambaPwdMustChange sambaLogonTime sambaLogoffTime sambaKickoffTime cn sn displayName sambaHomeDrive sambaHomePath sambaLogonScript sambaProfilePath description sambaUserWorkstations sambaSID sambaPrimaryGroupSID sambaLMPassword sambaNTPassword sambaDomainName objectClass sambaAcctFlags sambaMungedDial sambaBadPasswordCount sambaBadPasswordTime sambaPasswordHistory modifyTimestamp sambaLogonHours modifyTimestamp uidNumber gidNumber homeDirectory loginShell gecos
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=27 SEARCH RESULT tag=101 err=0 nentries=1 text=
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=28 SRCH base="dc=mi,dc=hdm-stuttgart,dc=de" scope=2 deref=0 filter="(&(objectClass=sambaGroupMapping)(gidNumber=1000))"
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=28 SRCH attr=gidNumber sambaSID sambaGroupType sambaSIDList description displayName cn objectClass
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=28 SEARCH RESULT tag=101 err=0 nentries=1 text=
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=29 SRCH base="dc=mi,dc=hdm-stuttgart,dc=de" scope=2 deref=0 filter="(&(sambaSID=s-1-5-21-191455238-2906638316-4037938886-1002)(objectClass=sambaSamAccount))"
+  Jul  1 07:45:28 sdi1a slapd[2596]: conn=12171 op=29 SRCH attr=uid uidNumber gidNumber homeDirectory sambaPwdLastSet sambaPwdCanChange sambaPwdMustChange sambaLogonTime sambaLogoffTime sambaKickoffTime cn sn displayName sambaHomeDrive sambaHomePath sambaLogonScript sambaProfilePath description sambaUserWorkstations sambaSID sambaPrimaryGroupSID sambaLMPassword sambaNTPassword sambaDomainName objectClass sambaAcctFlags sambaMungedDial sambaBadPasswordCount sambaBadPasswordTime sambaPasswordHistory modifyTimestamp sambaLogonHours modifyTimestamp uidNumber gidNumber homeDirectory loginShell gecos
+  [...]
