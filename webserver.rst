@@ -905,7 +905,7 @@ Wie zu sehen ist, werden bei der Installation schon Datenbanken zur internen Ver
 
 Wenn wir eine eigene Datenbank ``hdm`` anlegen mit der Tabelle ``studenten`` und den drei Feldern ``vorname``, ``nachname`` und ``matrikelnr``, sowie einen Testdatensatz anlegen...
 
-.. image:: images/Apache/22_phpmyadminTabelleAnlegen.png
+.. image:: images/Apache/23_phpmyadminTabelleAnlegen.png
 
 .. image:: images/Apache/24_phpmyadminTabelleAnzeigen.png
 
