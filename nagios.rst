@@ -302,7 +302,7 @@ Die Kontaktgruppe:
 
 Nun können Benachrichtigungen wahlweise pro Host oder pro Service in der entsprechenden Definition eingestellt werden. In diesem Fall ist ein Benachrichtigungsservice für alle Services von sdi2b erwünschenswert, weswegen die Hostdefinition (``/etc/nagios3/conf.d/sdi2b.conf``) wie folgt um die Direktive **contact_groups** erweitert wird:
 
-::
+.. code-block:: none
   :emphasize-lines: 7
 
     define host{
