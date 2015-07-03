@@ -428,21 +428,80 @@ Samba benötigt noch das Passwort für den Root-DN:
 ::
   smbpasswd -w test
 
-Außerdem müssen die Samba-User noch in das LDAP-Verzeichnis eingefügt werden:
+Nun kann ein neuer User in das LDAP-Verzeichnis eingefügt werden:
 ::
-  smbldap-useradd -a -P testuser0
-
-Die Samba-Benutzer befinden sich nun im korrekten LDAP-User-Verzeichnis:
-
-.. image:: images/Samba/ADSWitthSamba.png
-
-
-Nun erfolgt die Authentifizierung beim mounten wie in Kapitel 6.2.3
-gezeigt mithilfe von LDAP!
+  smbldap-useradd -a -P testuser4
+ 
+Hinzufügen bestehender LDAP-User mit
+::
+  smbpasswd -a testuser4
 
 
+NSS-Client
+++++++++++
 
-Bonus: Möglichkeiten zur Fehlerbehandlung in Samba/LDAP
+Wenn Samba mit einer LDAP-Authentifizierung funktionieren soll, so muss sichergestellt werden, dass die LDAP-User für das Host-OS sichtbar sind.
+
+Um dies zu ermöglichen muss das Paket libnss-ldapd installiert werden:
+::
+  apt-get install libnss-ldapd
+
+Nun muss in der Datei /etc/nssswitch.conf ldap als weitere Ressource angegeben werden:
+::  
+  1 # /etc/nsswitch.conf
+  2 #
+  3 # Example configuration of GNU Name Service Switch functionality.
+  4 # If you have the `glibc-doc-reference' and `info' packages installed, try:
+  5 # `info libc "Name Service Switch"' for information about this file.
+  6 
+  7 passwd:         files ldap
+  8 group:          files ldap
+  9 shadow:         files ldap
+  10 
+  11 hosts:          files dns ldap
+  12 networks:       files
+  13 
+  14 protocols:      db files
+  15 services:       db files
+  16 ethers:         db files
+  17 rpc:            db files
+  18 
+  19 netgroup:       nis
+  20 aliases:        ldap
+
+
+Außerdem muss die Adresse des LDAP-Servers in der Datei nslcd.conf angegeben werden:
+::
+  1 # /etc/nslcd.conf
+  2 # nslcd configuration file. See nslcd.conf(5)
+  3 # for details.
+  4 
+  5 # The user and group nslcd should run as.
+  6 uid nslcd
+  7 gid nslcd
+  8 
+  9 # The location at which the LDAP server(s) should be reachable.
+  10 uri ldapi:///141.62.75.101
+  11 
+  12 # The search base that will be used for all queries.
+  13 base dc=mi,dc=hdm-stuttgart,dc=de
+
+
+Nun ist der nur im LDAP-Verzeichnis vorhandene User testuser4 im OS sichtbar:
+::
+  root@sdi1a:/var/log/samba# id testuser4
+  uid=1005(testuser4) gid=513(Domain Users) groups=513(Domain Users)
+
+Ergebnis
+++++++++
+
+Wenn der testuser4 Zugriff auf einen share erhält (via /etc/samba/smb.conf) so kann sich dieser beim mounten über LDAP authentifizieren.
+
+Anmerkung:
+Es kann passieren, dass beim Mounten die Fehlermeldung "Key Expired" auftritt. 
+In diesem Fall muss dass LDAP-Attribut "maxShadow" gelöscht im jeweiligen User gelöscht werden.
+
+Möglichkeiten zur Fehlerbehandlung in Samba/LDAP
 #######################################################
 
 Logdateien
