@@ -45,6 +45,7 @@ Namensbasiertes Virtual Hosting
 Namensbasierte virtuelle Hosts verwenden mehrere Hostnames mit derselben IP. Dies erlaubt dem Server, mehrere Webseiten auf derselben IP zu betreiben. Der Server liest diese Information aus und reagiert entsprechend. Mit dieser Technik koennen mehrere Hosts ueber eine IP-Adresse betrieben werden. Der Vorteil ist, dass trotz IP-Adressenknappheit mehrere Hosts betrieben werden koennen.
 
 Voraussetzungen:
+
 * Browser gibt den gewuenschten Hostname im HTTP-Header seiner Anfrage mit an.
 * DNS-Eintraege muessen so gewaehlt sein, dass sie alle in Frage kommenden Domainnamen auf die gleiche korrekte IP-Adresse uebersetzen.
 
@@ -164,6 +165,7 @@ In ``envvars`` werden, wie der Name schon erahnen laesst, Apache-Umgebungsvariab
     ...
 
 ``magic`` enthaelt Regeln, um anhand der führenden Bytes einer Datei einen MIME-Typ, also den Inhalt eines Dokuments, zu erkennen. Wenn man sich die Datei anschaut (s.u.), ist sie vierspalitig aufgebaut und enthaelt pro Zeile eine Matching-Regel:
+
 * der Byteoffset, an dem das Pattern beginnt
 * Typ der Daten, der gematched werden soll
 * das Pattern selbst
@@ -224,6 +226,7 @@ Eine einfache Seite koennte wie folgt in einer ``VirtualHost``-Direktive definie
     </VirtualHost>
 
 Erklaerung der verwendeten Attribute:
+
 * ``ServerAdmin``: Diese Direktive legt fest, welche E-Mail-Adresse als Adresse des Server-Administrators angegeben wird. Der vorgegebene Wert ist ``webmaster@localhost``. Dieser Wert sollte in eine E-Mail-Adresse geändert werden, über die man den Webmaster erreichen kann. Falls auf der Website ein Problem auftritt, wird ein Fehlerhinweis mit dieser E-Mail-Adresse angezeigt, um das Problem zu melden. Um global fuer alle Hosts die gleiche E-Mail-Adresse festzulegen, kann die Direktive auch in das bereits erklaerten ``apache.conf`-File geschrieben werden.
 * ``ServerName``: Diese Direktive ist optional und gibt den FQDN an, auf den der VirtualHost reagieren soll. Sobald mehr als ein VirtualHost angegeben ist, sind fuer die zusaetzlichen Eintraege jedoch eindeutige ``ServerName``s Voraussetzung.  Bsp.: ``Servername www.example.com``.
 * ``ServerAlias``: Mit dem ``ServerAlias`` lassen sich alternative Nutzungs-URLs einrichten. Normalerweise ist es wuenschenswert wenn ein VirtualHost, der auf ``example.com`` reagiert, auch auf ``www.example.com`` antwortet. Oder man will alle Subdomains auf die Hauptdomain leiten. Mit einer Wildcard koennen VirtualHost so konfiguriert werden, dass sie auf jede Anfrage, die auf ``.sdi1b.mi.hdm-stuttgart.de`` endet, reagiert. Der Eintrag fuer Letzteres ist dann z.B. ``ServerAlias *.sdi1b.mi.hdm-stuttgart.de``.
@@ -240,6 +243,7 @@ Wie eine solche Konfigurationsdatei aussieht, steht im Aufgabenkapitel.
 Apache Befehle
 ##############
 Der Apache-Webserver laesst sich mit einigen Commands steuern. Einige sind Skripte, deren Ausfuehrung dem User Zeit spart im Vergleich nur manuellen Variante (die ``a2enXXX`` bzw. ``a2disXXX``-Commands).
+
 * ``a2ensite`` und ``a2dissite``: Aktiviert bzw. deaktiviert eine Seite aus dem ``/etc/apache2/sites-available``-Verzeichnis und erstellt bei Aktivierung einen symbolischen Link in ``sites-enabled``. Bei Deaktivierung wird der symbolische Link wieder geloescht. Die ausfuehrliche, manuelle Variante zur Aktivierung einer Seite, die das gleiche bewirkt aber mehr Tipparbeit ist, waere ``ln -s /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf``.
 * ``a2enmod`` und ``a2dismod``: Das gleiche wie Obiges nur fuer Module und deren zwei spezifischen Ordnern.
 * ``a2enconf`` und ``a2disconf``: Das gleiche wie Obiges nur fuer Konfigurationsdateien und deren zwei spezifschen Ordnern.
@@ -305,7 +309,7 @@ Installation von ``apache2-doc`` sowie Suche der URL
 ****************************************************
 Installiert werden kann die Apache Doku mit dem Command ``sudo apt-get install apache2-doc``.
 
-Verstaendnis 1:
+**Verstaendnis 1:**
 Die URL des Repositories finden, von dem das Package ``apache2-doc`` heruntergeladen wird. Das geht nicht mit dem in der Aufgabe erwaehnten Tipp "dpkg...", sondern geht ueber den Command ``apt-cache policy apache2-doc``, welcher die URLs wie folgt ausgibt:
 
 ::
@@ -321,7 +325,7 @@ Die URL des Repositories finden, von dem das Package ``apache2-doc`` heruntergel
          2.4.7-1ubuntu4 0
             500 http://archive.ubuntu.com/ubuntu/ trusty/main amd64 Packages
  
-Verstaendnis 2:
+**Verstaendnis 2:**
 Den Pfad finden, ueber den der Apache Webserver die installierte Doku zur Verfuegung stellt. Laut Tipp ist ein Hinweis in einer Datei im ``apache2-doc``-Package zu finden. Mit dem Command ``dpkg -L apache2-doc`` lassen sich nun alle zum Packe zugehoerigen Dateien samt absolutem Pfad ausgeben. Die Ausgabe ist jedoch zu komplex und kann mit dem grep-Filter entsprechend reduziert werden. Eine uebersichtlichere Ausgabe laesst sich mit dem Befehl ``dpkg -L apache2-doc | grep -vE '(manual|examples)'`` erzeugen:
 
 ::
@@ -355,6 +359,7 @@ Die gefundene Datei enthaelt:
     </Directory>
 
 In dieser Datei sind 2 Pfade zu sehen:
+
 * ``/usr/share/doc/apache2-doc-manual``: Der absolute Pfad, auf dem die Apache-Doku auf dem Server liegt.
 * ``/manual``: Ein relativer Pfad als Alias, ueber den die Doku im Browser aufgerufen kann. In unserem Fall waere das also ``sdi1b.mi.hdm-stuttgart.de/manual``.
 
@@ -380,55 +385,55 @@ Nun muss der Apache entsprechend konfiguriert werden, damit die Doku auch ueber 
  
 Es gibt 2 Moeglichkeiten:  Eine Redirect-Directive oder einen Alias. Vorraussetzung fuer beide Varianten ist, dass im SDI-Doku-Verzeichnis eine ``index.html`` als Einstiegspunkt existiert, was bei uns von unserem Doku-Tool Shinx bereits so erstellt wurde.
 
-``Alias``-Direktive:
+1. ``Alias``-Direktive:
 
-Alias wurden im Prinzip schon in der letzten Aufgabe rund um ``apache2-doc`` behandelt. Die Alias-Direktive nimmt einen relativen Pfad (relativ zum ServerName), also ``/mh203``, entgegen und mappt diesen auf einen anderen Pfad, in unserem Fall also ``/home/sdidoc``.
-::
+  Alias wurden im Prinzip schon in der letzten Aufgabe rund um ``apache2-doc`` behandelt. Die Alias-Direktive nimmt einen relativen Pfad (relativ zum ServerName), also ``/mh203``, entgegen und mappt diesen auf einen anderen Pfad, in unserem Fall also ``/home/sdidoc``.
+  ::
 
-    <VirtualHost *:80>
-            ServerName sdi1b.mi.hdm-stuttgart.de
-            DocumentRoot /var/www/html
-            Alias /mh203 /home/sdidoc
-            <Directory /home/sdidoc>
-                    Options Indexes FollowSymLinks
-                    AllowOverride None
-                    Require all granted
-            </Directory>
-    </VirtualHost>
+      <VirtualHost *:80>
+              ServerName sdi1b.mi.hdm-stuttgart.de
+              DocumentRoot /var/www/html
+              Alias /mh203 /home/sdidoc
+              <Directory /home/sdidoc>
+                      Options Indexes FollowSymLinks
+                      AllowOverride None
+                      Require all granted
+              </Directory>
+      </VirtualHost>
 
-Wie folgender Screenshot zeigt, funktioniert dieser Ansatz:
+  Wie folgender Screenshot zeigt, funktioniert dieser Ansatz:
 
-.. image:: images/Apache/04_sdiDocSlashMH203.png
+  .. image:: images/Apache/04_sdiDocSlashMH203.png
 
-``Redirect``-Direktive:
+2. ``Redirect``-Direktive:
 
-Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf einen anderen Host, also wie in diesem Beispiel auf ``sdidoc.mi.hdm-stuttgart.de``, weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
+  Hierbei wird die Anfrage nach ``sdi1b.mi.hdm-stuttgart.de/mh203`` auf einen anderen Host, also wie in diesem Beispiel auf ``sdidoc.mi.hdm-stuttgart.de``, weitergeleitet. Der Client muss dabei eine neue HTTP-Anfrage an die neue URL schicken. Demnach gibt es in der Apache-Konfigurationsdatei auch zwei ``VirtualHost``-Eintraege, einen fuer die Weiterleitung, den anderen fuer den eigentlichen Aufenthalt der SDI-Doku auf ``sdidoc.mi.hdm-stuttgart.de``.
 
-.. topic:: Bemerkung
+  .. topic:: Bemerkung
 
-    Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgeloest werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgeloest wird. Vergleiche auch mit naechster Aufgabe.
+      Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgeloest werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgeloest wird. Vergleiche auch mit naechster Aufgabe.
 
 
-::
+  ::
 
-    <VirtualHost *:80>
-            ServerName sdi1b.mi.hdm-stuttgart.de
-            DocumentRoot /var/www/html
-            Redirect /mh203 http://sdidoc.mi.hdm-stuttgart.de
-    </VirtualHost>
-    <VirtualHost *:80>
-            ServerName sdidoc.mi.hdm-stuttgart.de
-            DocumentRoot /home/sdidoc/
-            <Directory /home/sdidoc>
-                    Options Indexes FollowSymLinks
-                    AllowOverride None
-                    Require all granted
-            </Directory>
-    </VirtualHost>
+      <VirtualHost *:80>
+              ServerName sdi1b.mi.hdm-stuttgart.de
+              DocumentRoot /var/www/html
+              Redirect /mh203 http://sdidoc.mi.hdm-stuttgart.de
+      </VirtualHost>
+      <VirtualHost *:80>
+              ServerName sdidoc.mi.hdm-stuttgart.de
+              DocumentRoot /home/sdidoc/
+              <Directory /home/sdidoc>
+                      Options Indexes FollowSymLinks
+                      AllowOverride None
+                      Require all granted
+              </Directory>
+      </VirtualHost>
 
-Auch dieser Ansatz funktioniert, wenn der DNS-Eintrag fuer ``sdidoc.mi.hdm-stuttgart.de`` eingetragen ist:
+  Auch dieser Ansatz funktioniert, wenn der DNS-Eintrag fuer ``sdidoc.mi.hdm-stuttgart.de`` eingetragen ist:
 
-.. image:: images/Apache/05_sdiDocSubdomain.png
+  .. image:: images/Apache/05_sdiDocSubdomain.png
 
 Einrichtung von virtuellen Hosts
 ********************************
@@ -768,11 +773,15 @@ LDAP Authentifizierung
 
 Der LDAP-User ``tuser`` mit SMD5-hashed Passwort wurde mittels Apache Directory Studio erstellt:
 
-(1-2 screenshots zu apache directory studio, smd5 hash passwort)
+.. image:: images/Apache/14_ldapNewPassword.png
+
+Das Attribut ``userPassword`` ist nun richtig fuer diesen User eingetragen:
+
+.. image:: images/Apache/15_ldapTuserListed.png
 
 Auch die Bind-Operation ist nach Anlegen des Users erfolgreich:
 
-(1 screenshot successful tsuer bind)
+.. image:: images/Apache/16_ldapTuserBindSuccess.png
 
 Seitens Apache muessen zuerst min. ein LDAP-Modul aktiviert werden:
 
@@ -784,7 +793,7 @@ Seitens Apache muessen zuerst min. ein LDAP-Modul aktiviert werden:
 * Das wichtige Modul ist ``authnz_ldap``: es stellt Authentifizierung- und Authorisierungsmoeglichkeiten gegenueber einem LDAP-Server zur Verfuegung. Die beiden Phasen Authentifizierung (das *n* in ``authnz``) und Authorisierung (das *z* in ``authnz``) werden nacheinander in dieser Reihenfolge ausgefuehrt:
 
   1. Authentifizierungsphase: Es wird sichergestellt, dass die User-Credentials valide sind. Wird durch die Zeile ``AuthBasicProvider ldap`` (s.u.) aufgerufen. Dieser Schritt wird auch die *search/bind*-Phase genannt, da erst nach dem User gesucht wird und bei einem eindeutigen Treffer anschliessend ein Bind mit dem DN des Suchtreffers und Passwort des Users (ueber HTTP vom Client erhalten) gegen den LDAP-Server.
-  2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsaechlich Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Im Fall von ``valid-user`` ist jeder authentifizierte User gleichzeitig auch authorisiert. Der Wert ``ldap-user tuser`` sieht z.B. vor, dass nur der User *tuser* authorisiert ist, alle anderen Authorisierungsversuche werden abgelehnt.
+  2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsaechlich Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Details s.u.
 
   .. topic:: Bemerkung
 
@@ -800,6 +809,109 @@ Seitens Apache muessen zuerst min. ein LDAP-Modul aktiviert werden:
 
 Jetzt, wo der Apache faehig ist LDAP-AuthNZ zu vollziehen, koennen wir einen (oder mehrere) ``VirtualHost`` einrichten:
 
-...
+::
+
+    <VirtualHost *:80>
+            ServerName manual.mi.hdm-stuttgart.de
+            DocumentRoot /usr/share/doc/apache2-doc/manual/
+    
+            <Directory "/usr/share/doc/apache2-doc/manual">
+                    AuthName "Top Secret"
+                    AuthType Basic
+                    AuthBasicProvider ldap
+                    AuthLDAPURL ldap://localhost:389/ou=Peope,dc=mi,dc=hdm-stuttgart,dc=de?uid?sub
+                      # AuthBasicProvider file ldap  --> we only want ldap authentication, no "file" authentication
+                      # AuthUserFile "/usr/local/apache/passwd/passwords" --> no file needed in ldap-only authentication
+                    Require valid-user
+            </Directory>
+     </VirtualHost>
+
+Die Resource, fuer die in obigem Beispiel authentifiziert und authorisiert wird, ist ``/usr/share/doc/apache2-doc/manual``, das Verzeichnis, in dem die Apache-Doku liegt.
+
+Erklaerung der verwendeten Direktiven:
+
+* ``AuthName``: Gibt den Namen des Authorisierungs-Realms an. Dieser Name wird dem Client gesendet, sodass der User weiss welche Credentials er eingeben muss. Der Name wird in den meisten Browsern in den Eingabedialogen angezeigt. Wenn der Realm ein Leerzeichen enthalten soll, muss der gesamte Name in Hochkommata eingeschlossen werden. Bsp.: ``AuthName "Top Secret"``.
+* ``AuthType``: Gibt die Art der User-Authentifizierung fuer ein Verzeichnis an. Kann die Werte ``None``, ``Basic`` (HTTP-Basic Authentifizierung), ``Digest``(HTTP-Digest Authentifizierung) und ``Form`` annehmen. Je nach Wert werden verschiedene Apache-Module verwendet (z.B. ``mod_auth_basic`` fuer HTTP-Basic-Authentifizierung). Sofern nicht explizit anders definiert, wird die Art der Authentifizierung fuer Subsektionen (Unterordner des authentifizierten Resource) vererbt. Bsp.: ``AuthType Basic``.
+* ``AuthBasicProvider``: Diese Direktive setzt den Provider, der fuer die Resource zur Authentifizierung gilt. Mehrere Provider werden nacheinander ausgewertet bis ein Match fuer den Usernamen gefunden wurde. Bei einem Match wird das eingegebene Passwort gecheckt. Schlaegt die Passwort-Verfikation fehl, werden nachfolgend augelistete Provider nicht mehr genutzt. Moegliche Werte sind ``dbm`` (dbm-Passwortdateien), ``file`` (Passwortdateien in Klartext), ``dbd`` (ueber SQL-Tabellen), ``ldap`` (ueber LDAP-Dienste) und ``socache`` (keine stand-alone Authentifizierung. Verwaltung der Credentials im Cache, v.a. fuer ``dbd`` sinnvoll, da SQL-Lookups teuer werden koennen und LDAP mit eigenem Caching-Modul ``mod_ldap`` kommt).
+* ``AuthLDAPURL``: Erwartet eine URL fuer den LDAP-Dienst inklusive Filter. Die allgemeine Syntax ist ``ldap://host:port/basedn?attribute?scope?filter``. Wobei einige Eigenschaften selbsterklaerend sind, erklaeren wir die LDAP-spezifischen:
+  * ``basedn``: Gibt den Startpunkt der Suche an, also eine Node im Tree von der gestartet werden soll.
+  * ``attribute``: Gibt das Attribut an, nach dem gesucht werden soll. Ueblicherweise macht ``uid`` Sinn, was auch dem Standardwert entspricht.
+  * ``scope``: Gibt den LDAP-Scope an, kann also die Werte ``own`` (nur eigene Node), ``base`` (ein Level unterhalb der eigenen Node) und ``sub`` (alle Nodes unterhalb der eigenen Node) annehmen. Wenn nicht anders spezifiziert, wird standardmaessig ``sub`` verwendet.
+  * ``filter``: Hier kann ein valider LDAP-Suchfilter angegeben werden. Der Default-Wert ist ``(objectClass=*)``, was alle Objekte im Baum anspricht.
+* ``Require``: Wie oben bereits erwaehnt setzt diese Direktive ob und wenn ja wie ein authentifizierte User authorisiert wird. Wenn der Wert ``valid-user`` ist, ist jeder authentifizierte User gleichzeitig auch authorisiert. Der Wert ``ldap-user tuser`` sieht z.B. vor, dass nur der User *tuser* authorisiert ist, alle anderen Authorisierungsversuche werden abgelehnt. ``all granted`` gibt die Resource ohne Bedingung frei.
+
+In der Aufgabe war gefordert, die Authentifizierung nur ueber LDAP durchzufuehren, d.h. ``AuthBasicProvider`` muss wie im Codebeispiel oben auf ``ldap`` gesetzt werden.
+
+Wenn man den Host im Browser mit ``manual.mi.hdm-stuttgart.de`` aufruft, kommt erwartungsgemaess ein Popup zur Eingabe von Credentials:
+
+.. image:: images/Apache/17_ldapTuserBrowserAuth.png
+
+Die 2-Phasen-Authentifizierung in LDAP ist sehr gut im Log zu sehen, wenn man das Log-Level als ``olcLogLevel: Stats`` in ``/etc/ldap/slapd.d/cn=config.ldif`` definiert:
+
+.. image:: images/Apache/18_ldapTuserBindSuccessLog.png
+
+Wie im Screenshot des Logs zu sehen, findet erst die Suche (``SRCH``) statt mit dem baseDN, dem Scope, dem LDAP-Filter und dem gesuchten Attribut (``attr=uid``). In der naechsten Zeile wird das Suchergebnis geloggt (``nentries=1``). Da ein Treffer gefunden wurde, erfolgt als zweiter Schritt der Bind mit dieser ``uid``. Auch diese Operation ist erfolgreich, da ``err=0`` steht, sprich der Bind fehlerfrei funktioniert hat.
+
+MySQL
+*****
+
+Die Installation des MySQL-Datenbankservers kann mit dem Befehl
+
+::
+
+    sudo apt-get install mysql-server 
+    
+durchgefuehrt werden. Waehrend der Installation wird man nach einem Passwort fuer den root-User gefragt. Dieser User hat nichts mit dem UNI-User zu tun, sondern gilt isoliert fuer MySQL. Da wir eine auf PHP basierende Webanwendung unter Apache zum Laufen bringen wollen, muess noch folgendes Package installiert werden:
+
+::
+
+    sudo apt-get install php5-mysql
+
+Optional kann die MySQL-Installation in der Datei ``/etc/mysql/my.cnf`` konfiguriert werden. Die Datenbanken selbst werden im Verzeichnis ``/var/lib/mysql`` abgelegt. 
+
+Die Installation des MySQL-Frontends ``phpMyAdmin`` geschieht folgendermassen:
+
+::
+
+    sudo apt-get install phpmyadmin
+
+Waehrend dem Installationsprozess wird eine Apache-Konfigurationsdatei ``phpmyadmin.conf`` in das Verzeichnis ``/etc/apache2/conf-enabled/`` geschoben. Genauer gesagt wird ein symbolischer Link in auf das ``/etc/apache2/conf-available/phpmyadmin.conf``-File gesetzt, was selbst wiederum ein symbolischer Link auf das File ``/etc/phpmyadmin/apache2.conf`` ist. Falls die Konfiguration nicht aktiviert sein sollte, kann dies mit ``a2enconf phpmyadmin`` erledigt werden. Sollte das ``phpMyAdmin``-Package jemals neu konfiguriert werden muessen, geht das ueber den Befehl ``sudo dpkg-reconfigure phpmyadmin``:
+
+.. image:: images/Apache/19_phpmyadminReconfigure.png
+
+Ausserdem muss noch die PHP-Erweiterung ``mcrypt`` explizit aktiviert werden:
+
+::
+
+    sudo php5enmod mcrypt
+
+Zu guter letzt muss der Apache neu gestartet werden, damit die Aenderungen wirksam werden:
+
+::
+
+    service apache2 restart
+
+Nun ist die ``phpMyAdmin``-Weboberflaeche ueber die URL ``sdi1b.mi.hdm-stuttgart.de/phpmyadmin`` erreichbar. Einer initialer Login ist mit ``root / <Installationspasswort>`` moeglich:
+
+.. image:: images/Apache/20_phpmyadminLogin.png
+
+Nach dem Login sieht man die eigentliche GUI von ``phpMyAdmin``.
+
+.. image:: images/Apache/21_phpmyadminUI.png
+
+Wie zu sehen ist, werden bei der Installation schon Datenbanken zur internen Verwaltung angelegt. Diese sind erwartungsgemaess unter oben erwaehntem Verzeichnis auch als Ordner verfuegbar:
+
+.. image:: images/Apache/22_mysqlFS.png
+
+Wenn wir eine eigene Datenbank ``hdm`` anlegen mit der Tabelle ``studenten`` und den drei Feldern ``vorname``, ``nachname`` und ``matrikelnr``, sowie einen Testdatensatz anlegen...
+
+.. image:: images/Apache/23_phpmyadminTabelleAnlegen.png
 
 
+.. image:: images/Apache/24_phpmyadminTabelleAnzeigen.png
+
+... werden folgenden Dateien im Filesystem gespeichert:
+
+.. image:: images/Apache/25_mysqlFSCustomTable.png
+
+Die ``.frm``-Datei enthaelt die Tabellendefinitionen und die ``.ibd``-Datei die Daten an sich sowie Indizes sofern vorhanden. Diese Variante nennt sich *file-per-table*, da fuer jede Tabelle neue Dateien angelegt werden.
