@@ -62,6 +62,8 @@ Falls diese Kriterien nicht gegeben sind, können die jeweiligen Programme mit d
       ``/etc/nagios3/conf.d/timeperiods_nagios2.cfg``
     Verzeichnis der Überwachungsprogramme
       ``/usr/lib/nagios/plugins/``
+    Kommandodefinitionen
+      ``/usr/share/nagios-plugins/``
     allgemeine NRPE-Konfiguration
       ``/etc/nagios/nrpe.cfg`` (Auf dem remote Host)
   
