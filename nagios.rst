@@ -9,7 +9,7 @@ Nagios Introduction
 Was ist Nagios
 **************
 
-Nagios ist eine quelloffene Software zur Überwachung von IT-Infrastrukturen. Es können einzelne **"Hosts"** überwacht werden, sowie die verschiednen Dienste (**"Services"**), die auf diesen laufen. Unter dem Begriff "Service" sind sowohl Programme wie Webserver, DNS-Server, LDAP-Server, etc... zusammengefasst als auch interne Eigenschaften wie CPU-Auslastung, freier Festplattenspeicher, angemeldete Benutzer etc. Die Überwachung der Services erfolgt mithilfe eigenständiger Programme (**"Plugins"**). Für die wichtigsten Services stellt Nagios die entsprechenden Plug-ins im Paket ``nagios-plugins`` zur Verfügung. Sollte für einen Service kein vorgefertigtes Plug-in vorhanden sein (oder für den Fall, dass das mitgelieferte Plug-in nicht den eigenen Anforderungen entspricht), bietet sich die Möglichkeit, dieses selbst zu programmieren. Dabei ist nur zu beachten, dass die Ausgaben den Nagios-Richtlinien entsprechen.
+Nagios ist eine quelloffene Software zur Überwachung von IT-Infrastrukturen. Es können einzelne **"Hosts"** überwacht werden, sowie die verschiednen Dienste (**"Services"**), die auf diesen laufen. Unter dem Begriff "Service" sind sowohl Programme wie Webserver, DNS-Server, LDAP-Server, etc... zusammengefasst als auch interne Eigenschaften wie CPU-Auslastung, freier Festplattenspeicher, angemeldete Benutzer etc. Die Überwachung der Services erfolgt mithilfe eigenständiger Programme (**"Plug-ins"**). Für die wichtigsten Services stellt Nagios die entsprechenden Plug-ins im Paket ``nagios-plugins`` zur Verfügung. Sollte für einen Service kein vorgefertigtes Plug-in vorhanden sein (oder für den Fall, dass das mitgelieferte Plug-in nicht den eigenen Anforderungen entspricht), bietet sich die Möglichkeit, dieses selbst zu programmieren. Dabei ist nur zu beachten, dass die Ausgaben den Nagios-Richtlinien entsprechen.
 
 Die Informationen über die überwachten Systeme werden über ein Webinterface zur Verfügung gestellt. Damit dieses nicht laufend vom Adminstrator abgefragt werden muss, bietet Nagios die Option, bei bestimmten Ereignissen Benachrichtigungen an ausgewählte Addressen zu senden. Der Benachrichtigungsservice kann dabei beliebig konfiguriert werden. Administratoren werden als Kontakte (**"Contact"**) hinterlegt, welche wiederum bestimmten Kontaktgruppen (**"Contact Groups"**) zugeordnet werden. Für jeden Kontakt kann individuell eingestellt werden, für welche Services auf welchen Hosts in welchem Zeitraum Benachrichtigungen verschickt werden sollen. Benachrichtigungen können wahlweise über E-Mail, SMS, IM-Messages, etc. empfangen werden.
 
@@ -17,7 +17,7 @@ Die Informationen über die überwachten Systeme werden über ein Webinterface z
 NRPE
 ****
 
-Oftmals ist es nicht ohne weiteres möglich, Zustände von bestimmten Services auf dem remote Host zu überprüfen; etwa wenn es sich um interne Services handelt, die von Außen nicht sichtbar sind. Für diesen Zweck gibt es NRPE (Nagios Remote Plugin Executor). NRPE erlaubt das Ausführen von internen Checks auf dem remote Host und besteht aus zwei Teilen: Einem NRPE-Dienst auf der remote Seite und dem NRPE-Plug-in auf der überwachenden Seite. Die Aufgabe des ersteren ist es, interne Befehle für die Außenwelt verfügbar zu machen. Bei letzterem handelt es sich um ein gewöhnliches Nagios-Plug-in, das den Status des NRPE-Dienstes abfragt. Die Kommunikation erfolgt dabei über eine verschlüsselte SSL-Verbindung. 
+Oftmals ist es nicht ohne weiteres möglich, Zustände von bestimmten Services auf dem remote Host zu überprüfen; etwa wenn es sich um interne Services handelt, die von Außen nicht sichtbar sind. Für diesen Zweck gibt es NRPE (Nagios Remote Plugin Executor). NRPE erlaubt das Ausführen von internen Checks auf dem remote Host und besteht aus zwei Teilen: Einem NRPE-Dienst auf der remote Seite und dem NRPE-Plug-in auf der überwachenden Seite. Die Aufgabe des ersteren ist es, interne Befehle für die Außenwelt verfügbar zu machen. Bei letzterem handelt es sich um ein gewöhnliches Nagios-Plug-in, das den Status des NRPE-Dienstes abfragt. Die Kommunikation erfolgt dabei optional über eine verschlüsselte SSL-Verbindung. 
 
 .. image:: images/Nagios/15-nrpe.png
 
@@ -27,6 +27,10 @@ Soll zum Beispiel der verfügbare Speicherplatz auf dem remote Host überprüft 
 check_nrpe wiederum reicht das Ergebnis an Nagios weiter, wo es, wie die Ergebnisse anderer Plug-ins auch, dargestellt wird.
 
 Quelle: http://wiki.monitoring-portal.org/nagios/howtos/nrpe
+
+Alternativ können Kommandos auf dem remote Host auch direkt über SSL mit dem **check_by_ssh**-Plug-in  aufgerufen werden. Diese Vorgehensweise ist einerseits sicherer als NRPE - auf der anderen Seite verursacht diese Methode aber ein deutlicher CPU-Overhead auf beiden Rechnern und ist somit langsamer.
+
+Quelle: http://nagios.sourceforge.net/docs/nrpe/NRPE.pdf
 
 Exercises
 #########
