@@ -17,18 +17,18 @@ Die Informationen über die überwachten Systeme werden über ein Webinterface z
 NRPE
 ****
 
-Oftmals ist es nicht ohne weiteres möglich, Zustände von bestimmten Services auf dem remote Host zu überprüfen; etwa wenn es sich um interne Services handelt, die von außen nicht sichtbar sind. Für diesen Zweck gibt es NRPE (Nagios Remote Plugin Executor). NRPE erlaubt das Ausführen von internen Checks auf dem remote Host und besteht aus zwei Teilen: Einem NRPE-Dienst auf der remote Seite und dem NRPE-Plug-in auf der überwachenden Seite. Die Aufgabe des ersteren ist es, interne Befehle für die Außenwelt verfügbar zu machen. Bei letzterem handelt es sich um ein gewöhnliches Nagios-Plug-in, das den Status des NRPE-Dienstes abfragt. Die Kommunikation erfolgt dabei optional über eine verschlüsselte SSL-Verbindung. 
+Oftmals ist es nicht ohne weiteres möglich, Zustände von bestimmten Services auf dem Remote Host zu überprüfen; etwa wenn es sich um interne Services handelt, die von außen nicht sichtbar sind. Für diesen Zweck gibt es NRPE (Nagios Remote Plugin Executor). NRPE erlaubt das Ausführen von internen Checks auf dem Remote Host und besteht aus zwei Teilen: Einem NRPE-Dienst auf der Remote-Seite und dem NRPE-Plug-in auf der überwachenden Seite. Die Aufgabe des ersteren ist es, interne Befehle für die Außenwelt verfügbar zu machen. Bei letzterem handelt es sich um ein gewöhnliches Nagios-Plug-in, das den Status des NRPE-Dienstes abfragt. Die Kommunikation erfolgt dabei optional über eine verschlüsselte SSL-Verbindung. 
 
 .. image:: images/Nagios/15-nrpe.png
 
 Die Funktionsweise ist dabei die folgende:
 
-Soll zum Beispiel der verfügbare Speicherplatz auf dem remote Host überprüft werden, wird das Plugin **check_nrpe** mit dem Parameter **check_disk** auf dem überwachenden System ausgeführt. check_nrpe sendet hierfür den String **check_disk** an den überwachten Host. In der Konfigurationsdatei des NRPE-Dienstes sind mehrere solcher Strings definiert, die jeweils einem Kommando zugeordnet sind. Der auf Port 5666 hörende NRPE-Dienst vergleicht den ankommenden String mit denen in seiner Konfigurationsdatei hinterlegten. Findet er nun den String **check_disk** in seiner Konfiguration, führt er das zugehörige Kommando aus und schickt das Ergebnis (Exitcode und Ausgabe) an die Nagiosmaschine zurück. 
+Soll zum Beispiel der verfügbare Speicherplatz auf dem Remote Host überprüft werden, wird das Plugin **check_nrpe** mit dem Parameter **check_disk** auf dem überwachenden System ausgeführt. check_nrpe sendet hierfür den String **check_disk** an den überwachten Host. In der Konfigurationsdatei des NRPE-Dienstes sind mehrere solcher Strings definiert, die jeweils einem Kommando zugeordnet sind. Der auf Port 5666 hörende NRPE-Dienst vergleicht den ankommenden String mit denen in seiner Konfigurationsdatei hinterlegten. Findet er nun den String **check_disk** in seiner Konfiguration, führt er das zugehörige Kommando aus und schickt das Ergebnis (Exitcode und Ausgabe) an die Nagiosmaschine zurück. 
 check_nrpe wiederum reicht das Ergebnis an Nagios weiter, wo es, wie die Ergebnisse anderer Plug-ins auch, dargestellt wird.
 
 Quelle: http://wiki.monitoring-portal.org/nagios/howtos/nrpe
 
-Alternativ können Kommandos auf dem remote Host auch direkt über SSL mit dem **check_by_ssh**-Plug-in  aufgerufen werden. Diese Vorgehensweise ist einerseits sicherer als NRPE - auf der anderen Seite verursacht diese Methode aber ein deutlicher CPU-Overhead auf beiden Rechnern und ist somit langsamer.
+Alternativ können Kommandos auf dem Remote Host auch direkt über SSL mit dem **check_by_ssh**-Plug-in  aufgerufen werden. Diese Vorgehensweise ist einerseits sicherer als NRPE - auf der anderen Seite verursacht diese Methode aber ein deutlicher CPU-Overhead auf beiden Rechnern und ist somit langsamer.
 
 Quelle: http://nagios.sourceforge.net/docs/nrpe/NRPE.pdf
 
@@ -37,7 +37,7 @@ Exercises
 
 Voraussetzungen
 ***************
-In diesem Beispiel wird ein Nagios Server aufgesetzt, der einen Remote Host überwacht. Die Überwachung des remote Hosts erfolgt mittels NRPE. 
+In diesem Beispiel wird ein Nagios Server aufgesetzt, der einen Remote Host überwacht. Die Überwachung des Remote Hosts erfolgt teilweise mittels NRPE, teilweise ohne. 
 Das *überwachende* System, auf dem Nagios läuft, hat den Hostnamen **sdi2a**. Die Adresse lautet ``141.62.75.2``.
 Das *überwachte* System, also der Remote Host, hat den Hostnamen **sdi2b** und hat die Adresse ``141.62.75.2``.
 
@@ -67,14 +67,14 @@ Falls diese Kriterien nicht gegeben sind, können die jeweiligen Programme mit d
     Verzeichnis der Überwachungsprogramme
       ``/usr/lib/nagios/plugins/``
     Kommandodefinitionen
-      ``/usr/share/nagios-plugins/``
+      ``/etc/nagios-plugins/config/``
     allgemeine NRPE-Konfiguration
-      ``/etc/nagios/nrpe.cfg`` (Auf dem remote Host)
+      ``/etc/nagios/nrpe.cfg`` (Auf dem Remote Host)
   
 
 Einrichtung des Nagios Servers
 *******************************
-Der Nagios Server wird mit dem Befehl ``apt-get install nagios3 nagios-nrpe-plugin`` auf dem überwachenden System installiert. ``nagios-nrpe-plugin`` ist das Plugin mit dem später der NRPE Daemon auf dem remote Host angesprochen wird.
+Der Nagios Server wird mit dem Befehl ``apt-get install nagios3 nagios-nrpe-plugin`` auf dem überwachenden System installiert. ``nagios-nrpe-plugin`` ist das Plugin mit dem später der NRPE Daemon auf dem Remote Host angesprochen wird.
 Das Installationsskript fordert während der Installation zur Einstellung einiger Konfigurationswerte auf. Zunächst müssen die Mail-Einstellungen getroffen werden:
 
 :: 
@@ -132,11 +132,11 @@ Anschließend muss noch ein Passwort für den Nagios-Admin eingegeben werden:
 Nach der Eingabe des Passworts ist die initiale Konfiguration des Nagios Servers abgeschlossen.
 Das Admin-Passwort kann auch nachträglich mit dem Befehl ``htpasswd /etc/nagios3/htpasswd.users nagiosadmin`` geändert werden.
 
-Über die URL sdi2a.mi.hdm-stuttgart.de/nagios3 kann nun auf das Nagios-Webinterface zugegriffen werden. Beim ersten Aufruf wird man zur Eingabe der Logindaten aufgefordert. Der Benutzername lautet **nagiosadmin** (sofern dies nicht geändert wurde) und das Passwort ist das Passwort, das in der eben durgeführten Konfiguration eingegeben wurde.
+Über die URL *[Domain des Webservers]*/nagios3 kann nun auf das Nagios-Webinterface zugegriffen werden. Beim ersten Aufruf wird man zur Eingabe der Logindaten aufgefordert. Der Benutzername lautet **nagiosadmin** (sofern dies nicht geändert wurde) und das Passwort ist das Passwort, das in der eben durgeführten Konfiguration eingegeben wurde.
 
 .. image:: images/Nagios/01-webinterface.png
 
-Überwachung eines Services auf einem remote Host
+Überwachung eines Services auf einem Remote Host
 ************************************************
 In Nagios müssen alle Services, die überwacht werden sollen, explizit in einer Konfigurationsdatei definiert werden. Hierfür wird auf dem überwachenden System die Datei ``/etc/nagios3/conf.d/sdi2b.conf`` angelegt. In dieser muss zunächst der überwachte Host definiert werden:
 
@@ -163,10 +163,15 @@ In Nagios müssen alle Services, die überwacht werden sollen, explizit in einer
     address
       die IP-Adresse des Hosts
     check_command
-      der auszuführende Befehl zur Überprüfung des Hoststatuses
+      der auszuführende Befehl zur Überprüfung des Hoststatuses. **check-host-alive** erreicht dies mit dem Senden von ICMP-Paketen. 
 
-  
   Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#host>`_.
+
+
+.. topic:: Hinweis
+
+  In diesem und in einigen der folgenden Beispiele wird eine Vorlage verwendet (sieher Option **use**). Dies ermöglicht es zwingend vorausgesetzte Optionen wegzulassen. Die Hostdefinition wäre in diesem Fall ohne **use** ungültig, da verpflichtende Optionen wie **contact** weggelassen wurden. Ein Blick in die Templatedefinition **generic-host** in ``/etc/nagios3/conf.d/generic-host_nagios2`` kann sich lohnen.
+  
 
 Außerdem soll der Webserver auf sdi2b überwacht werden. Hierfür wird die ``sdi2b.conf`` um folgende Servicedefinition erweitert:
 
@@ -190,7 +195,7 @@ Außerdem soll der Webserver auf sdi2b überwacht werden. Hierfür wird die ``sd
     service_description
       die Beschreibung des Services, der auf dem Webinterface angezeigt wird.
     check_command
-      das auszuführende Überwachungsprogramm gefolgt von den mit ``!`` getrennten Argumenten (in diesem Fall ohne Argumente). Die verfügbaren Programme befinden sich im Verzeichnis ``/usr/lib/nagios/plugins``. Hinweise zur Benutzung der Programme können abgerufen werden, indem das jeweilige Programm mit dem Argument ``-h`` aufgerufen wird.
+      das auszuführende Kommando gefolgt von den mit ``!`` getrennten Argumenten (in diesem Fall ohne Argumente). Kommandos sind unter Debian im Verzeichnis ``/etc/nagios-plugins/config/`` definiert. In den Kommandodefinitionen sind wiederum die konkreten Programmaufrufe der Überwachungsprogramme eingetragen. Die verfügbaren Programme befinden sich im Verzeichnis ``/usr/lib/nagios/plugins``. Hinweise zur Benutzung der Programme können abgerufen werden, indem das jeweilige Programm mit dem Argument ``-h`` aufgerufen wird. Außerdem lohnt sich bei Unklarheiten zur Benutzung der Kommandos ein Blick in die Kommandodefinition.
 
   Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#service>`_.
 
@@ -234,9 +239,9 @@ Dazu muss ein Kontakt, sowie eine Kontaktgruppe in der Datei ``/etc/nagios3/conf
 ::
 
     define contact{
-        contact_name                    root
+        contact_name                    dh055
         contactgroups                   admins
-        alias                           Root
+        alias                           David Hettler
         service_notification_period     24x7
         host_notification_period        24x7
         service_notification_options    w,u,c,r
@@ -255,7 +260,7 @@ Dazu muss ein Kontakt, sowie eine Kontaktgruppe in der Datei ``/etc/nagios3/conf
     contactgroups
       Liste der Gruppen, welchen der Kontakt angehört
     alias
-      optionaler Alias 
+      optionaler Anzeigename 
     service_notification_period
       Zeitperiode, in der Mails bzgl. Services empfangen werden sollen. Die Zeitperiode ist in ``/etc/nagios3/conf.d/timeperiods_nagios2.cfg`` definiert.
     service_notification_period
@@ -280,7 +285,7 @@ Die Kontaktgruppe:
     define contactgroup{
             contactgroup_name       admins
             alias                   Nagios Administrators
-            members                 root
+            members                 dh055
     }
     
 .. topic:: Optionen
@@ -292,7 +297,7 @@ Die Kontaktgruppe:
     alias
       optionaler Anzeigename der Kontaktgruppe
     members
-      optionale Liste aller Benutzer in der Kontaktgruppe
+      optionale Liste aller Benutzer in der Kontaktgruppe. Die Gruppenzugehörigkeit kann, wie oben gezeigt, ebenfalls pro Kontakt in der Kontaktdefinition erfolgen.
 
   Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contactgroup>`_.
 
@@ -316,7 +321,7 @@ Nun können Benachrichtigungen wahlweise pro Host oder pro Service in der entspr
 
 Anschließend muss der Server neu gestartet werden: ``service nagios3 restart``
 
-Wird der laufende Webserver auf dem remote host gestoppt, spiegelt sich die Änderung sogleich auf der Weboberfläche wider:
+Wird der laufende Webserver auf dem Remote Host gestoppt, spiegelt sich die Änderung sogleich auf der Weboberfläche wider:
 
 .. image:: images/Nagios/08-http-down.png
 
@@ -327,7 +332,7 @@ und Nagios sendet die Mail:
 
 .. topic:: Tipp
 
-    Zum Testen kann es hilfreich sein, die sog. **Flap-Detection** entweder global- oder für einzelne Services zu deaktivieren.  Mit Flap-Detection können häufige Statusschwankungen erkannt werden. Ändert sich der Status eines Statuses zu oft, werden die Benachrichtigungen für den Service temporär deaktiviert. Dies kann in der Praxis hilfreich sein, um unnötige Spamnachrichten bei einer Fehlkonfiguration zu vermeiden. Da beim Testen Fehler provoziert werden sollen, ist dieser Schutzmechanismus für unsere Zwecke eher nachteilig. Um Flap Detection zu deaktivieren, muss der Parameter ``flap_detection_enabled    0`` in die betreffende Servicekonfiguration eingefügt werden, bzw. der Wert von ``1`` auf ``0`` geändert werden, falls der Parameter schon vorhanden war. Soll Flap-Detection standardmäßig deaktiviert werden, muss diese Einstellung in ``/etc/nagios3/conf.d/generic-service_nagios2.cfg`` vorgenommen werden.
+    Zum Testen kann es hilfreich sein, die sog. **Flap-Detection** entweder global- oder für einzelne Services zu deaktivieren.  Mit Flap-Detection können häufige Statusschwankungen erkannt werden. Ändert sich der Status eines Statuses zu oft, werden die Benachrichtigungen für den Service temporär deaktiviert. Dies kann in der Praxis hilfreich sein, um unnötige Spamnachrichten bei einer Fehlkonfiguration zu vermeiden. Da beim Testen Fehler provoziert werden sollen, ist dieser Schutzmechanismus für unsere Zwecke eher nachteilig. Um Flap Detection zu deaktivieren, muss der Parameter ``flap_detection_enabled    0`` in die betreffende Servicekonfiguration eingefügt werden, bzw. der Wert von ``1`` auf ``0`` geändert werden, falls der Parameter schon vorhanden war. Soll Flap-Detection standardmäßig deaktiviert werden, muss diese Einstellung in der Servicevorlage (``/etc/nagios3/conf.d/generic-service_nagios2.cfg``) vorgenommen werden.
 
 
 Einrichtung des NRPE Servers
@@ -403,11 +408,11 @@ Auf der Seite des überwachenden Systems müssen zur Überwachung dieser Dienste
     check_command                   check_nrpe!check_procs!250 400
   }
   
-An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befehl **check_nrpe**. Damit dieser zur Verfügung steht, muss das entsprechende Plugin mit dem Befehl ``apt-get install nagios-nrpe-plugin`` installiert werden. 
+An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befehl **check_nrpe**. Damit dieser zur Verfügung steht, muss das entsprechende Plugin, wie anfangs erwähnt, mit dem Befehl ``apt-get install nagios-nrpe-plugin`` installiert worden sein. 
 
 .. topic:: Hinweis
 
-  Zu beachten ist hier, dass die einzelnen Argumente *NICHT*, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem Leerzeichen.
+  Zu beachten ist hier, dass die einzelnen Argumente *NICHT*, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem **Leerzeichen**. Der Grund dafür ist, dass alle Argumente des aufzurufenden Befehls zu *einem* Argument des *NRPE*-Kommandos zusammengefasst werden. D. h. z. B. im Fall der ausgeführten Prozesse: "Rufe **check_nrpe** mit zwei Argumenten auf: **'check_procs'** und **'250 400'**"
 
 
 Nach einem Neustart des Servers mit ``service nagios3 restart`` zeigt die Übersichtsseite nun die per NRPE überwachten Services an.
@@ -416,7 +421,7 @@ Nach einem Neustart des Servers mit ``service nagios3 restart`` zeigt die Übers
 
 Überwachung der HTTPS-Authentifizierung
 ***************************************
-HTTPS-Authentifizierung lässt sich mit dem Programm ``check_http --ssl -I [IP] -a [username:password]`` überwachen. Da der Befehl die Kenntnis über die Credentials von mindestens einem authorisierten Benutzer auf dem remote Host voraussetzt, bietet sich hier die Überwachung per NRPE an. Zusätzlich will man die Credentials evtl. nicht über das Netzwerk schicken. Die Idee ist, auf dem überwachten System einen Befehl ohne Argumente zur Verfügung zustellen, welcher von dem überwachenden System aufgerufen wird. Die Credentials sind in der Definition des Befehls auf der überwachten Seite angegeben. Somit muss die überwachende Seite keine Credentials wissen und übers Netzwerk schicken.
+HTTPS-Authentifizierung lässt sich mit dem Programm ``check_http --ssl -I [IP] -a [username:password]`` überwachen. Da der Befehl die Kenntnis über die Credentials von mindestens einem authorisierten Benutzer auf dem Remote Host voraussetzt, bietet sich hier die Überwachung per NRPE an. Zusätzlich will man die Credentials evtl. nicht über das Netzwerk schicken. Die Idee ist, auf dem überwachten System einen Befehl ohne Argumente zur Verfügung zustellen, welcher von dem überwachenden System aufgerufen wird. Die Credentials sind in der Definition des Befehls auf der überwachten Seite angegeben. Somit muss die überwachende Seite keine Credentials wissen und übers Netzwerk schicken.
 
 Auf der überwachten Seite wird der Befehl in der Datei ``/etc/nagios/nrpe.cfg`` folgenermaßen definiert:
 
@@ -424,11 +429,11 @@ Auf der überwachten Seite wird der Befehl in der Datei ``/etc/nagios/nrpe.cfg``
 
   command[check_http_auth]=/usr/lib/nagios/plugins/check_http --ssl -I localhost -a beam:password
 
-Diese Zeile definiert einen neuen Befehl mit der Bezeichnung **check_http_auth**, welcher das **check_http**-Programm mit den Argumenten **--ssl**, **-I** und **-a** aufruft. In letzterem Argument werden die Credentials angegeben. Diese sind in diesem Fall die des Beispielbenutzers **beam**. Sein Passwort ist **password**.
+Diese Zeile definiert eine neues Kommando mit der Bezeichnung **check_http_auth**, welcher das **check_http**-Programm mit den hartkodierten Argumenten **--ssl**, **-I** und **-a** aufruft. In letzterem Argument werden die Credentials angegeben. Diese sind in diesem Fall die des Beispielbenutzers **beam**. Sein Passwort ist **password**.
 
 Anschließend wird der Daemon neu gestartet: ``service nagios-nrpe-server restart``.
 
-Auf dem Nagios-Server auf der überwachenden Seite wird der Befehl in ``/etc/nagios3/conf.d/sdi2b.cfg`` aufgerufen:
+Auf dem Nagios-Server auf der überwachenden Seite wird das Kommando in ``/etc/nagios3/conf.d/sdi2b.cfg`` aufgerufen:
 
 ::
 
@@ -439,7 +444,7 @@ Auf dem Nagios-Server auf der überwachenden Seite wird der Befehl in ``/etc/nag
     check_command                   check_nrpe_1arg!check_http_auth
   }
   
-``check_nrpe_1arg`` ruft einen Befehl auf dem remote nur mit dem nachfolgenden Befehl auf, also ohne zusätzliche Argumente.
+``check_nrpe_1arg`` ruft ein Kommando auf dem Remote Host nur mit dem nachfolgenden Kommando auf, also ohne zusätzliche Argumente (das Kommando wurde schließlich mit hartkodierten Argumenten definiert).
 
 Nach einem Neustart des Services (``service nagios3 restart``) erscheint der überwachte Service auf dem Webinterface:
 
@@ -458,14 +463,14 @@ Nach einem Neustart zeigt die Weboberfläche die Änderung korrekt an:
 
 Überwachung des LDAP-Servers
 ****************************
-Analog zum vorherigen Abschnitt kann der LDAP-Server auf dem remote Host überwacht werden.
-Zunächst wird der Befehl **check_ldap** auf der NRPE-Seite in ``/etc/nagios/nrpe.cfg`` definiert:
+Analog zum vorherigen Abschnitt kann der LDAP-Server auf dem Remote Host überwacht werden.
+Zunächst wird das Kommando **check_ldap** auf der NRPE-Seite in ``/etc/nagios/nrpe.cfg`` definiert:
 
 ::
 
   command[check_ldap]=/usr/lib/nagios/plugins/check_ldap -H localhost -b dc=betrayer,dc=com -3
   
-Mit dem Argument ``-b [base-dn]`` wird der Basis-DN des DIT angegeben. In diesem Fall lautet dieser **dc=betrayer,dc=com**. Mit dem Argument ``-3`` wird angegeben, dass es sich um einen LDAP-Server nach der LDAP-Protokollversion **3** handelt. Dieses Argument ist zwingend notwendig.
+Mit dem Argument ``-b [base-dn]`` wird der Basis-DN des DIT angegeben. In diesem Fall lautet dieser **dc=betrayer,dc=com**. Mit dem Argument ``-3`` wird angegeben, dass es sich um einen LDAP-Server nach der LDAP-Protokollversion **3** handelt. Dieses Argument wird zwingend vorausgesetzt.
 
 Der NRPE-Server muss nun neu gestartet werden: ``service nagios-nrpe-server restart``
 
@@ -486,17 +491,17 @@ Nach einem Neustart des Nagios-Daemons (``service nagios3 restart``) erscheint d
 
 Einrichten von Serviceabhängigkeiten
 ************************************
-Oftmals bestehen logische Abhängigkeiten zwischen den überwachten Services. Der gerade eingerichtete **HTTPS Auth**-Service ist beispielsweise vom **LDAP**-Service abhängig, da die HTTPS-Authentifizierung über LDAP realisiert ist. Fällt der LDAP-Server aus, funktioniert folglich die Authentifizierung auf dem Webserver nicht mehr. Für den Fall, dass der LDAP-Server ausfällt, sendet der Nagios-Daemon standardmäßig eine Benachrichtigungsmail für den Ausfall des LDAP-Servers sowie für jeden Service, der aufgrund der Nichterreichbarkeit von LDAP ausfällt. In einem realen Szenario wären noch viel mehr Services von LDAP abhängig, als nur der Webserver. Die Folge ist eine Kaskade an Benachrichtigungsmails, die dem Administrator nichts bringen, da dieser bereits weiß, dass die abhängigen Services nicht funktionieren können.
+Oftmals bestehen logische Abhängigkeiten zwischen den überwachten Services. Der gerade eingerichtete **HTTPS Auth**-Service ist beispielsweise vom **LDAP**-Service abhängig, da die HTTPS-Authentifizierung über LDAP realisiert ist. Fällt der LDAP-Server aus, funktioniert folglich die Authentifizierung auf dem Webserver nicht mehr. Für den Fall, dass der LDAP-Server ausfällt, sendet der Nagios-Daemon standardmäßig eine Benachrichtigungsmail für den Ausfall des LDAP-Servers sowie für jeden Service, der aufgrund der Nichterreichbarkeit von LDAP ausfällt. In einem realen Szenario wären noch viel mehr Services von LDAP abhängig, als nur der Webserver. Die Folge ist eine Kaskade an Benachrichtigungsmails, die niemandem etwas bringen, da klar ist, dass die abhängigen Services nicht funktionieren *können*.
 
 Das Webinterface zeigt den Effekt, den das Ausschalten des LDAP-Servers hat:
 
 .. image:: images/Nagios/12-ldap-down.png
 
-Wie erwartet kommen zwei E-Mails:
+Erwartungsgemäß kommen zwei E-Mails:
 
 .. image:: images/Nagios/13-redundant-mails.png
 
-Eine solche Abhängigkeit kann in unserer Konfigurationsdatei ``/etc/nagios3/conf.d/sdi2b.cfg`` mit folgendem Eintrag definiert werden:
+Dies soll unterbunden werden. Hierfür wird eine Abhängigkeit in unserer Konfigurationsdatei ``/etc/nagios3/conf.d/sdi2b.cfg`` mit folgendem Eintrag definiert:
 
 ::
 
@@ -508,8 +513,8 @@ Eine solche Abhängigkeit kann in unserer Konfigurationsdatei ``/etc/nagios3/con
     notification_failure_criteria   o,w,u,c
   }
 
-Diese Definition sagt aus, dass der Service mit dem Bezeichner **HTTPS Auth**, der auf dem Host **sdi2b** läuft, vom Service **LDAP**, der ebenfalls auf **sdi2b** läuft, abhängig ist. ``notification_failure_criteria`` bestimmt, in welchen Fällen *KEINE* Benachrichtigungen gesendet werden sollen. Die Werte ``o,w,u,c`` geben an, dass keine Benachrichtigungen gesendet werden sollen, wenn sich der **Masterservice** in einem der Zustände **OK** (o), **Warning** (w), **Unknown** (u) oder **Critical** (c) befindet.
+Diese Definition sagt aus, dass der Service mit dem Bezeichner **HTTPS Auth**, der auf dem Host **sdi2b** läuft, vom Service **LDAP**, der ebenfalls auf **sdi2b** läuft, abhängig ist. **notification_failure_criteria** bestimmt, in welchen Fällen *KEINE* Benachrichtigungen gesendet werden sollen. Die Werte **o,w,u,c** geben an, dass keine Benachrichtigungen gesendet werden sollen, wenn sich der **Masterservice** in einem der Zustände **OK** (o), **Warning** (w), **Unknown** (u) oder **Critical** (c) befindet.
 
-Wird der LDAP-Server nun gestoppt, wird nur *eine* Mail für den **LDAP**-Service versendet, auch wenn der Zustand des **HTTP-Auth**-Services ebenfalls kritisch ist:
+Wird der LDAP-Server nun gestoppt, wird nur *eine* Mail für den *LDAP*-Service versendet, auch wenn der Zustand des *HTTP-Auth*-Services ebenfalls kritisch ist:
 
 .. image:: images/Nagios/14-one-mail.png
