@@ -17,7 +17,7 @@ Die Informationen über die überwachten Systeme werden über ein Webinterface z
 NRPE
 ****
 
-Oftmals ist es nicht ohne weiteres möglich, Zustände von bestimmten Services auf dem Remote Host zu überprüfen; etwa wenn es sich um interne Services handelt, die von außen nicht sichtbar sind. Für diesen Zweck gibt es NRPE (Nagios Remote Plugin Executor). NRPE erlaubt das Ausführen von internen Checks auf dem Remote Host und besteht aus zwei Teilen: Einem NRPE-Dienst auf der Remote-Seite und dem NRPE-Plug-in auf der überwachenden Seite. Die Aufgabe des ersteren ist es, interne Befehle für die Außenwelt verfügbar zu machen. Bei letzterem handelt es sich um ein gewöhnliches Nagios-Plug-in, das den Status des NRPE-Dienstes abfragt. Die Kommunikation erfolgt dabei optional über eine verschlüsselte SSL-Verbindung. 
+Oftmals ist es nicht ohne weiteres möglich, Zustände von bestimmten Services auf dem Remote Host zu überprüfen; etwa wenn es sich um interne Services handelt, die von außen nicht sichtbar sind. Für diesen Zweck gibt es NRPE (Nagios Remote Plugin Executor). NRPE erlaubt das Ausführen von internen Checks auf dem Remote Host und besteht aus zwei Teilen: Einem NRPE-Dienst auf der Remote-Seite und dem NRPE-Plug-in auf der überwachenden Seite. Die Aufgabe des ersteren ist es, interne Überprüfungskommandos für die Außenwelt verfügbar zu machen. Bei letzterem handelt es sich um ein gewöhnliches Nagios-Plug-in, das den Status des NRPE-Dienstes abfragt. Die Kommunikation erfolgt dabei optional über eine verschlüsselte SSL-Verbindung. 
 
 .. image:: images/Nagios/15-nrpe.png
 
@@ -163,7 +163,7 @@ In Nagios müssen alle Services, die überwacht werden sollen, explizit in einer
     address
       die IP-Adresse des Hosts
     check_command
-      der auszuführende Befehl zur Überprüfung des Hoststatuses. **check-host-alive** erreicht dies mit dem Senden von ICMP-Paketen. 
+      der auszuführende Kommando zur Überprüfung des Hoststatuses. **check-host-alive** erreicht dies mit dem Senden von ICMP-Paketen. 
 
   Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#host>`_.
 
@@ -270,9 +270,9 @@ Dazu muss ein Kontakt, sowie eine Kontaktgruppe in der Datei ``/etc/nagios3/conf
     host_notification_options 
       wann Mails bzgl. Hosts gesendet werden sollen... d = down (wenn der Host down ist), r = recovery (wenn der Host wieder erreichbar ist)
     service_notification_commands
-      welche Befehle ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Services versendet werden soll
+      welches Kommando ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Services versendet werden soll
     notify-host-by-email
-      welche Befehle ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Hosts versendet werden soll
+      welches Kommando ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Hosts versendet werden soll
     email
       Die E-Mail-Adresse des Kontakts, an welche Benachrichtigungen gesendet werden.
 
@@ -340,7 +340,7 @@ Einrichtung des NRPE Servers
 Auf dem überwachten System wird der NRPE Server mit dem Befehl ``apt-get install nagios-nrpe-server`` installiert.
 Standardmäßig ist der Aufruf von Nagios-Plugins auf dem Remote System aus Sicherheitsgründen nur ohne Argumente erlaubt. Um Argumente zu aktivieren, muss in der Konfigurationsdatei ``/etc/nagios/nrpe.cfg`` die Option ``dont_blame_nrpe=1`` gesetzt werden. Zusätzlich muss der Zugriff des überwachenden Systems explizit gestattet werden. Dies wird durch die Option ``allowed_hosts=141.62.75.102`` erreicht.
 
-Ebenfalls in dieser Datei sind die Befehle definiert, wie sie vom überwachenden System aufgerufen werden. Standardmäßig sind nur Befehle definiert, die von dem überwachenden System ohne Argumente aufgerufen werden. Bei diesen sind die Argumente hartcodiert:
+Ebenfalls in dieser Datei sind die Kommandos definiert, wie sie vom überwachenden System aufgerufen werden. Standardmäßig sind nur Kommandos definiert, die von dem überwachenden System ohne Argumente aufgerufen werden. Bei diesen sind die Argumente hartcodiert:
 
 ::
 
@@ -350,8 +350,8 @@ Ebenfalls in dieser Datei sind die Befehle definiert, wie sie vom überwachenden
   command[check_zombie_procs]=/usr/lib/nagios/plugins/check_procs -w 5 -c 10 -s Z
   command[check_total_procs]=/usr/lib/nagios/plugins/check_procs -w 150 -c 200
 
-Da wir Befehle mit Argumenten aufrufen wollen, werden diese Einträge nicht gebraucht und können auskommentiert werden. 
-Eine Befehlsdefinition für einen Befehl mit Argumenten sieht ähnlich aus. Der Unterschied ist, dass an die Stelle der hartcodierten Werte Argument-Platzhalter stehen. Die Befehle zur Überwachung der Benutzer, Auslastung, Plattenspeicher und Prozesse sehen beispielsweise folgendermaßen aus.
+Da in diesem Beispiel Kommandos mit Argumenten aufgerufen werden sollen, werden diese Einträge nicht gebraucht und können auskommentiert werden. 
+Eine Kommandodefinition für ein Kommando mit Argumenten sieht ähnlich aus. Der Unterschied ist, dass an die Stelle der hartkodierten Werte Argument-Platzhalter stehen. Die Kommandos zur Überwachung der Benutzer, Auslastung, Plattenspeicher und Prozesse sehen beispielsweise folgendermaßen aus.
 
 ::
 
@@ -360,7 +360,7 @@ Eine Befehlsdefinition für einen Befehl mit Argumenten sieht ähnlich aus. Der 
   command[check_disk]=/usr/lib/nagios/plugins/check_disk -w $ARG1$ -c $ARG2$
   command[check_procs]=/usr/lib/nagios/plugins/check_procs -w $ARG1$ -c $ARG2$
   
-Nachdem die Befehle definiert wurden, muss der NRPE-Daemon neugestartet werden, damit die Änderungen übernommen werden: ``service nagios-nrpe-server restart``
+Nachdem die Kommandos definiert wurden, muss der NRPE-Daemon neugestartet werden, damit die Änderungen übernommen werden: ``service nagios-nrpe-server restart``
 
 Auf der Seite des überwachenden Systems müssen zur Überwachung dieser Dienste folgende Einträge in die Datei ``/etc/nagios3/conf.d/sdi2b.cfg`` eingefügt werden:
 
@@ -408,11 +408,11 @@ Auf der Seite des überwachenden Systems müssen zur Überwachung dieser Dienste
     check_command                   check_nrpe!check_procs!250 400
   }
   
-An die Stelle der eigentlichen Überwachungsbefehle tritt der vorgestellte Befehl **check_nrpe**. Damit dieser zur Verfügung steht, muss das entsprechende Plugin, wie anfangs erwähnt, mit dem Befehl ``apt-get install nagios-nrpe-plugin`` installiert worden sein. 
+An die Stelle der eigentlichen Überwachungskommandos tritt das vorgestellte Kommando **check_nrpe**. Damit dieses zur Verfügung steht, muss das entsprechende Plugin, wie anfangs erwähnt, mit dem Befehl ``apt-get install nagios-nrpe-plugin`` installiert worden sein. 
 
 .. topic:: Hinweis
 
-  Zu beachten ist hier, dass die einzelnen Argumente *NICHT*, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem **Leerzeichen**. Der Grund dafür ist, dass alle Argumente des aufzurufenden Befehls zu *einem* Argument des *NRPE*-Kommandos zusammengefasst werden. D. h. z. B. im Fall der ausgeführten Prozesse: "Rufe **check_nrpe** mit zwei Argumenten auf: **'check_procs'** und **'250 400'**"
+  Zu beachten ist hier, dass die einzelnen Argumente *NICHT*, wie bei der normalen Überwachung ohne NRPE, mit einem "**!**" getrennt sind, sondern mit einem **Leerzeichen**. Der Grund dafür ist, dass alle Argumente des aufzurufenden Kommandos zu *einem* Argument des *NRPE*-Kommandos zusammengefasst werden. D. h. z. B. im Fall der ausgeführten Prozesse: "Rufe **check_nrpe** mit zwei Argumenten auf: **'check_procs'** und **'250 400'**"
 
 
 Nach einem Neustart des Servers mit ``service nagios3 restart`` zeigt die Übersichtsseite nun die per NRPE überwachten Services an.
@@ -421,9 +421,9 @@ Nach einem Neustart des Servers mit ``service nagios3 restart`` zeigt die Übers
 
 Überwachung der HTTPS-Authentifizierung
 ***************************************
-HTTPS-Authentifizierung lässt sich mit dem Programm ``check_http --ssl -I [IP] -a [username:password]`` überwachen. Da der Befehl die Kenntnis über die Credentials von mindestens einem authorisierten Benutzer auf dem Remote Host voraussetzt, bietet sich hier die Überwachung per NRPE an. Zusätzlich will man die Credentials evtl. nicht über das Netzwerk schicken. Die Idee ist, auf dem überwachten System einen Befehl ohne Argumente zur Verfügung zustellen, welcher von dem überwachenden System aufgerufen wird. Die Credentials sind in der Definition des Befehls auf der überwachten Seite angegeben. Somit muss die überwachende Seite keine Credentials wissen und übers Netzwerk schicken.
+HTTPS-Authentifizierung lässt sich mit dem Programm ``check_http --ssl -I [IP] -a [username:password]`` überwachen. Da das Kommando die Kenntnis über die Credentials von mindestens einem authorisierten Benutzer auf dem Remote Host voraussetzt, bietet sich hier die Überwachung per NRPE an. Zusätzlich will man die Credentials evtl. nicht über das Netzwerk schicken. Die Idee ist, auf dem überwachten System ein Kommando ohne Argumente zur Verfügung zustellen, welcher von dem überwachenden System aufgerufen wird. Die Credentials sind in der Kommandodefinition auf der überwachten Seite angegeben. Somit muss die überwachende Seite keine Credentials wissen und übers Netzwerk schicken.
 
-Auf der überwachten Seite wird der Befehl in der Datei ``/etc/nagios/nrpe.cfg`` folgenermaßen definiert:
+Auf der überwachten Seite wird das Kommando in der Datei ``/etc/nagios/nrpe.cfg`` folgenermaßen definiert:
 
 ::
 
