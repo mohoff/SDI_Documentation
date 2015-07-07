@@ -170,7 +170,7 @@ In Nagios müssen alle Services, die überwacht werden sollen, explizit in einer
 
 .. topic:: Hinweis
 
-  In diesem und in einigen der folgenden Beispiele wird eine Vorlage verwendet (sieher Option **use**). Dies ermöglicht es zwingend vorausgesetzte Optionen wegzulassen. Die Hostdefinition wäre in diesem Fall ohne **use** ungültig, da verpflichtende Optionen wie **contact** weggelassen wurden. Ein Blick in die Templatedefinition **generic-host** in ``/etc/nagios3/conf.d/generic-host_nagios2`` kann sich lohnen.
+  In diesem und in einigen der folgenden Beispiele wird eine Vorlage verwendet (siehe Option **use**). Dies ermöglicht es, zwingend vorausgesetzte Optionen wegzulassen. Die Hostdefinition wäre in diesem Fall ohne **use** ungültig, da verpflichtende Optionen wie **contact** weggelassen wurden. Ein Blick in die Templatedefinition **generic-host** in ``/etc/nagios3/conf.d/generic-host_nagios2`` kann sich lohnen.
   
 
 Außerdem soll der Webserver auf sdi2b überwacht werden. Hierfür wird die ``sdi2b.conf`` um folgende Servicedefinition erweitert:
