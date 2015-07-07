@@ -9,15 +9,15 @@ Nagios Introduction
 Was ist Nagios
 **************
 
-Nagios ist eine quelloffene Software zur Überwachung von IT-Infrastrukturen. Es können einzelne **"Hosts"** überwacht werden, sowie die verschiednen Dienste (**"Services"**), die auf diesen laufen. Unter dem Begriff "Service" sind sowohl Programme wie Webserver, DNS-Server, LDAP-Server, etc... zusammengefasst als auch interne Eigenschaften wie CPU-Auslastung, freier Festplattenspeicher, angemeldete Benutzer etc. Die Überwachung der Services erfolgt mithilfe eigenständiger Programme (**"Plug-ins"**). Für die wichtigsten Services stellt Nagios die entsprechenden Plug-ins im Paket ``nagios-plugins`` zur Verfügung. Sollte für einen Service kein vorgefertigtes Plug-in vorhanden sein (oder für den Fall, dass das mitgelieferte Plug-in nicht den eigenen Anforderungen entspricht), bietet sich die Möglichkeit, dieses selbst zu programmieren. Dabei ist nur zu beachten, dass die Ausgaben den Nagios-Richtlinien entsprechen.
+Nagios ist eine quelloffene Software zur Überwachung von IT-Infrastrukturen. Es können einzelne **"Hosts"** überwacht werden, sowie die verschiedenen Dienste (**"Services"**), die auf diesen laufen. Unter dem Begriff "Service" sind sowohl Programme wie Webserver, DNS-Server, LDAP-Server, etc... zusammengefasst als auch interne Eigenschaften wie CPU-Auslastung, freier Festplattenspeicher, angemeldete Benutzer etc. Die Überwachung der Services erfolgt mithilfe eigenständiger Programme (**"Plug-ins"**). Für die wichtigsten Services stellt Nagios die entsprechenden Plug-ins im Paket ``nagios-plugins`` zur Verfügung. Sollte für einen Service kein vorgefertigtes Plug-in vorhanden sein (oder für den Fall, dass das mitgelieferte Plug-in nicht den eigenen Anforderungen entspricht), bietet sich die Möglichkeit, dieses selbst zu programmieren. Dabei ist nur zu beachten, dass die Ausgaben den Nagios-Richtlinien entsprechen.
 
-Die Informationen über die überwachten Systeme werden über ein Webinterface zur Verfügung gestellt. Damit dieses nicht laufend vom Adminstrator abgefragt werden muss, bietet Nagios die Option, bei bestimmten Ereignissen Benachrichtigungen an ausgewählte Addressen zu senden. Der Benachrichtigungsservice kann dabei beliebig konfiguriert werden. Administratoren werden als Kontakte (**"Contact"**) hinterlegt, welche wiederum bestimmten Kontaktgruppen (**"Contact Groups"**) zugeordnet werden. Für jeden Kontakt kann individuell eingestellt werden, für welche Services auf welchen Hosts in welchem Zeitraum Benachrichtigungen verschickt werden sollen. Benachrichtigungen können wahlweise über E-Mail, SMS, IM-Messages, etc. empfangen werden.
+Die Informationen über die überwachten Systeme werden über ein Webinterface zur Verfügung gestellt. Damit dieses nicht laufend abgefragt werden muss, bietet Nagios die Option, bei bestimmten Ereignissen Benachrichtigungen an ausgewählte Adressen zu senden. Der Benachrichtigungsservice kann dabei beliebig konfiguriert werden. Nachrichtenempfänger werden als Kontakte (**"Contact"**) hinterlegt, welche wiederum bestimmten Kontaktgruppen (**"Contact Groups"**) zugeordnet werden. Für jeden Kontakt kann individuell eingestellt werden, für welche Services auf welchen Hosts in welchem Zeitraum Benachrichtigungen verschickt werden sollen. Benachrichtigungen können wahlweise in Form von E-Mail, SMS, IM-Messages, etc. empfangen werden.
 
 
 NRPE
 ****
 
-Oftmals ist es nicht ohne weiteres möglich, Zustände von bestimmten Services auf dem remote Host zu überprüfen; etwa wenn es sich um interne Services handelt, die von Außen nicht sichtbar sind. Für diesen Zweck gibt es NRPE (Nagios Remote Plugin Executor). NRPE erlaubt das Ausführen von internen Checks auf dem remote Host und besteht aus zwei Teilen: Einem NRPE-Dienst auf der remote Seite und dem NRPE-Plug-in auf der überwachenden Seite. Die Aufgabe des ersteren ist es, interne Befehle für die Außenwelt verfügbar zu machen. Bei letzterem handelt es sich um ein gewöhnliches Nagios-Plug-in, das den Status des NRPE-Dienstes abfragt. Die Kommunikation erfolgt dabei optional über eine verschlüsselte SSL-Verbindung. 
+Oftmals ist es nicht ohne weiteres möglich, Zustände von bestimmten Services auf dem remote Host zu überprüfen; etwa wenn es sich um interne Services handelt, die von außen nicht sichtbar sind. Für diesen Zweck gibt es NRPE (Nagios Remote Plugin Executor). NRPE erlaubt das Ausführen von internen Checks auf dem remote Host und besteht aus zwei Teilen: Einem NRPE-Dienst auf der remote Seite und dem NRPE-Plug-in auf der überwachenden Seite. Die Aufgabe des ersteren ist es, interne Befehle für die Außenwelt verfügbar zu machen. Bei letzterem handelt es sich um ein gewöhnliches Nagios-Plug-in, das den Status des NRPE-Dienstes abfragt. Die Kommunikation erfolgt dabei optional über eine verschlüsselte SSL-Verbindung. 
 
 .. image:: images/Nagios/15-nrpe.png
 
@@ -46,7 +46,7 @@ Die Voraussetzungen für das überwachende System sind
 1. ein funktionsfähiger Webserver
 2. ein funktionsfähiger Mailserver
 
-Falls diese Kriterien nicht gegeben sind, können die jeweiligen Programme mit den Befehlen ``apt-get install apache2`` (für den Webserver) und ``apt-get install posix`` (für den Mailserver) installiert werden.
+Falls diese Kriterien nicht gegeben sind, können die jeweiligen Programme mit den Befehlen ``apt-get install apache2`` (für den Webserver) und ``apt-get install postfix`` (für den Mailserver) installiert werden.
 
 
 .. topic:: Relevante Dateien und Verzeichnisse
@@ -117,7 +117,7 @@ Anschließend muss der FQDN der Mail-Adressen angegeben werden, an die Mails ges
 Hier wurde **hdm-stuttgart.de** gewählt, da die Mails später an ``dh055@hdm-stuttgart.de`` gesendet werden sollen.
 
 
-Anschließnd muss noch ein Passwort für den Nagios-Admin eingegeben werden:
+Anschließend muss noch ein Passwort für den Nagios-Admin eingegeben werden:
 
 ::
 
@@ -129,7 +129,7 @@ Anschließnd muss noch ein Passwort für den Nagios-Admin eingegeben werden:
   
   Nagios web administration password:
 
-Nach der Eingabe des Passworts ist die initale Konfiguration des Nagios Servers abgeschlossen.
+Nach der Eingabe des Passworts ist die initiale Konfiguration des Nagios Servers abgeschlossen.
 Das Admin-Passwort kann auch nachträglich mit dem Befehl ``htpasswd /etc/nagios3/htpasswd.users nagiosadmin`` geändert werden.
 
 Über die URL sdi2a.mi.hdm-stuttgart.de/nagios3 kann nun auf das Nagios-Webinterface zugegriffen werden. Beim ersten Aufruf wird man zur Eingabe der Logindaten aufgefordert. Der Benutzername lautet **nagiosadmin** (sofern dies nicht geändert wurde) und das Passwort ist das Passwort, das in der eben durgeführten Konfiguration eingegeben wurde.
@@ -186,7 +186,7 @@ Außerdem soll der Webserver auf sdi2b überwacht werden. Hierfür wird die ``sd
     use
       optionale Vorlage für den Service - alle nicht spezifizierten Optionen werden aus der Vorlage entnommen.
     host_name
-      der Name des überwachten Hosts. Es ist der Name, der in der Hostdefinition (s.o.) angegeben wurde
+      der Name des überwachten Hosts. Es ist der Name, der in der Hostdefinition (s. o.) angegeben wurde
     service_description
       die Beschreibung des Services, der auf dem Webinterface angezeigt wird.
     check_command
@@ -195,9 +195,9 @@ Außerdem soll der Webserver auf sdi2b überwacht werden. Hierfür wird die ``sd
   Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#service>`_.
 
 Die Konfiguration kann anschließend mit dem Befehl ``nagios3 -v /etc/nagios3/nagios.cfg`` überprüft werden.
-Sollten keine Fehler aufgetreten sein, muss der Server neu gestart werden: ``service nagios3 restart``
+Sollten keine Fehler aufgetreten sein, muss der Server neu gestartet werden: ``service nagios3 restart``
 
-Das Webinterface zeigt nach einer kurzen Wartezeit beide Hosts an. Der überwachende Rechner wird ebenfalls angezeigt, da Nagios standardmäßig eine Kofigurationsdatei für den eigenen Host mitliefert (``/etc/nagios3/conf.d/localhost_nagios2.cfg``).
+Das Webinterface zeigt nach einer kurzen Wartezeit beide Hosts an. Der überwachende Rechner wird ebenfalls angezeigt, da Nagios standardmäßig eine Konfigurationsdatei für den eigenen Host mitliefert (``/etc/nagios3/conf.d/localhost_nagios2.cfg``).
 
 .. image:: images/Nagios/02-hostuebersicht.png
 
@@ -228,7 +228,7 @@ ersetzt und die Zeile
     
 eingefügt.
 
-Sobald der Mailserver Mails senden kann, können die eigentliche Einstellungen zum Versenden von Mails in Nagios getroffen werden.
+Sobald der Mailserver Mails senden kann, können die eigentlichen Einstellungen zum Versenden von Mails in Nagios getroffen werden.
 Dazu muss ein Kontakt, sowie eine Kontaktgruppe in der Datei ``/etc/nagios3/conf.d/contacts_nagios2.cfg`` angelegt werden:
 
 ::
@@ -269,7 +269,7 @@ Dazu muss ein Kontakt, sowie eine Kontaktgruppe in der Datei ``/etc/nagios3/conf
     notify-host-by-email
       welche Befehle ausgeführt werden soll, wenn eine Benachrichtigung bzgl. Hosts versendet werden soll
     email
-      Die E-Mail-Addresse des Kontakts, an welche Benachrichtigungen gesendet werden.
+      Die E-Mail-Adresse des Kontakts, an welche Benachrichtigungen gesendet werden.
 
   Eine vollständige Auflistung der verfügbaren Parameter befindet sich in der `offiziellen Dokumentation <http://nagios.sourceforge.net/docs/nagioscore/3/en/objectdefinitions.html#contact>`_.
 
@@ -300,7 +300,7 @@ Die Kontaktgruppe:
 
     Zum Testen kann es hilfreich sein, die Zeit zwischen Serverausfall und der gesendeten Benachrichtigung zu verringern. Diese beträgt in den Standardeinstellungen nämlich einige Minuten. Die Einstellung kann pro Service in seiner Konfigurationsdatei getroffen werden oder global in der Definition des generic Service (``/etc/nagios3/conf.d/generic-service_nagios2.cfg``). Der Parameter lautet ``first_notification_delay 1``. Der darauffolgende Wert gibt die Zeit an, die gewartet wird, bevor die erste Nachricht gesendet wird. Die Zeiteinheit kann in ``/etc/nagios3/`` mit dem Parameter ``interval_length=5`` verändert werden, wobei der angegebene Wert den Sekunden entspricht. In diesem Fall ist ein Intervall also 5 Sekunden lang. Zusammen mit der Einstellung ``first_notification_delay 1`` bedeutet dies, dass 5 Sekunden gewartet wird, bevor die erste Statusnachricht gesendet wird.
 
-Nun können Benachrichtigungen wahlweise pro Host oder pro Service in der entsprechenden Definition eingestellt werden. In diesem Fall ist ein Benachrichtigungsservice für alle Services von sdi2b erwünschenswert, weswegen die Hostdefinition (``/etc/nagios3/conf.d/sdi2b.conf``) wie folgt um die Direktive **contact_groups** erweitert wird:
+Nun können Benachrichtigungen wahlweise pro Host oder pro Service in der entsprechenden Definition eingestellt werden. In diesem Fall ist ein Benachrichtigungsservice für alle Services von sdi2b wünschenswert, weswegen die Hostdefinition (``/etc/nagios3/conf.d/sdi2b.conf``) wie folgt um die Direktive **contact_groups** erweitert wird:
 
 .. code-block:: none
   :emphasize-lines: 7
@@ -333,7 +333,7 @@ und Nagios sendet die Mail:
 Einrichtung des NRPE Servers
 *****************************
 Auf dem überwachten System wird der NRPE Server mit dem Befehl ``apt-get install nagios-nrpe-server`` installiert.
-Standardmäßig ist der Aufruf von Nagios-Plugins auf dem Remote System aus Sicherheitsgründen nur ohne Argumente erlaubt. Um Argumente zu aktivieren, muss in der Konfigurationsdatei ``/etc/nagios/nrpe.cfg`` die Option ``dont_blame_nrpe=1`` gesetzt werden. Zustäzlich muss der Zugriff des überwachenden Systems explizit gestattet werden. Dies wird durch die Option ``allowed_hosts=141.62.75.102`` erreicht.
+Standardmäßig ist der Aufruf von Nagios-Plugins auf dem Remote System aus Sicherheitsgründen nur ohne Argumente erlaubt. Um Argumente zu aktivieren, muss in der Konfigurationsdatei ``/etc/nagios/nrpe.cfg`` die Option ``dont_blame_nrpe=1`` gesetzt werden. Zusätzlich muss der Zugriff des überwachenden Systems explizit gestattet werden. Dies wird durch die Option ``allowed_hosts=141.62.75.102`` erreicht.
 
 Ebenfalls in dieser Datei sind die Befehle definiert, wie sie vom überwachenden System aufgerufen werden. Standardmäßig sind nur Befehle definiert, die von dem überwachenden System ohne Argumente aufgerufen werden. Bei diesen sind die Argumente hartcodiert:
 
