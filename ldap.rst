@@ -13,9 +13,10 @@ Daten dieser Art könnten ebenfalls in Datenbanken abgespeichert werden. Ein Ver
 Die generelle Struktur des Baums ist in einem **Schema** definiert.
 
 Die Objekte eines Baums werden über den sog. **Distinguised Name** (DN) referenziert. Dieser setzt sich aus den folgenden Bestandteilen zusammen:
-* **Domain Component** (dc): Die Identifikation des Unternehmens. Üblicherweise ist dieser an dessen Internetdomain angelehnt, wobei die Punkte entfernt werden und die Bestandteile der Domain einen eigenen dc haben. aus *beispiel.de* wird also *dc=beispiel,dc=de*
-* **Orginazational Unit** (ou): Definiert die einzelnen Organisationseinheiten (Abteilungen) innerhalb des Unternehmens
-* **Common Name** (cn): Der Name über den eine Person referenziert wird.
+
+- **Domain Component** (dc): Die Identifikation des Unternehmens. Üblicherweise ist dieser an dessen Internetdomain angelehnt, wobei die Punkte entfernt werden und die Bestandteile der Domain einen eigenen dc haben. aus *beispiel.de wird also *dc=beispiel,dc=de*
+- **Orginazational Unit** (ou): Definiert die einzelnen Organisationseinheiten (Abteilungen) innerhalb des Unternehmens
+- **Common Name** (cn): Der Name über den eine Person referenziert wird.
 
 Die einzelnen Bestandteile (**Relative Distinguished Name** = RDN) werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter aneinandergeheftet. Ein Angestellter *Max Mustermann* des Unternehmens *Beispiel.de*, dem die Rolle *Project-Manager* in der Abteilung *Development* zugeteilt ist, könnte beispielsweise den DN *cn=mustermann,ou=pm,ou=dev,dc=beispiel,dc=de* haben.
 
