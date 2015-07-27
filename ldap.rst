@@ -4,8 +4,8 @@
 LDAP
 ****
 
-The LDAP concept
-################
+LDAP Introduction
+#################
 
 SOMETHING AMNOG THOSE LINES:
 
@@ -41,8 +41,11 @@ SOMETHING AMNOG THOSE LINES:
     OU
       Organizational Unit
 
+Exercises
+#########
+
 Apache Directory Studio
-#######################
+***********************
 
 Das Apache Directory Studio (ADS) ist ein auf Eclipse basierendes Tool, mit dem CRUD-Operations auf LDAP-Datenbanken
 ausgeführt werden können.
@@ -53,7 +56,7 @@ Für die alltäglichen Administrierungsaufgaben sind jedoch Web-basierte Tools, 
 
 
 Setting up a LDAP-Server
-########################
+************************
 
 Man unterscheidet zwischen dem OpenLDAP server daemon im Package ``slapd`` und LDAP
 management utilities im Package ``ldap-utils``.
@@ -86,7 +89,7 @@ werden kann. Die default Konfiguration in unseren VM ist daher
   dc=mi,dc=hdm-stuttgart,dc=de
 
 Die ``config``-Datenbank
-************************
+++++++++++++++++++++++++
 
 Der Inhalt der config-Datenbank sieht aus wie folgt:
 
@@ -112,7 +115,8 @@ Direkte Aenderungen in der config-Datenbank sind nicht empfohlen, man soll besse
 ueber das LDAP Protocol (Tool aus dem Package ``ldap-utils``) Aenderungen vornehmen.
 
 The LDAP-Protocol
-#################
+*****************
+
 Befehl ``ldapsearch``:
 ::
 
@@ -158,7 +162,7 @@ and Security Layer" (SASL) (-Y <SASL mechanism>).
 
 
 LDIF Files
-##########
+**********
 
 Mit LDIF Files lassen sich LDAP-spezifische Daten speichern, z.B. als Export-Funktion.
 Ueber ``slapadd`` im Terminal (LDAP-Server zur Sicherheit dafuer stoppen) oder die
@@ -218,7 +222,7 @@ Ein weiter "Leaf"-Usre wurde im letzten Block hinzugefuegt.
 **weitere ERKLAERUNGen DAZU**
 
 LDAP with mail client Thunderbird
-#################################
+*********************************
 The data can now be accessed with a mail client, in our case we accessed the data
 with Mozilla ThunderBird.
 
@@ -236,7 +240,7 @@ Now the emails can be viewed with the correct filter:
 
 
 LDAP Filter Search
-##################
+******************
 
 Filter kann man ueber das CLI oder ueber das Apache Directory Studio festlegen.
 
@@ -271,13 +275,14 @@ Suchstring escapen.
 
 
 Search Filter Aufgaben
-**********************
+++++++++++++++++++++++
+
 The filter ``(uid=b*)`` filters users with an attribute starting with "d".
 
 The filter ``(|(uid=*)(ou=d*))`` filters users all entries either with either a defined uid attribute or a ou attribute starting with letter “d”.
 
 Extending an existing Entry
-###########################
+***************************
 Finally, we added a ``posixAccount`` for the user Jim Beam with the following .ldif-file:
 
 .. code-block:: html
@@ -298,9 +303,9 @@ Finally, we added a ``posixAccount`` for the user Jim Beam with the following .l
   homeDirectory: /home/beam/
 
 LDAP Account Manager
-####################
+********************
 Der LDAP Account Manager (LAM) stellt Funktionen zur Administration von LDAP-Verzeichnissen über ein Webinterface zur Verfügung.
-LAM kann über die Kommandozeile mit dem Befehl ``[sudo] apt-get install ldap-account-manager`` installiert werden
+LAM kann über die Kommandozeile mit dem Befehl ``[sudo] apt-get install ldap-account-manager`` installiert werden.
 
 
 Der LAM läuft ohne weiteres Zutun auf Apache-Webservern und ist nach der Installation unter der Adresse ``http://localhost/lam`` erreichbar. Auf dem Interface lassen sich sogleich die LAM-Einstellungen vornehmen. Das standard Master-Passwort lautet **lam**.
@@ -334,7 +339,7 @@ Unter **Module Settings** lassen sich u.a. Einstellungen zu den UIDs für User, 
 
 
 LDAP Replication (basic theory)
-###############################
+*******************************
 LDAP Replication serves failure safety, so the LDAP services are still available when
 some nodes crash in the LDAP-infrastructure.
 
