@@ -47,8 +47,8 @@ Apache Directory Studio
 Das Apache Directory Studio (ADS) ist ein auf Eclipse basierendes Tool, mit dem CRUD-Operations auf LDAP-Datenbanken
 ausgeführt werden können.
 
-Dient zur Unterstützung des Installationsprozesses, sowie der Entwicklung und dem Debugging unter LDAP.
-Für die alltäglichen Administrierungsaufgaben sind jedoch webbasierte Tools geeigneter.
+Das Apache Directory Studio vereinfacht den Installationsprozesses, sowie der Entwicklung und Debugging.
+Für die alltäglichen Administrierungsaufgaben sind jedoch Web-basierte Tools, wie der LDAP Account Manager (s. u.) geeigneter.
 
 
 
@@ -297,49 +297,40 @@ Finally, we added a ``posixAccount`` for the user Jim Beam with the following .l
   add: homeDirectory
   homeDirectory: /home/beam/
 
-LDAP Account Manager (LAM)
-##########################
-Installation unter Ubuntu mit
-::
+LDAP Account Manager
+####################
+Der LDAP Account Manager (LAM) stellt Funktionen zur Administration von LDAP-Verzeichnissen über ein Webinterface zur Verfügung.
+LAM kann über die Kommandozeile mit dem Befehl ``[sudo] apt-get install ldap-account-manager`` installiert werden
 
-    [sudo] apt-get install ldap-account-manager
 
-Der LAM laeuft auf Apache und ist nach der Installation sofort unter
-``http://localhost/lam`` erreichbar. Auf dieser Webseite
-lassen sich gleich die LAM-Einstellungen vornehmen. Das default-Master-Passwort
-ist ``lam``.
+Der LAM läuft ohne weiteres Zutun auf Apache-Webservern und ist nach der Installation unter der Adresse ``http://localhost/lam`` erreichbar. Auf dem Interface lassen sich sogleich die LAM-Einstellungen vornehmen. Das standard Master-Passwort lautet **lam**.
 
 .. image:: images/LAM/lamlogin.png
 
-Die "General Settings" umfassen Einstellungen zur Sicherheit, Passwoertern und
-deren Policies, und Logging.
+Der Reiter **General Settings** umfasst Einstellungen zur Sicherheit, Passwörtern und deren Policies, und Logging.
 
-Damit wir auf unseren LDAP- Server zugreifen können, müssen unter Server-Profiles die Daten unseren Servers eingestellt werden.
+Damit auf den installierten LDAP-Server zugegriffen werden kann, müssen unter Server-Profiles die Daten des Servers eingestellt werden.
 
 .. image:: images/LAM/ServerSetting.png
 
-Außerdem müssen die richtigen Security-Settings eingestellt werden:
+Zudem müssen die richtigen Security-Settings eingestellt werden:
 
 .. image:: images/LAM/SecuritySettings.png
 
-Nun können wir uns auf unserem LDAP-Server korrekt anmelden.
+Im Anschluss kann man sich auf dem LDAP-Server anmelden.
 
-Auch unter "Account Types" muessen fuer User, Hosts und Groups die entsprechenden
-LDAP-Suffixes angegeben werden:
+Auch unter "Account Types" müssen für User, Hosts und Groups die entsprechenden LDAP-Suffixes angegeben werden:
 
 .. image:: images/LAM/AccountSettings.png
 
-Mit diesen Einstellungen werden im Server die User korrekt angezeigt:
+Mit diesen Einstellungen werden eingetragenen Benutzer unter dem Reiter **Users** korrekt angezeigt:
 
 .. image:: images/LAM/UserList.png
 
 
-Unter "Modules" koennen die "objectClass"es der LDAP-Entitaetstypen verwaltet
-werden.
+Unter **Modules** können die objectClasses der LDAP-Entitätstypen verwaltet werden.
 
-Unter "Module Settings" lassen sich u.a. Einstellungen zu den UIDs fuer Users, Groups
-und Hosts vornehmen. Also z.B. die Art des UID-Generators, sowie die Range, in der sich
-generierte UIDs befinden duerfen.
+Unter **Module Settings** lassen sich u.a. Einstellungen zu den UIDs für User, Groups und Hosts vornehmen. Also z.B. die Art des UID-Generators, sowie die Range, in der sich generierte UIDs befinden dürfen.
 
 
 LDAP Replication (basic theory)
