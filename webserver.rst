@@ -8,7 +8,7 @@ Webserver Einführung
 Die Aufgabe eines Webservers ist es, statische Dateien zur Darstellung von Webseiten auf Anfrage auszuliefern. Bei den Dateien handelt es sich vorrangig um HTML-Dokumente, Stylesheets und Bild-Dateien. Jede dieser Dateien wird über eine separate Anfrage angefordert. Üblicherweise verwendet man für diesen Vorgang das HTTP-, bzw. HTTPS-Protokoll. Der Ablauf von der Anfrage bis zur Darstellung einer Webseite kann grob in folgenden Schritten zusammengefasst werden:
 
 * Der Benutzer gibt in die Adresszeile des Browsers die URL der gewünschten Seite ein
-* Falls die URL einen Domainname enthaelt, wird dieser zunächst per DNS auf eine IP-Adresse aufgelöst. An diese IP-Adresse wird eine HTTP-Anfrage auf Port 80 geschickt.
+* Falls die URL einen Domainname enthält, wird dieser zunächst per DNS auf eine IP-Adresse aufgelöst. An diese IP-Adresse wird eine HTTP-Anfrage auf Port 80 geschickt.
 * Der Server empfängt die Anfrage und:
 
   * ent- und verschlüsselt Anfrage und Antwort, falls TLS eingesetzt wird
@@ -51,7 +51,7 @@ Voraussetzungen:
 
 ::
 
-    NameVirtualHost *:80    // fuer alle IP-Adressen wird auf Port 80 namensbasiertes virtuelles Hosting verwendet. Wenn nur "*" steht, gilt das sowohl fuer HTTP und HTTPS.
+    NameVirtualHost *:80    // für alle IP-Adressen wird auf Port 80 namensbasiertes virtuelles Hosting verwendet. Wenn nur "*" steht, gilt das sowohl für HTTP und HTTPS.
 
     <VirtualHost *:80>
       ServerName www.domain.tld
@@ -68,7 +68,7 @@ Voraussetzungen:
 Apache Funktionsweise
 #####################
 
-Apache wird standardmässig in das Verzeichnis ``/etc/apache2/`` installiert. Dieses Root-Verzeichnis enthält zu Beginn folgende Dateien und Unterordner:
+Apache wird standardmäßig in das Verzeichnis ``/etc/apache2/`` installiert. Dieses Root-Verzeichnis enthält zu Beginn folgende Dateien und Unterordner:
 
 ::
 
@@ -95,7 +95,7 @@ Im Folgenden wird auf die vier Dateien ``apache2.conf``, ``envvars``, ``magic`` 
 * ``Timeout``: Anzahl Sekunden, die gewartet wird, bevor ein Timeout-Signal gesendet wird. Bsp.: ``300``.
 * ``KeepAlive``: Ob permanente Verbindungen (mehrere Anfragen pro Verbindung) erlaubt sind oder nicht. Bsp.: ``On``.
 * ``MaxKeepAliveRequests``: maximale Zahl an Anfragen, die pro persistenter Verbindung erlaubt sind. Bsp.: ``100``.
-* ``HostnameLookups``: Ob nur die IP-Adresse oder auch der Hostname ueber einen versuchten DNS-Lookup in Logdateien gespeichert wird. Hat zur Folge, dass pro eingehender Verbindung mindestens 1 Lookup stattfindet. Bsp.: ``Off``.
+* ``HostnameLookups``: Ob nur die IP-Adresse oder auch der Hostname über einen versuchten DNS-Lookup in Logdateien gespeichert wird. Hat zur Folge, dass pro eingehender Verbindung mindestens 1 Lookup stattfindet. Bsp.: ``Off``.
 * ``ErrorLog``: Pfad der Errorlog-Files. Dient als Fallback, wenn die virtuellen Hosts diesen Wert nicht setzen. Bsp.: ``${APACHE_LOG_DIR}/error.log``.
 * ``Include`` bzw. ``IncludeOptional``: Andere Konfigurationsdateien werden eingebunden. Bsp.: ``ports.conf``.
 * ``LogLevel``: Gibt die "Strenge" an, mit der Nachrichten gelogged werden sollen. Bsp.: ``warn``.
@@ -122,7 +122,7 @@ Im Folgenden wird auf die vier Dateien ``apache2.conf``, ``envvars``, ``magic`` 
 
   Damit wird der Zugriff auf das Root-Filesystem explizit verboten (erste Direktive) und der Zugriff auf ``/usr/share/`` und ``/var/www/`` erlaubt (zweite und dritte Direktive). Host-spezifische (Directory-)Direktiven können in den entsprechenden VirtualHost-Direktiven in ``/etc/apache2/sites-available`` festgelegt werden.
 * ``AccessFileName``: Der Name der Datei, die in jedem Ordner gesucht wird, um nach zusätzlichen Konfigurations-Direktiven zu schauen.
-* ``<FilesMatch "^\.ht">Require all denied</FilesMatch>``: Mit dieser Direktive koennen die Dateien ``.htaccess`` und ``.htpasswd`` nicht von Clients gelesen werden.
+* ``<FilesMatch "^\.ht">Require all denied</FilesMatch>``: Mit dieser Direktive können die Dateien ``.htaccess`` und ``.htpasswd`` nicht von Clients gelesen werden.
 * einige Umgebungsvariablen, z.B. ``${APACHE_PID_FILE}``, die aus der Datei ``envvars`` referenziert werden.
 
 
@@ -155,7 +155,7 @@ Wenn der Webserver nur auf Anfragen von localhost antworten soll, kann anstatt `
 
 ``envvars`` und ``magic``
 *************************
-In ``envvars`` werden, wie der Name schon erahnen laesst, Apache-Umgebungsvariablen gesetzt. Z.B. die beiden folgenden für den User und die Gruppe ``www-data``:
+In ``envvars`` werden, wie der Name schon erahnen lässt, Apache-Umgebungsvariablen gesetzt. Z.B. die beiden folgenden für den User und die Gruppe ``www-data``:
 
 ::
 
@@ -189,7 +189,7 @@ Die Datei wird von dem Modul ``mime_magic`` verwendet.
 ***************************************
 Der Apache ist modular aufgebaut. Das bedeutet, dass nur Basisfunktionen im Kern enthalten sind. Erweiterte Funkionen werden durch Module bereitgestellt, die in Apache geladen werden können. Standardmäßig werden einige Basismodule bei der Installation hinzugefügt, im Nachhinein lassen sich aber weitere Module jederzeit integrieren.
 
-Im Ordner ``mods-available`` werden alle lokal vorhandenen Konfigurationsdateien fuer Module gelistet. In meiner Umgebung sind das bereits 130 Module, die überwiegend bei der Installation von Apache zur Verfügung gestellt werden. Allerdings besitzt nicht jedes Modul eine eigene Konfigurationsdatei.
+Im Ordner ``mods-available`` werden alle lokal vorhandenen Konfigurationsdateien für Module gelistet. In meiner Umgebung sind das bereits 130 Module, die überwiegend bei der Installation von Apache zur Verfügung gestellt werden. Allerdings besitzt nicht jedes Modul eine eigene Konfigurationsdatei.
 
 Im Ordner ``mods-enabled`` werden die aktuell verwendeten Module aufgelistet. Der Ordner enthält symbolische Verweise zu Dateien in ``/etc/apache2/mods-available``. Wenn eine Modul-Konfigurationsdatei einen symbolischen Verweis besitzt, wird sie beim nächsten Neustart von apache2 mitgeladen. Aktuell sind in meiner Umgebung 37 Stück von den verfügbaren 130 in Verwendung.
 
@@ -212,7 +212,7 @@ Mit ``a2dismod auth_mysql`` lässt sich das Modul wieder deaktivieren.
 *****************************************
 Der systematische Aufbau von ``sites`` ist der selbe wie bei ``mods`` - es gibt *verfügbare* und *aktivierte* Seiten. Damit gleich nach der Apache-Installation eine Standardseite über den Browser erreichbar ist, existiert eine Standardseite, die in der Datei ``000-default.conf`` definiert ist. In dieser Art von Dateien muss mindestens eine ``VirtualHost``-Direktive stehen, mehrere sind aber auch möglich. Wichtig ist, dass pro aktivierter ``site`` dann mehrere Hosts gestartet werden können (vgl. Kapitel "namebased und IP-based virtual hosting").
 
-Eine einfache Seite koennte wie folgt in einer ``VirtualHost``-Direktive definiert sein:
+Eine einfache Seite könnte wie folgt in einer ``VirtualHost``-Direktive definiert sein:
 
 ::
 
@@ -230,13 +230,13 @@ Erklärung der verwendeten Attribute:
 * ``ServerAdmin``: Diese Direktive legt fest, welche E-Mail-Adresse als Adresse des Server-Administrators angegeben wird. Der vorgegebene Wert ist ``webmaster@localhost``. Dieser Wert sollte in eine E-Mail-Adresse geändert werden, über die man den Webmaster erreichen kann. Falls auf der Website ein Problem auftritt, wird ein Fehlerhinweis mit dieser E-Mail-Adresse angezeigt, um das Problem zu melden. Um global für alle Hosts die gleiche E-Mail-Adresse festzulegen, kann die Direktive auch in das bereits erklärten ``apache.conf`-File geschrieben werden.
 * ``ServerName``: Diese Direktive ist optional und gibt den FQDN an, auf den der VirtualHost reagieren soll. Sobald mehr als ein VirtualHost angegeben ist, sind für die zusätzlichen Einträge jedoch eindeutige ``ServerName``s Voraussetzung.  Bsp.: ``Servername www.example.com``.
 * ``ServerAlias``: Mit dem ``ServerAlias`` lassen sich alternative Nutzungs-URLs einrichten. Normalerweise ist es wünschenswert wenn ein VirtualHost, der auf ``example.com`` reagiert, auch auf ``www.example.com`` antwortet. Oder man will alle Subdomains auf die Hauptdomain leiten. Mit einer Wildcard können VirtualHost so konfiguriert werden, dass sie auf jede Anfrage, die auf ``.sdi1b.mi.hdm-stuttgart.de`` endet, reagiert. Der Eintrag für Letzteres ist dann z.B. ``ServerAlias *.sdi1b.mi.hdm-stuttgart.de``.
-* ``DocumentRoot``: Diese Direktive gibt an, wo sich die Webinhalte fuer einen VirtualHost befinden. Der Standardwert ist ``/var/www/html``. Wenn andere Pfade angegeben werden, muss sichergestellt werden, dass eine Zugriffsberechtigung mittel der ``Directory``-Direktive vorliegt.
+* ``DocumentRoot``: Diese Direktive gibt an, wo sich die Webinhalte für einen VirtualHost befinden. Der Standardwert ist ``/var/www/html``. Wenn andere Pfade angegeben werden, muss sichergestellt werden, dass eine Zugriffsberechtigung mittel der ``Directory``-Direktive vorliegt.
 * ``ErrorLog``: Legt den Namen und Ort des ErrorLog-Files fest.
-* ``CustomLog``: Legt eine neue Logdatei an, die mit einem individuellen ``LogFormat`` kommt. Das ``LogFormat`` wird als letzter Parameter (standardmaessig ``combined``) angegeben.
+* ``CustomLog``: Legt eine neue Logdatei an, die mit einem individuellen ``LogFormat`` kommt. Das ``LogFormat`` wird als letzter Parameter (standardmäßig ``combined``) angegeben.
 
 ``conf-available`` und ``conf-enabled``
 ***************************************
-Enthält wie ``mods-...`` auch Konfigurationsdateien. Nur erweitern diese das Funktionsspektrum des Apaches nicht direkt (wie es bei den Modulen der Fall ist), sondern kommen von externen, auf Apache beruhenden Anwendungen. Z.B. existieren Konfigurationsdateien in diesem Ordner fuer den LDAP-Account-Manager, Nagios, phpMyAdmin und die Apache-Dokumentation. Alle Tools kommen mit einer Weboberfläche, die vom Apache verwaltet wird und für die die Speicherorte z.B. über ``Directory``-Direktiven freigegeben werden müssen.
+Enthält wie ``mods-...`` auch Konfigurationsdateien. Nur erweitern diese das Funktionsspektrum des Apaches nicht direkt (wie es bei den Modulen der Fall ist), sondern kommen von externen, auf Apache beruhenden Anwendungen. Z.B. existieren Konfigurationsdateien in diesem Ordner für den LDAP-Account-Manager, Nagios, phpMyAdmin und die Apache-Dokumentation. Alle Tools kommen mit einer Weboberfläche, die vom Apache verwaltet wird und für die die Speicherorte z.B. über ``Directory``-Direktiven freigegeben werden müssen.
 
 Wie eine solche Konfigurationsdatei aussieht, steht im Aufgabenkapitel.
 
@@ -255,7 +255,7 @@ Der Apache-Webserver lässt sich mit einigen Commands steuern. Einige sind Skrip
 
 Apache Prozesse
 ###############
-Wie in folgendem Auszug aus der Konsole zu sehen ist, existieren mehrere zu Apache zugeordnete Prozesse gleichzeitig wenn der Webserver gestartet ist. Grund hierfür ist, dass bei Serverstart ein ``apache2``-Prozess vom User ``root`` gestartet wird, der die TCP-Ports öffnet und ein paar Kindprozesse (standardmässig 5 an der Zahl) unter dem User ``www-data`` forked, die als *Worker* die Client-Anfragen beantworten. Diese Kindprozesse werden je nach Auslastung vom Mutterprozess gespawned oder gekilled. Parameter, wie die initiale Anzahl an gestarteten Kindprozessen bei Serverstart, können mittels Direktiven in der bekannten ``apache2.conf`` festgelegt werden.
+Wie in folgendem Auszug aus der Konsole zu sehen ist, existieren mehrere zu Apache zugeordnete Prozesse gleichzeitig wenn der Webserver gestartet ist. Grund hierfür ist, dass bei Serverstart ein ``apache2``-Prozess vom User ``root`` gestartet wird, der die TCP-Ports öffnet und ein paar Kindprozesse (standardmäßig 5 an der Zahl) unter dem User ``www-data`` forked, die als *Worker* die Client-Anfragen beantworten. Diese Kindprozesse werden je nach Auslastung vom Mutterprozess gespawned oder gekilled. Parameter, wie die initiale Anzahl an gestarteten Kindprozessen bei Serverstart, können mittels Direktiven in der bekannten ``apache2.conf`` festgelegt werden.
 
 .. image:: images/Apache/00_apacheProzessePsAux.png
 
@@ -344,7 +344,7 @@ Den Pfad finden, über den der Apache Webserver die installierte Doku zur Verfü
     /etc/apache2/conf-available
     /etc/apache2/conf-available/apache2-doc.conf
 
-Wie zu sehen ist, wurden die in Frage kommenden Files erheblich reduziert. Die einzigste Datei, die Sinn macht, ist die ``/etc/apache2/conf-available/apache2-doc.conf``. Ein Apache-Kenner hätte sofot in dieser Datei nachschauen koennen, da in diesem Verzeichnis alle Konfigurationsdateien von auf Apache beruhenden Packages, also z.B. der Apache-Doku, aber auch dem MySql-Frontend sowie dem Nagios-Frontend, gehalten werden.
+Wie zu sehen ist, wurden die in Frage kommenden Files erheblich reduziert. Die einzigste Datei, die Sinn macht, ist die ``/etc/apache2/conf-available/apache2-doc.conf``. Ein Apache-Kenner hätte sofot in dieser Datei nachschauen können, da in diesem Verzeichnis alle Konfigurationsdateien von auf Apache beruhenden Packages, also z.B. der Apache-Doku, aber auch dem MySql-Frontend sowie dem Nagios-Frontend, gehalten werden.
 
 Die gefundene Datei enthält:
 
@@ -432,7 +432,7 @@ Es gibt zwei Möglichkeiten:  Eine Redirect-Directive oder einen Alias. Vorrauss
               </Directory>
       </VirtualHost>
 
-  Auch dieser Ansatz funktioniert, wenn der DNS-Eintrag fuer ``sdidoc.mi.hdm-stuttgart.de`` eingetragen ist:
+  Auch dieser Ansatz funktioniert, wenn der DNS-Eintrag für ``sdidoc.mi.hdm-stuttgart.de`` eingetragen ist:
 
   .. image:: images/Apache/05_sdiDocSubdomain.png
 
@@ -462,7 +462,7 @@ Die Konfigurationsdatei, mit der das Verhalten erzielt werden kann, sieht folgen
             DocumentRoot /usr/share/doc/apache2-doc/manual/
     </VirtualHost>
 
-Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin über ``sdi1b.mi.hdm-stuttgart.de`` erreichbar (erster VirtualHost-Eintrag). Ein ServerName muss nicht zwangsweise mit angegeben werden, denn so wird dieser VirtualHost für alle Anfragen verwendet, die nicht einen anderen ServerName anfragen (s. folgende VirtualHosts), eine Art Fallback also. Der zweite VirtualHost-Eintrag ermöglicht den Zugriff auf die SDI-Doku ueber ``mh203.mi.hdm-stuttgart.de``, der dritte Eintrag auf die Apache-Doku über ``manual.mi.hdm-stuttgart.de``. Ersteren muss man wieder über die ``Directory``-Direktive erweitern, sodass das Verzeichnis ``/home/sdidoc`` zugänglich ist.
+Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin über ``sdi1b.mi.hdm-stuttgart.de`` erreichbar (erster VirtualHost-Eintrag). Ein ServerName muss nicht zwangsweise mit angegeben werden, denn so wird dieser VirtualHost für alle Anfragen verwendet, die nicht einen anderen ServerName anfragen (s. folgende VirtualHosts), eine Art Fallback also. Der zweite VirtualHost-Eintrag ermöglicht den Zugriff auf die SDI-Doku über ``mh203.mi.hdm-stuttgart.de``, der dritte Eintrag auf die Apache-Doku über ``manual.mi.hdm-stuttgart.de``. Ersteren muss man wieder über die ``Directory``-Direktive erweitern, sodass das Verzeichnis ``/home/sdidoc`` zugänglich ist.
 
 .. topic:: Bemerkung
 
@@ -510,7 +510,7 @@ Außerdem muss sichergestellt werden, dass in der bereits behandelten ``ports.co
     </IfModule>
 
 
-Der folgende prinzipielle Ablauf ist: Wir erstellen uns eine eigene Root-CA, die wir in den Browser importieren. Anschließend erstellen wir das Server-Zertifikat, das wir mit dem Key der Root-CA signieren und auf unseren Server ``sdi1b.mi.hdm-stuttgart.de`` laden. Dort erstellen wir einen passenden ``VirtualHost``, der SSL-fähig ist und starten den Webserver neu. Anschliessend kann mit dem Browser, der das Root-CA geladen hat, problemlos die HTTPS-Version der Seite angesurfed werden.
+Der folgende prinzipielle Ablauf ist: Wir erstellen uns eine eigene Root-CA, die wir in den Browser importieren. Anschließend erstellen wir das Server-Zertifikat, das wir mit dem Key der Root-CA signieren und auf unseren Server ``sdi1b.mi.hdm-stuttgart.de`` laden. Dort erstellen wir einen passenden ``VirtualHost``, der SSL-fähig ist und starten den Webserver neu. Anschließend kann mit dem Browser, der das Root-CA geladen hat, problemlos die HTTPS-Version der Seite angesurfed werden.
 
 Die eigentliche Erstellung der Keys und Zertifikate, sowie die Apache-Konfiguration, erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird (*Vorgehensweise ist auf http://datacenteroverlords.com/2012/03/01/creating-your-own-ssl-certificate-authority/* genau beschrieben).
 
@@ -525,7 +525,7 @@ Erstellen des Root-Keys (ohne Passwortschutz) mit:
 
     openssl genrsa -out rootCA.key 2048 [-des3]
 
-Der erstellte private Key wird dadurch in dem File ``rootCA.key`` im aktuellen Verzeichnis gespeichert. Als Schlüssellaenge sind die Werte 1024, 2048 und 4096 möglich, wobei 2048 Bits state-of-the-art ist.
+Der erstellte private Key wird dadurch in dem File ``rootCA.key`` im aktuellen Verzeichnis gespeichert. Als Schlüssellänge sind die Werte 1024, 2048 und 4096 möglich, wobei 2048 Bits state-of-the-art ist.
 
 In der Praxis ist dieser Key strengstens geheim zu halten, da die gesamte CA-Sicherheit darauf beruht. In unserem Fall ist der Key neu generiert und wird nicht verwendet, daher ist es unbedenklich ihn hier exemplarisch auszugeben.
 
@@ -675,7 +675,7 @@ Der erstellte CSR hat folgenden Inhalt:
     ncLhvKcJ+0E=
     -----END CERTIFICATE REQUEST-----
 
-Nun wir der CSR mit dem ganz zu Beginn erstelltem privaten Schluessel der Root-CA signiert:
+Nun wir der CSR mit dem ganz zu Beginn erstelltem privaten Schlüssel der Root-CA signiert:
 
 ::
 
@@ -808,7 +808,7 @@ Seitens Apache muss zuerst min. ein LDAP-Modul aktiviert werden:
 
 *(Quelle: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html)*
 
-Jetzt, wo der Apache faehig ist LDAP-AuthNZ zu vollziehen, können wir einen (oder mehrere) ``VirtualHost`` einrichten:
+Jetzt, wo der Apache fähig ist LDAP-AuthNZ zu vollziehen, können wir einen (oder mehrere) ``VirtualHost`` einrichten:
 
 ::
 
@@ -832,16 +832,16 @@ Die Resource, für die in obigem Beispiel authentifiziert und authorisiert wird,
 Erklärung der verwendeten Direktiven:
 
 * ``AuthName``: Gibt den Namen des Authorisierungs-Realms an. Dieser Name wird dem Client gesendet, sodass der User weiß, welche Credentials er eingeben muss. Der Name wird in den meisten Browsern in den Eingabedialogen angezeigt. Wenn der Realm ein Leerzeichen enthalten soll, muss der gesamte Name in Hochkommata eingeschlossen werden. Bsp.: ``AuthName "Top Secret"``.
-* ``AuthType``: Gibt die Art der User-Authentifizierung für ein Verzeichnis an. Kann die Werte ``None``, ``Basic`` (HTTP-Basic Authentifizierung), ``Digest``(HTTP-Digest Authentifizierung) und ``Form`` annehmen. Je nach Wert werden verschiedene Apache-Module verwendet (z.B. ``mod_auth_basic`` fuer HTTP-Basic-Authentifizierung). Sofern nicht explizit anders definiert, wird die Art der Authentifizierung für Subsektionen (Unterordner des authentifizierten Resource) vererbt. Bsp.: ``AuthType Basic``.
-* ``AuthBasicProvider``: Diese Direktive setzt den Provider, der für die Resource zur Authentifizierung gilt. Mehrere Provider werden nacheinander ausgewertet bis ein Match für den Usernamen gefunden wurde. Bei einem Match wird das eingegebene Passwort gecheckt. Schlägt die Passwort-Verfikation fehl, werden nachfolgend augelistete Provider nicht mehr genutzt. Mögliche Werte sind ``dbm`` (dbm-Passwortdateien), ``file`` (Passwortdateien in Klartext), ``dbd`` (über SQL-Tabellen), ``ldap`` (ueber LDAP-Dienste) und ``socache`` (keine stand-alone Authentifizierung. Verwaltung der Credentials im Cache, v.a. für ``dbd`` sinnvoll, da SQL-Lookups teuer werden können und LDAP mit eigenem Caching-Modul ``mod_ldap`` kommt).
+* ``AuthType``: Gibt die Art der User-Authentifizierung für ein Verzeichnis an. Kann die Werte ``None``, ``Basic`` (HTTP-Basic Authentifizierung), ``Digest``(HTTP-Digest Authentifizierung) und ``Form`` annehmen. Je nach Wert werden verschiedene Apache-Module verwendet (z.B. ``mod_auth_basic`` für HTTP-Basic-Authentifizierung). Sofern nicht explizit anders definiert, wird die Art der Authentifizierung für Subsektionen (Unterordner des authentifizierten Resource) vererbt. Bsp.: ``AuthType Basic``.
+* ``AuthBasicProvider``: Diese Direktive setzt den Provider, der für die Resource zur Authentifizierung gilt. Mehrere Provider werden nacheinander ausgewertet bis ein Match für den Usernamen gefunden wurde. Bei einem Match wird das eingegebene Passwort gecheckt. Schlägt die Passwort-Verfikation fehl, werden nachfolgend augelistete Provider nicht mehr genutzt. Mögliche Werte sind ``dbm`` (dbm-Passwortdateien), ``file`` (Passwortdateien in Klartext), ``dbd`` (über SQL-Tabellen), ``ldap`` (über LDAP-Dienste) und ``socache`` (keine stand-alone Authentifizierung. Verwaltung der Credentials im Cache, v.a. für ``dbd`` sinnvoll, da SQL-Lookups teuer werden können und LDAP mit eigenem Caching-Modul ``mod_ldap`` kommt).
 * ``AuthLDAPURL``: Erwartet eine URL für den LDAP-Dienst inklusive Filter. Die allgemeine Syntax ist ``ldap://host:port/basedn?attribute?scope?filter``. Während einige Eigenschaften selbsterklärend sind, erklären wir die LDAP-spezifischen:
   * ``basedn``: Gibt den Startpunkt der Suche an, also eine Node im Tree von der gestartet werden soll.
   * ``attribute``: Gibt das Attribut an, nach dem gesucht werden soll. Üblicherweise macht ``uid`` Sinn, was auch dem Standardwert entspricht.
-  * ``scope``: Gibt den LDAP-Scope an, kann also die Werte ``own`` (nur eigene Node), ``base`` (ein Level unterhalb der eigenen Node) und ``sub`` (alle Nodes unterhalb der eigenen Node) annehmen. Wenn nicht anders spezifiziert, wird standardmässig ``sub`` verwendet.
+  * ``scope``: Gibt den LDAP-Scope an, kann also die Werte ``own`` (nur eigene Node), ``base`` (ein Level unterhalb der eigenen Node) und ``sub`` (alle Nodes unterhalb der eigenen Node) annehmen. Wenn nicht anders spezifiziert, wird standardmäßig ``sub`` verwendet.
   * ``filter``: Hier kann ein valider LDAP-Suchfilter angegeben werden. Der Default-Wert ist ``(objectClass=*)``, was alle Objekte im Baum anspricht.
 * ``Require``: Wie oben bereits erwähnt, setzt diese Direktive ob und wenn ja wie ein authentifizierte User authorisiert wird. Wenn der Wert ``valid-user`` ist, ist jeder authentifizierte User gleichzeitig auch authorisiert. Der Wert ``ldap-user tuser`` sieht z.B. vor, dass nur der User *tuser* authorisiert ist, alle anderen Authorisierungsversuche werden abgelehnt. ``all granted`` gibt die Resource ohne Bedingung frei.
 
-In der Aufgabe war gefordert, die Authentifizierung nur ueber LDAP durchzuführen, d.h. ``AuthBasicProvider`` muss wie im Codebeispiel oben auf ``ldap`` gesetzt werden.
+In der Aufgabe war gefordert, die Authentifizierung nur über LDAP durchzuführen, d.h. ``AuthBasicProvider`` muss wie im Codebeispiel oben auf ``ldap`` gesetzt werden.
 
 Wenn man den Host im Browser mit ``manual.mi.hdm-stuttgart.de`` aufruft, kommt erwartungsgemäß ein Popup zur Eingabe von Credentials:
 
@@ -866,7 +866,7 @@ Die Installation des MySQL-Datenbankservers kann mit dem Befehl
 
     sudo apt-get install mysql-server
 
-durchgeführt werden. Während der Installation wird man nach einem Passwort fuer den root-User gefragt. Dieser User hat nichts mit dem UNIX-User zu tun, sondern gilt isoliert für MySQL. Da wir eine auf PHP basierende Webanwendung unter Apache zum Laufen bringen wollen, muss noch folgendes Package installiert werden:
+durchgeführt werden. Während der Installation wird man nach einem Passwort für den root-User gefragt. Dieser User hat nichts mit dem UNIX-User zu tun, sondern gilt isoliert für MySQL. Da wir eine auf PHP basierende Webanwendung unter Apache zum Laufen bringen wollen, muss noch folgendes Package installiert werden:
 
 ::
 
