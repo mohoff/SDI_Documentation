@@ -4,8 +4,8 @@
 LDAP
 ****
 
-LDAP Introduction
-#################
+LDAP Einführung
+###############
 
 SOMETHING AMNOG THOSE LINES:
 
