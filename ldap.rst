@@ -12,13 +12,13 @@ LDAP (Lighweight Directory Access Protocol) ist ein Protokoll mit dem über das 
 Daten dieser Art könnten ebenfalls in Datenbanken abgespeichert werden. Ein Vergleich zwischen Verzeichnissen und (relationalen) Datenbanken liegt also nahe. Der wohl größte Unterschied ist die Strukturierung der Daten. Bei Datenbanken sind einzelne Datensätze in Form von Tupeln in einer Vielzahl von Tabellen gespeichert, die sich untereinander referenzieren. Verzeichnisse sind baumartig, also hierarchisch, innerhalb eines **Directory Information Tree** (DIT) strukturiert. Dieser enthält eine Menge von **Objekten**, die wiederum in **Container** und **Blätter** unterteilt sind. Container können wiederum weitere Objekte, also Container und Blätter, enthalten. Die Container an den "Enden" sind üblicherweise die gespeicherten Personen. Diese enthalten eine Menge an Blättern, die die einzelnen Attribute der Person darstellen. Ein solches Attribut ist beispielsweise ein Name, eine E-Mail-Adresse oder Telefonnummer, etc. Jedes dieser Attribute hat einen Typ, der in einer **objectClass** definiert ist. 
 Die generelle Struktur des Baums ist in einem **Schema** definiert.
 
-Die Objekte eines Baums werden über den sog. **Distinguised Name** (DN) referenziert. Dieser setzt sich aus den folgenden Bestandteilen zusammen:
+Die Objekte eines Baums werden über den sog. **Distinguised Name** (DN) referenziert. Dieser setzt sich aus einer Reihe **Relative Distinguished Names** (RDN) zusammen, welche folgendermaßen unterteilt werden können:
 
-- **Domain Component** (dc): Die Identifikation des Unternehmens. Üblicherweise ist dieser an dessen Internetdomain angelehnt, wobei die Punkte entfernt werden und die Bestandteile der Domain einen eigenen dc haben. aus *beispiel.de wird also *dc=beispiel,dc=de*
+- **Domain Component** (dc): Die Identifikation des Unternehmens. Üblicherweise ist dieser an dessen Internetdomain angelehnt, wobei die Punkte entfernt werden und die einzelnen Domainbestandteile in eigene RDNs verpackt werden. Aus *beispiel.de* wird also *dc=beispiel,dc=de*
 - **Orginazational Unit** (ou): Definiert die einzelnen Organisationseinheiten (Abteilungen) innerhalb des Unternehmens
 - **Common Name** (cn): Der Name über den eine Person referenziert wird.
 
-Die einzelnen Bestandteile (**Relative Distinguished Name** = RDN) werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter aneinandergeheftet. Ein Angestellter *Max Mustermann* des Unternehmens *Beispiel.de*, dem die Rolle *Project-Manager* in der Abteilung *Development* zugeteilt ist, könnte beispielsweise den DN *cn=mustermann,ou=pm,ou=dev,dc=beispiel,dc=de* haben.
+RDNs werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter aneinandergeheftet. Ein Angestellter *Max Mustermann* des Unternehmens *Beispiel.de*, dem die Rolle *Project-Manager* in der Abteilung *Development* zugeteilt ist, könnte beispielsweise den DN *cn=mustermann,ou=pm,ou=dev,dc=beispiel,dc=de* haben.
 
 SOMETHING AMNOG THOSE LINES:
 
