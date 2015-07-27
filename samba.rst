@@ -11,7 +11,7 @@ Mithilfe von Samba können Daten (Verzeichnisse, Laufwerke, Festplatten) sowie G
 Diese sogenannten Freigaben tauchen dann zB. in der Windows-Netzwerkumgebung auf und können eingebunden werden.
 Unter Linux diese Freigaben ebenfalls gemountet werden.
 
-Samba kann in gemischten Netzen (Windows & Linux) sowie homogenen Netzwerken zum Datenaustausch eingesetzt werden. 
+Samba kann in gemischten Netzen (Windows & Linux) sowie homogenen Netzwerken zum Datenaustausch eingesetzt werden.
 Samba ist unter Linux sozusagen das Bindeglied zu anderen Betriebssystemen.
 
 Die Bezeichnung "Samba-Server" bezeichnet den Rechner, der die Freigaben zur Verfügung stellt.
@@ -37,7 +37,7 @@ Anschließend können Benutzer hinzugefügt werden. Dies geschieht mit dem Befeh
 
 Hierfür ist es notwendig, dass auf dem System Linux Benutzer mit dem entsprechenden Benutzernamen angelegt ist. Benutzer können mit dem Befehl ``useradd --create-home %username%`` angelegt werden. Mit dem Parameter ``--create-home`` wird gleichzeitig ein Homeverzeichnis angelegt.
 ::
-  root@sdi1a:~# useradd --create-home testuser0 
+  root@sdi1a:~# useradd --create-home testuser0
 
 Zur Erstellung des Samba-Users:
 ::
@@ -51,7 +51,7 @@ Das Passwort-Backend steht in der Samba-Konfigurationsdatei smb.conf:
 ``passdb backend = tdbsam``
 
 Erklärung zu tdbsam:
-:: 
+::
   This backend provides a rich database backend for local servers.
   This backend is not suitable for multiple domain controllers (i.e., PDC + one or more BDC) installations.
    The tdbsam password backend stores the old smbpasswd information plus the extended MS Windows NT/200x SAM information into a binary format TDB (trivial database) file.
@@ -85,9 +85,9 @@ Samba user können nun mit dem Befehl ``pdbedit -L -v`` aufgelistet werden:
   Logon Script:         logon.bat
   Profile Path:         \\PDC-SRV\profiles\testuser0
   Domain:               SDI1A
-  Account desc:         
-  Workstations:         
-  Munged dial:          
+  Account desc:
+  Workstations:
+  Munged dial:
   Logon time:           0
   Logoff time:          Tue, 19 Jan 2038 03:14:07 UTC
   Kickoff time:         Tue, 19 Jan 2038 03:14:07 UTC
@@ -109,9 +109,9 @@ Samba user können nun mit dem Befehl ``pdbedit -L -v`` aufgelistet werden:
   Logon Script:         logon.bat
   Profile Path:         \\PDC-SRV\profiles\testuser1
   Domain:               SDI1A
-  Account desc:         
-  Workstations:         
-  Munged dial:          
+  Account desc:
+  Workstations:
+  Munged dial:
   Logon time:           0
   Logoff time:          Tue, 19 Jan 2038 03:14:07 UTC
   Kickoff time:         Tue, 19 Jan 2038 03:14:07 UTC
@@ -138,28 +138,28 @@ Um beispielsweise das Verzeichnis ``/home/testuser0/shared`` freizugeben, muss i
   public = yes
 
 Der Bezeichner innerhalb der eckigen Klammern ist der Name des Shares. In diesem Fall also **testshare0**.
-Die Parameter im Detail: 
+Die Parameter im Detail:
 
 .. glossary::
 	path
-  		Der Freizugebende Pfad
-  		
+      Der Freizugebende Pfad
+
 	available
   		dient als "Schalter" für das Share. Wird der Parameter auf **no** gesetzt, schlagen alle Versuche auf das Share zuzugreifen fehl.
-  		
+
   	valid users
   		Eine mit Kommas getrennte Liste an Benutzern, die auf das Share zugreifen dürfen; Andersherum können einzelne Benutzer mit dem Parameter **invalid users** vom Zugriff ausgeschlossen werden.
-  	
+
   	read only
   		Legt fest, ob die zugelassenen Benutzer Schreibzugriff auf das Share haben
-  	
+
   	browsesable
   		Ist diese Option auf "no" gesetzt, wird das Share niemals aufgelistet. Es ist also nur möglich direkt per Pfad auf das Share zuzugreifen.
-  	
+
   	public
-  		Legt fest, ob für den Zugriff auf das Share ein Passwort benötigt wird. 
-  		
-  
+  		Legt fest, ob für den Zugriff auf das Share ein Passwort benötigt wird.
+
+
 Nach einem Serverneustart mit ``service smbd restart`` kann auf den Ordner über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testshare0\`` zugegriffen werden.
 
 Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfür müssen in der ``smb.conf`` die Kommentare vor dem folgendem Eintrag entfernt werden:
@@ -191,15 +191,15 @@ Die Konfiguration kann mit dem Befehl ``testparm`` überprüft werden:
 Informationen zu einzelnen Samba-Usern können mit ``smbclient`` abgerufen werden.
 ::
   root@sdi1a:/home# smbclient -L localhost --user testuser0
-  Enter testuser0's password: 
+  Enter testuser0's password:
   Domain=[WORKGROUP] OS=[Unix] Server=[Samba 4.1.6-Ubuntu]
-  
+
   	Sharename       Type      Comment
   	---------       ----      -------
 	print$          Disk      Printer Drivers
-	testshare0      Disk      
-	testshare1      Disk      
-	testshare2      Disk      
+	testshare0      Disk
+	testshare1      Disk
+	testshare2      Disk
 	IPC$            IPC       IPC Service (sdi1a server (Samba, Ubuntu))
   	testuser0       Disk      Home Directories
   Domain=[WORKGROUP] OS=[Unix] Server=[Samba 4.1.6-Ubuntu]
@@ -220,7 +220,7 @@ Mounten von shares
 
 Windows
 +++++++
-Der freigegebene ``shared``-Ordner kann folgendermaßen in Windows eingebunden werden. 
+Der freigegebene ``shared``-Ordner kann folgendermaßen in Windows eingebunden werden.
 Im Arbeitsplatz im Reiter "Computer" die Option "Netzwerkaufwerk verbinden" wählen.
 
 .. image:: images/Samba/windows/01.bmp
@@ -249,7 +249,7 @@ bzw zum Einhängen der Home-Directory von "testuser0":
 ::
   sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/testuser0 /mnt/test/ -ouser=testuser0
 
-  
+
 Verknüpfung mit einem LDAP-Server
 #################################
 
@@ -378,7 +378,7 @@ Zunächst wird ein Backup des aktuellen DIT erstellt, für den Fall dass etwas s
 ::
   slapcat -l backup.ldif
 
-Anschließend werden die Objekte mithilfe des Kommandos 
+Anschließend werden die Objekte mithilfe des Kommandos
 ::
   smbldap-populate
 erzeugt.
@@ -431,7 +431,7 @@ Samba benötigt noch das Passwort für den Root-DN:
 Nun kann ein neuer User in das LDAP-Verzeichnis eingefügt werden:
 ::
   smbldap-useradd -a -P testuser4
- 
+
 Hinzufügen bestehender LDAP-User mit
 ::
   smbpasswd -a testuser4
@@ -447,25 +447,25 @@ Um dies zu ermöglichen muss das Paket libnss-ldapd installiert werden:
   apt-get install libnss-ldapd
 
 Nun muss in der Datei /etc/nssswitch.conf ldap als weitere Ressource angegeben werden:
-::  
+::
   1 # /etc/nsswitch.conf
   2 #
   3 # Example configuration of GNU Name Service Switch functionality.
   4 # If you have the `glibc-doc-reference' and `info' packages installed, try:
   5 # `info libc "Name Service Switch"' for information about this file.
-  6 
+  6
   7 passwd:         files ldap
   8 group:          files ldap
   9 shadow:         files ldap
-  10 
+  10
   11 hosts:          files dns ldap
   12 networks:       files
-  13 
+  13
   14 protocols:      db files
   15 services:       db files
   16 ethers:         db files
   17 rpc:            db files
-  18 
+  18
   19 netgroup:       nis
   20 aliases:        ldap
 
@@ -475,14 +475,14 @@ Außerdem muss die Adresse des LDAP-Servers in der Datei nslcd.conf angegeben we
   1 # /etc/nslcd.conf
   2 # nslcd configuration file. See nslcd.conf(5)
   3 # for details.
-  4 
+  4
   5 # The user and group nslcd should run as.
   6 uid nslcd
   7 gid nslcd
-  8 
+  8
   9 # The location at which the LDAP server(s) should be reachable.
   10 uri ldapi:///141.62.75.101
-  11 
+  11
   12 # The search base that will be used for all queries.
   13 base dc=mi,dc=hdm-stuttgart,dc=de
 
@@ -498,7 +498,7 @@ Ergebnis
 Wenn der testuser4 Zugriff auf einen share erhält (via /etc/samba/smb.conf) so kann sich dieser beim mounten über LDAP authentifizieren.
 
 Anmerkung:
-Es kann passieren, dass beim Mounten die Fehlermeldung "Key Expired" auftritt. 
+Es kann passieren, dass beim Mounten die Fehlermeldung "Key Expired" auftritt.
 In diesem Fall muss dass LDAP-Attribut "maxShadow" gelöscht im jeweiligen User gelöscht werden.
 
 Möglichkeiten zur Fehlerbehandlung in Samba/LDAP
@@ -515,19 +515,19 @@ Die Logging-Einstellungen befinden sich in der Datei ``/etc/samba/smb.conf`` in 
   # This tells Samba to use a separate log file for each machine
   # that connects
     log file = /var/log/samba/log.%m
-  
+
   # Cap the size of the individual log files (in KiB).
      max log size = 1000
-  
+
   # If you want Samba to only log through syslog then set the following
   # parameter to 'yes'.
   #   syslog only = no
-  
+
   # We want Samba to log a minimum amount of information to syslog. Everything
   # should go to /var/log/samba/log.{smbd,nmbd} instead. If you want to log
   # through syslog you should set the following parameter to something higher.
      syslog = 0
-  
+
   # Do something sensible when Samba crashes: mail the admin a backtrace
      panic action = /usr/share/samba/panic-action %d
 
@@ -541,7 +541,7 @@ Mit diesen Einstellungen wird für jeden Klienten eine Logdatei erstellt:
   log.192.168.222.102  log.nmbd.3.gz        log.smbd.4.gz
   log.192.168.222.126  log.paul-pc          log.smbd.old
   log.192.168.222.226  log.sdi1a            log.win-1gp29bt5kvn
- 
+
 Welche Logging-Informationen in dieser Datei gespeichert werden, hängt vom Log-Level ab.
 Dieser wurde in der obigen Konfiguration nicht explizit gesetzt, ist daher per default auf 1 gestellt. Das heißt, dass nur sehr wenige Informationen geloggt werden. In diesem Fall lediglich die Verbindung selbst.
 
@@ -558,7 +558,7 @@ Dazu wird zunächst die PID des smbd benötigt:
 ::
   #Aussschnitt aus root@sdi1a:~# smbstatus :
   Samba version 4.1.6-Ubuntu
-  PID     Username      Group         Machine                        
+  PID     Username      Group         Machine
   -------------------------------------------------------------------
   21420     testuser0     testuser0     192.168.222.126 (ipv4:192.168.222.126:57135)
 
@@ -586,7 +586,7 @@ Dazu muss zunächst der Loglevel mittels einer .ldif-Datei eingestellt werden:
 LDIF-Datei auf LDAP-Datenbank anwenden:
 ``ldapmodify -Q -Y EXTERNAL -H ldapi:/// -f loglevel.ldif``
 
-Anschließend können die LDAP-Logs auf der Konsole angezeigt werden: 
+Anschließend können die LDAP-Logs auf der Konsole angezeigt werden:
 ::
   root@sdi1a:~# cd /var/log
   root@sdi1a:/var/log# tail /var/log -n0 -f `find . -type f`

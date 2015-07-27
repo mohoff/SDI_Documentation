@@ -28,7 +28,7 @@ IP-basiertes Virtual Hosting
 
 Beim IP-basierten Virtual Hosting wird jedem virtuellen Host eine eigene IP-Addresse zugewiesen. Der Webserver hat dafür mehrere Netzwerkschnittstellen (physikalisch oder virtuell) mit verschiedenen IP-Addressen.
 
-Im Endeffekt kann der Server anhand der IP- Adresse, auf der eine Anfrage angekommen ist, entscheiden, welcher virtuelle Host angesprochen wurde.
+Im Endeffekt kann der Server anhand der IP- Adresse, auf der eine Anfrage angekommen ist, entscheiden, welcher virtuelle Host angesprochen wird.
 
 ::
 
@@ -51,7 +51,7 @@ Voraussetzungen:
 
 ::
 
-    NameVirtualHost *:80    // für alle IP-Adressen wird auf Port 80 namensbasiertes virtuelles Hosting verwendet. Wenn nur "*" steht, gilt das sowohl für HTTP und HTTPS.
+    NameVirtualHost *:80    // für alle IP-Adressen wird auf Port 80 namensbasiertes virtuelles Hosting verwendet. Wenn nur "*" steht, gilt das sowohl für HTTP als auch HTTPS.
 
     <VirtualHost *:80>
       ServerName www.domain.tld
@@ -89,7 +89,7 @@ Im Folgenden wird auf die vier Dateien ``apache2.conf``, ``envvars``, ``magic`` 
 
 ``apache2.conf``
 ****************
-``apache2.conf`` ist eine der beiden ``.conf``-Dateien, mit denen sich der Apache-Webserver konfigurieren lässt (früher: ``httpd.conf``). Als Hauptkonfigurationsdatei fügt die Teile anderer Konfigurationsdateien (``mods``, ``confs``, ``sites`` und ``ports.conf``) zusammen, wenn der Server gestartet wird. Beispielhaft sind hier ein paar wichtige Einstellungen aufgeführt:
+``apache2.conf`` ist eine der beiden ``.conf``-Dateien, mit denen sich der Apache-Webserver konfigurieren lässt (früher: ``httpd.conf``). Als Hauptkonfigurationsdatei fügt sie die Teile anderer Konfigurationsdateien (``mods``, ``confs``, ``sites`` und ``ports.conf``) zusammen, wenn der Server gestartet wird. Beispielhaft sind hier ein paar wichtige Einstellungen aufgeführt:
 
 * ``ServerRoot``: Root-Verzeichnis, unter dem die Konfigurationen, Error- und Logdateien des Servers gehalten werden. Bsp.: ``/etc/apache2``.
 * ``Timeout``: Anzahl Sekunden, die gewartet wird, bevor ein Timeout-Signal gesendet wird. Bsp.: ``300``.
@@ -120,7 +120,7 @@ Im Folgenden wird auf die vier Dateien ``apache2.conf``, ``envvars``, ``magic`` 
         Require all granted
       </Directory>
 
-  Damit wird der Zugriff auf das Root-Filesystem explizit verboten (erste Direktive) und der Zugriff auf ``/usr/share/`` und ``/var/www/`` erlaubt (zweite und dritte Direktive). Host-spezifische (Directory-)Direktiven können in den entsprechenden VirtualHost-Direktiven in ``/etc/apache2/sites-available`` festgelegt werden.
+  Damit wird der Zugriff auf das Root-Filesystem explizit verboten (erste Direktive) und der Zugriff auf ``/usr/share/`` und ``/var/www/`` erlaubt (zweite und dritte Direktive). Host-spezifische (Directory-)Direktiven können in den entsprechenden ``VirtualHost``-Direktiven in ``/etc/apache2/sites-available`` festgelegt werden.
 * ``AccessFileName``: Der Name der Datei, die in jedem Ordner gesucht wird, um nach zusätzlichen Konfigurations-Direktiven zu schauen.
 * ``<FilesMatch "^\.ht">Require all denied</FilesMatch>``: Mit dieser Direktive können die Dateien ``.htaccess`` und ``.htpasswd`` nicht von Clients gelesen werden.
 * einige Umgebungsvariablen, z.B. ``${APACHE_PID_FILE}``, die aus der Datei ``envvars`` referenziert werden.
@@ -153,9 +153,9 @@ Wenn der Webserver nur auf Anfragen von localhost antworten soll, kann anstatt `
     Listen localhost:80
     ...
 
-``envvars`` und ``magic``
-*************************
-In ``envvars`` werden, wie der Name schon erahnen lässt, Apache-Umgebungsvariablen gesetzt. Z.B. die beiden folgenden für den User und die Gruppe ``www-data``:
+``envvars``
+***********
+In ``envvars`` werden - wie der Name schon erahnen lässt - Apache-Umgebungsvariablen gesetzt. Z.B. die beiden folgenden für den User und die Gruppe ``www-data``:
 
 ::
 
@@ -163,6 +163,9 @@ In ``envvars`` werden, wie der Name schon erahnen lässt, Apache-Umgebungsvariab
     export APACHE_RUN_USER=www-data
     export APACHE_RUN_GROUP=www-data
     ...
+
+``magic``
+*********
 
 ``magic`` enthält Regeln, um anhand der führenden Bytes einer Datei einen MIME-Typ, also den Inhalt eines Dokuments, zu erkennen. Wenn man sich die Datei anschaut (s.u.), ist sie vierspalitig aufgebaut und enthält pro Zeile eine Matching-Regel:
 
@@ -187,7 +190,7 @@ Die Datei wird von dem Modul ``mime_magic`` verwendet.
 
 ``mods-available`` und ``mods-enabled``
 ***************************************
-Der Apache ist modular aufgebaut. Das bedeutet, dass nur Basisfunktionen im Kern enthalten sind. Erweiterte Funkionen werden durch Module bereitgestellt, die in Apache geladen werden können. Standardmäßig werden einige Basismodule bei der Installation hinzugefügt, im Nachhinein lassen sich aber weitere Module jederzeit integrieren.
+Der Apache Webserver ist modular aufgebaut. Das bedeutet, dass nur Basisfunktionen im Kern enthalten sind. Erweiterte Funkionen werden durch Module bereitgestellt, die in Apache geladen werden können. Standardmäßig werden einige Basismodule bei der Installation hinzugefügt, im Nachhinein lassen sich aber weitere Module jederzeit integrieren. Auf diese Art und Weise ist ein flexibles und einfach wartbares System möglich.
 
 Im Ordner ``mods-available`` werden alle lokal vorhandenen Konfigurationsdateien für Module gelistet. In meiner Umgebung sind das bereits 130 Module, die überwiegend bei der Installation von Apache zur Verfügung gestellt werden. Allerdings besitzt nicht jedes Modul eine eigene Konfigurationsdatei.
 
@@ -206,7 +209,7 @@ Aktiviert werden kann das Modul mit folgendem Command. Anschließend wird der Ap
     sudo a2enmod auth_mysql
     sudo service apache2 restart
 
-Mit ``a2dismod auth_mysql`` lässt sich das Modul wieder deaktivieren.
+Mit ``a2dismod auth_mysql`` lässt sich das Modul wieder deaktivieren (Apache-spezifische Skripte werden im Kapitel "Apache Befehle" behandelt).
 
 ``sites-available`` und ``sites-enabled``
 *****************************************
@@ -228,7 +231,7 @@ Eine einfache Seite könnte wie folgt in einer ``VirtualHost``-Direktive definie
 Erklärung der verwendeten Attribute:
 
 * ``ServerAdmin``: Diese Direktive legt fest, welche E-Mail-Adresse als Adresse des Server-Administrators angegeben wird. Der vorgegebene Wert ist ``webmaster@localhost``. Dieser Wert sollte in eine E-Mail-Adresse geändert werden, über die man den Webmaster erreichen kann. Falls auf der Website ein Problem auftritt, wird ein Fehlerhinweis mit dieser E-Mail-Adresse angezeigt, um das Problem zu melden. Um global für alle Hosts die gleiche E-Mail-Adresse festzulegen, kann die Direktive auch in das bereits erklärten ``apache.conf`-File geschrieben werden.
-* ``ServerName``: Diese Direktive ist optional und gibt den FQDN an, auf den der VirtualHost reagieren soll. Sobald mehr als ein VirtualHost angegeben ist, sind für die zusätzlichen Einträge jedoch eindeutige ``ServerName``s Voraussetzung.  Bsp.: ``Servername www.example.com``.
+* ``ServerName``: Diese Direktive ist optional und gibt den FQDN an, auf den der VirtualHost reagieren soll. Sobald mehr als ein VirtualHost angegeben ist, sind für die zusätzlichen Einträge jedoch eindeutige ``ServerName`` Voraussetzung.  Bsp.: ``Servername www.example.com``.
 * ``ServerAlias``: Mit dem ``ServerAlias`` lassen sich alternative Nutzungs-URLs einrichten. Normalerweise ist es wünschenswert wenn ein VirtualHost, der auf ``example.com`` reagiert, auch auf ``www.example.com`` antwortet. Oder man will alle Subdomains auf die Hauptdomain leiten. Mit einer Wildcard können VirtualHost so konfiguriert werden, dass sie auf jede Anfrage, die auf ``.sdi1b.mi.hdm-stuttgart.de`` endet, reagiert. Der Eintrag für Letzteres ist dann z.B. ``ServerAlias *.sdi1b.mi.hdm-stuttgart.de``.
 * ``DocumentRoot``: Diese Direktive gibt an, wo sich die Webinhalte für einen VirtualHost befinden. Der Standardwert ist ``/var/www/html``. Wenn andere Pfade angegeben werden, muss sichergestellt werden, dass eine Zugriffsberechtigung mittel der ``Directory``-Direktive vorliegt.
 * ``ErrorLog``: Legt den Namen und Ort des ErrorLog-Files fest.
@@ -273,9 +276,9 @@ Funktionsweise
 
 Der Client startet einen Verbindungsversuch zum Server. Der Server reagiert, indem er mit seinem eignenen Zertifikat antwortet. Der Client überprüft das Zertifikat und stellt sicher, dass der Servername mit dem im Zertifikat übereinstimmt. Per assymetrischer Verschlüsselung wird ein symmetrischer Schlüssel ausgetauscht, der in der Sitzung zur Verschlüsselung der Nutzdaten in Zukunft verwendet wird.
 
-Im Fall von namensbasiertem virtuellen Hosting mit HTTPS gibt es eine Besonderheit zu beachten:
+.. topic:: Bemerkung
 
-Bei HTTPS muss der Webserver für jeden Hostnamen ein eignenes Zertifikat ausliefern. Der Hostname ist dem Apache-Server aber erst nach dem TLS-Handshake bekannt. Eine Lösung besteht in der Erweiterung des TLS-Protocols um den Mechanismus Server Name Indication (SNI), welches seit TLS Version 1.2 verfügbar ist und auch in der Praxis eingesetzt wird. Hierbei wird die Hostname-Information bereits während des TLS-Handshakes an den Apache-Server übermittelt, sodass dieser das entsprechende Zertifikat zurückgeben kann.
+    Im Fall von namensbasiertem virtuellen Hosting mit HTTPS gibt es eine Besonderheit zu beachten: bei HTTPS muss der Webserver für jeden Hostnamen ein eignenes Zertifikat ausliefern. Der Hostname ist dem Apache-Server aber erst nach dem TLS-Handshake bekannt. Eine Lösung besteht in der Erweiterung des TLS-Protocols um den Mechanismus Server Name Indication (SNI), welches seit TLS Version 1.2 verfügbar ist und auch in der Praxis eingesetzt wird. Hierbei wird die Hostname-Information bereits während des TLS-Handshakes an den Apache-Server übermittelt, sodass dieser das entsprechende Zertifikat zurückgeben kann.
 
 Exercises
 #########
@@ -300,9 +303,7 @@ Eine eigene ``index.html`` mit folgendem Content wurde im Default-Verzeichnis ``
 
 Wenn man ``sdi1b.mi.hdm-stuttgart.de`` im Browser aufruft, erscheint wie erwartet unsere Testseite.
 
-.. image:: images/Apache/01_customIndexHTML.png
-
-Benannt man die ``index.html`` in ``doc.html`` um, erscheint die IndexOf-Seite, da der Einstiegspunkt einer ``index.html``-Datei nicht mehr vorhanden ist.
+Benennt man die ``index.html`` in ``doc.html`` um, erscheint die IndexOf-Seite, da der Einstiegspunkt einer ``index.html``-Datei nicht mehr vorhanden ist.
 
 .. image:: images/Apache/02_renamedToDocHTML.png
 
@@ -372,7 +373,31 @@ Auffällig ist, dass beim Aufruf dieser URL eine automatische Weiterleitung nach
 
 SDI-Doku hochladen und zugänglich machen
 ****************************************
-Die SDI-Doku besteht aus mehreren Files, daher macht es Sinn die Doku vor dem Upload in eine Datei zu packen. Somit muss man nur eine Datei manuell hochladen. Gepackt wurde die Doku in einen Tarball mittels ``tar -cvzf sphinxdoku.tgz html`` (**ERKLÄRUNG DER PARAMETER**)). Die Übertragung von lokalem PC auf den Server ist mit dem Tool ``scp`` realisierbar, konkret dem Befehl ``scp sphinxdoku.tgz root@141.62.75.106:.`` (**ERKLÄRUNG DER PARAMETER**). Durch die Angabe des Punkts hinten, landet die Datei dann serverseitig im Homeverzeichnis des Users root. Anschließend muss die Datei wieder entpackt werden, z.B. mit dem Befehl ``tar -xvf sphinxdoku.tgz``. Unsere SDI-Doku liegt nun also auf dem Server in dem Verzeichnis ``/home/sdidoc/``.
+Die SDI-Doku besteht aus mehreren Files, daher macht es Sinn die Doku vor dem Upload in eine Datei zu packen. Somit muss man nur eine Datei manuell hochladen. Gepackt wurde die Doku in einen Tarball mittels ``tar -cvzf sphinxdoku.tgz html``. Die Übertragung von lokalem PC auf den Server ist mit dem Tool ``scp`` realisierbar, konkret dem Befehl ``scp sphinxdoku.tgz root@141.62.75.106:.``.
+
+Erklärung der verwendeten ``scp``-Parameter:
+.. glossary::
+	*Parameter 1*
+  		Die Datei, die übertragen werden soll (=Quelle)
+
+	*Parameter 2*
+      User und Zieladresse mit Pfadangabe (=Ziel)
+
+Durch die Angabe des Punkts hinten, landet die Datei dann serverseitig im Homeverzeichnis des Users root. Anschließend muss die Datei wieder entpackt werden, z.B. mit dem Befehl ``tar -xvf sphinxdoku.tgz``. Unsere SDI-Doku liegt nun also auf dem Server in dem Verzeichnis ``/home/sdidoc/``.
+
+Erklärung der verwendeten ``tar``-Parameter:
+
+.. glossary::
+  c
+    *create*, erstellt ein Archiv
+  v
+    *verbose*, führt die ``tar``-Operation im ``verbose``-Modus aus, sprich zeigt ausführliche Informationen an sofern verfügbar.
+  z
+    *gzip*, das angegebene Archiv soll mit ``gzip`` gelesen und geschrieben werden. Trifft auf Archive mit Dateiendung ``.tar.gz`` zu.
+  f
+    *file*, gibt das Archiv-File an, mit der operiert wird.
+  x
+    *extract*, gibt an die Dateien eines Archivs zu entpacken.
 
 Nun muss der Apache entsprechend konfiguriert werden, damit die Doku auch über einen Browser erreichbar ist:
 
@@ -412,7 +437,7 @@ Es gibt zwei Möglichkeiten:  Eine Redirect-Directive oder einen Alias. Vorrauss
 
   .. topic:: Bemerkung
 
-      Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgelöst werden. Auf meinem Server habe ich daher dieses Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgelöst wird. Vergleiche auch mit der nächsten Aufgabe.
+      Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgelöst werden. Auf meinem Server habe ich daher diesen Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgelöst wird. Vergleiche auch mit der nächsten Aufgabe.
 
 
   ::
@@ -438,7 +463,7 @@ Es gibt zwei Möglichkeiten:  Eine Redirect-Directive oder einen Alias. Vorrauss
 
 Einrichtung von virtuellen Hosts
 ********************************
-Die Konfigurationsdatei, mit der das Verhalten erzielt werden kann, sieht folgendermassen aus:
+Die Konfigurationsdatei, mit der das Verhalten erzielt werden kann, sieht folgendermaßen aus:
 
 ::
 
@@ -462,7 +487,7 @@ Die Konfigurationsdatei, mit der das Verhalten erzielt werden kann, sieht folgen
             DocumentRoot /usr/share/doc/apache2-doc/manual/
     </VirtualHost>
 
-Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin über ``sdi1b.mi.hdm-stuttgart.de`` erreichbar (erster VirtualHost-Eintrag). Ein ServerName muss nicht zwangsweise mit angegeben werden, denn so wird dieser VirtualHost für alle Anfragen verwendet, die nicht einen anderen ServerName anfragen (s. folgende VirtualHosts), eine Art Fallback also. Der zweite VirtualHost-Eintrag ermöglicht den Zugriff auf die SDI-Doku über ``mh203.mi.hdm-stuttgart.de``, der dritte Eintrag auf die Apache-Doku über ``manual.mi.hdm-stuttgart.de``. Ersteren muss man wieder über die ``Directory``-Direktive erweitern, sodass das Verzeichnis ``/home/sdidoc`` zugänglich ist.
+Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin über ``sdi1b.mi.hdm-stuttgart.de`` erreichbar (erster VirtualHost-Eintrag). Ein ServerName muss nicht zwangsweise mit angegeben werden, denn so wird dieser VirtualHost für alle Anfragen verwendet, die nicht einen anderen ServerName anfragen (s. folgende ``VirtualHost``), eine Art Fallback also. Der zweite ``VirtualHost``-Eintrag ermöglicht den Zugriff auf die SDI-Doku über ``mh203.mi.hdm-stuttgart.de``, der dritte Eintrag auf die Apache-Doku über ``manual.mi.hdm-stuttgart.de``. Ersteren muss man wieder über die ``Directory``-Direktive erweitern, sodass das Verzeichnis ``/home/sdidoc`` zugänglich ist.
 
 .. topic:: Bemerkung
 
@@ -513,6 +538,8 @@ Außerdem muss sichergestellt werden, dass in der bereits behandelten ``ports.co
 Der folgende prinzipielle Ablauf ist: Wir erstellen uns eine eigene Root-CA, die wir in den Browser importieren. Anschließend erstellen wir das Server-Zertifikat, das wir mit dem Key der Root-CA signieren und auf unseren Server ``sdi1b.mi.hdm-stuttgart.de`` laden. Dort erstellen wir einen passenden ``VirtualHost``, der SSL-fähig ist und starten den Webserver neu. Anschließend kann mit dem Browser, der das Root-CA geladen hat, problemlos die HTTPS-Version der Seite angesurfed werden.
 
 Die eigentliche Erstellung der Keys und Zertifikate, sowie die Apache-Konfiguration, erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird (*Vorgehensweise ist auf http://datacenteroverlords.com/2012/03/01/creating-your-own-ssl-certificate-authority/* genau beschrieben).
+
+Die Erklärungen aller verwendeten Parameter im Laufe des Prozesses sind am Ende des hierauf folgenden Unterkapitels aufgeführt.
 
 Erstellen des Root-Keys und des Root-Zertifikats
 ++++++++++++++++++++++++++++++++++++++++++++++++
@@ -641,7 +668,7 @@ Aus diesem Key wird ein "Certificate Signing Request" (CSR) erstellt:
 
 ::
 
-    opensll req -new -key device.key -out device.csr
+    openssl req -new -key device.key -out device.csr
 
 Wieder werden einige User-Eingaben verlangt. Wichtig ist hierbei nur, dass unter der Eingabe "common name" der Hostname oder die IP-Adresse des Servers eingetragen wird, der das Zertifikat später verwenden soll.
 
@@ -723,6 +750,54 @@ Exemplarisch der Inhalt der aktuellen ``rootCA.srl``:
 
     Das Root-Zertifikat ist 1024 Tage gültig, es macht also keinen Sinn das Device-Zertifikat über einen längeren Zeitraum auszustellen. Nach Ablauf des Root-Zertifikats wird auch dieses ungültig werden.
 
+Erklärung der ``openssl``-Parameter:
+
+.. glossary::
+  genrsa
+    ein Standardkommando, das die Generierung eines RSA-private-keys bewirkt. Der public Key ist im private Key enthalten. (*Quelle: https://www.openssl.org/docs/HOWTO/keys.txt*)
+
+  req
+    ein Standardkommando, das Certificate Signing Requests (CSR) handhabt.
+
+  x509
+      ein Standardkommando, das ein vielseitiges Certificate-Utility ist, um Zertifikate anzuzeigen, konvertieren und um Certificate-Requests zu signieren.
+
+  -out <filename>
+      Gibt den Dateinamen für die Ausgabe eines Befehls an.
+
+  genrsa <num>
+      Die Länge des private Keys, der mit ``genrsa`` generiert werden soll, in Bits. Tritt im Zusammenhang mit ``genrsa`` auf. In unserem Beispiel ist die Schlüssellange 2048 Bits.
+
+  -aes128|-aes192|-aes256|-camellia128|-camellia192|-camellia256|-des|-des3|-idea
+      Optionen, um den private Key vor der Ausgabe zusätzlich zu schützen. Falls angegeben, wird nach einer Passphrase gefragt. Wenn nicht angegeben, wird der private Key auch nicht verschlüsselt
+
+  -x509
+      Mit diesem Parameter wird ein selbstsigniertes Zertifikat anstatt einem Certificate-Request ausgegeben. Wird i.d.R. verwendet, um ein Test-Zertifikat oder eine selbstsignierte Root-CA zu generieren.
+
+  -new
+      Diese Option generiert einen neuen Certificate-Request. Der User wird nach relevanten Eingaben gefragt.
+
+  -nodes
+      Mit diesem Parameter, wird ein privater Key, der im Laufe der Operation generiert wird, nicht verschlüsselt.
+
+  -key <filename>
+      Gibt die Datei an, von der der private Key gelesen werden soll.
+
+  -days <num>
+      Gibt im Kontext des ``-x509`-Kommandos an, wie viele Tage das Zertifikat gültig sein soll. Der Standardwert beträgt 30 Tage.
+
+  -in  <filename>
+      Gibt den Input-Dateinamen an, von dem ein Request gelesen werden soll. Ein Request wird nur gelesen, sofern die Option ``-new`` nicht im gleichen Befehl mit angegeben wurde.
+
+  -CA <filename>
+      Spezifiziert das CA-Zertifikat, das zum Signieren verwendet werden soll. Das Standardkommando ``x509`` verhält sich nun wie eine "mini CA". Die Input-Datei kann mit dieser signiert werden.
+
+  -CAkey <filename>
+      Setzt den private Key der CA, mit dem ein Zertifikat signiert werden soll. Wenn diese Option nicht gesetzt ist, wird davon ausgegangen, dass der private Key der CA bereits im Zertifikat der CA enthalten ist.
+
+  -CAcreateserial
+      Mit dieser Option wird eine CA-serial-number erstellt, falls sie nicht schon existiert. Falls die ``-CA``-Option gesetzt ist und die serial-number-Datei nicht existiert, wird eine Zufallszahl generiert.
+
 zugehöriger ``VirtualHost`` unter Apache
 ++++++++++++++++++++++++++++++++++++++++
 
@@ -738,7 +813,7 @@ Folgende Commands kopieren die beiden Files in das gewünschte Verzeichnis.
 
 Seitens Key und Zertifikat ist das Setup beendet. Nun muss der Apache im letzten Schritt noch angewiesen werden, die beiden Dateien in seiner SSL-Konfiguration zu verwenden.
 
-Ein passender ``VirtualHost`` sieht z.B. folgendermaßen aus
+Ein passender ``VirtualHost`` sieht z.B. folgendermaßen aus:
 
 ::
 
@@ -753,7 +828,7 @@ Ein passender ``VirtualHost`` sieht z.B. folgendermaßen aus
     </VirtualHost>
 
 
-Neu sind die 3 Zeilen in der Mitte: sie sagen aus, dass die ``SSLEngine`` für diesen Host aktiv sein soll und gibt die Pfade zum ``SSLCertificateFile`` und zum ``SSLCertificateKeyFile`` an, die im letzten Schritt jeweils in das Verzeichnis ``/etc/ssl/certs`` kopiert wurden.
+Neu sind die drei Zeilen am Ende: sie sagen aus, dass die ``SSLEngine`` für diesen Host aktiv sein soll und gibt die Pfade zum ``SSLCertificateFile`` und zum ``SSLCertificateKeyFile`` an, die im letzten Schritt jeweils in das Verzeichnis ``/etc/ssl/certs`` kopiert wurden.
 
 Praxistest
 ++++++++++
@@ -764,7 +839,7 @@ Der Aufruf von ``https://sdi1b.mi.hdm-stuttgart.de`` funktioniert nun. Der Firef
 
 Mit einem Click auf "Weitere Informationen..." kann das Server-Zertifikat (Device-Zertifikat) begutachtet werden.
 
-Wenn das Root-Zertifikat nicht im Browser integriert ist, kommt folgender bekannter Warnhinweis:
+Wenn das Root-Zertifikat nicht im Browser integriert ist, kommt folgender - aus dem Alltag bekannter - Warnhinweis:
 
 .. image:: images/Apache/13_pageNotTrusted.png
 
@@ -820,7 +895,7 @@ Jetzt, wo der Apache fähig ist LDAP-AuthNZ zu vollziehen, können wir einen (od
                     AuthName "Top Secret"
                     AuthType Basic
                     AuthBasicProvider ldap
-                    AuthLDAPURL ldap://localhost:389/ou=Peope,dc=mi,dc=hdm-stuttgart,dc=de?uid?sub
+                    AuthLDAPURL ldap://localhost:389/ou=People,dc=mi,dc=hdm-stuttgart,dc=de?uid?sub
                       # AuthBasicProvider file ldap  --> we only want ldap authentication, no "file" authentication
                       # AuthUserFile "/usr/local/apache/passwd/passwords" --> no file needed in ldap-only authentication
                     Require valid-user
@@ -919,4 +994,4 @@ Wenn wir eine eigene Datenbank ``hdm`` anlegen mit der Tabelle ``studenten`` und
 
 .. image:: images/Apache/25_mysqlFSCustomTable.png
 
-Die ``.frm``-Datei enthält die Tabellendefinitionen und die ``.ibd``-Datei die Daten an sich, sowie Indizes sofern vorhanden. Diese Variante nennt sich *file-per-table*, da für jede Tabelle neue Dateien angelegt werden.
+Die ``.frm``-Datei enthält die Tabellendefinitionen und die ``.ibd``-Datei die Tabellendaten an sich, sowie Indizes sofern vorhanden. Diese Variante nennt sich *file-per-table*, da für jede Tabelle neue Dateien angelegt werden.
