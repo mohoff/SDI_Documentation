@@ -169,9 +169,14 @@ a.headerlink:hover {
     color: white;
 }
 
-div.body p, div.body dd, div.body li {
+div.body p, div.body li {
     text-align: justify;
-    line-height: 130%;
+    line-height: 150%;
+}
+
+div.body dd {
+    text-align: justify;
+    line-height: 110%;
 }
 
 div.admonition p.admonition-title + p {

@@ -391,6 +391,7 @@ dt:target, .highlighted {
 dl.glossary dt {
     font-weight: bold;
     /*font-size: 1.1em;*/
+    line-height: 100%
 }
 
 .field-list ul {
