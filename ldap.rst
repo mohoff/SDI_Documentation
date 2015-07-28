@@ -79,7 +79,7 @@ Standardmäßig werden im Directory Studio nur 1000 Einträge angzeigt. Bei Verz
 
 
 Selbiges Ergebnis kann auch über die Kommandozeile mit dem Tool **ldapsearch** erzielt werden. Dieses befindet sich im Paket **ldap-utilities**.
-Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055``. Die Kommandozeile zeigt daraufhin dieselben Informationen wie das Directory Studio.
+Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055``. Die Kommandozeile zeigt daraufhin dieselben Informationen wie das Directory Studio. Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio. Das Kommando wird weiter unten im Detail behandelt.
 
 
 Einrichtung eines LDAP-Servers
@@ -87,7 +87,6 @@ Einrichtung eines LDAP-Servers
 
 Man unterscheidet zwischen dem OpenLDAP Server Daemon im Package ``slapd`` und LDAP
 Management Utilities im Package ``ldap-utils``.
->>>>>>> 782cdf4753403ba1cbd994c3b6f9066720cbd384
 
 ::
 
@@ -113,6 +112,8 @@ werden kann. Die Standardkonfiguration in unseren VMs ist daher
 ::
 
   dc=mi,dc=hdm-stuttgart,dc=de
+
+Mit dem Apache Directory Studio kann nun wie oben beschrieben auf diesen eben eingerichteten LDAP-Server zugegriffen werden.
 
 Die ``config``-Datenbank
 ++++++++++++++++++++++++
@@ -177,9 +178,33 @@ and Security Layer" (SASL) (-Y <SASL mechanism>).
     ``-x``
       Gibt an, dass eine "einfache Authentifizierung" an Stelle von SASL verwendet wird.
 
+    ``-W``
+      User wird bei *simple authentication* per Prompt nach einem Passwort gefragt. Alternativ muss die Authentifizierung im Kommando selbst stattfinden.
+
     ``<filter>``
       Bietet die Möglichkeit, einen Ausgabefilter anzugeben. Falls er weggelassen wird, wird der Standardfilter ``(objectClass=*)`` verwendet. Wir verwenden ``dn``, sodass alle "distinguished names" innerhalb der Searchbase (s.o.) angezeigt werden.
 
+Befehl ``ldapadd``:
+::
+
+  [sudo] ldapadd -x -W -c -D cn=admin,dc=betrayer,dc=com -f data.ldif
+
+Dieses Kommando wird in der nächsten Aufgabe verwendet.
+
+.. topic:: ``ldapsearch``
+
+  .. glossary::
+    ``-x``
+      Nutzt den SASL "quiet mode". User wird nicht nach Eingaben gefragt.
+
+    ``-c``
+      Fährt im Fall von Fehlern ohne Abbruch fort. Die Fehler werden nach Durchführung in einem Report zusammengefasst
+
+    ``-D <bindDN>``
+      Gibt den ``bindDN`` an, mit dem der Bind durchgeführt werden soll.
+
+    ``-f <filename>``
+      Gibt an, dass aus der angegebenen Datei gelesen werden soll.
 
 LDIF Files
 **********
@@ -228,13 +253,49 @@ Ein LDIF-File kann z.B. folgendermaßen aussehen:
   sn: Beam
   mail: beam@betrayer.com
 
-Mit diesem LDIF-File werden mehrere neue ``ou`` dem DIT hinzugefügt. Außerdem wurde ein neuer User hinzugefügt
+  dn: uid=halle,ou=devel,ou=software,ou=departments,dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
+  changetype: add
+  objectClass: inetOrgPerson
+  uid: halle
+  cn: Hans Halle
+  givenName: Hans
+  sn: Halle
+  mail: halle@betrayer.com
 
-Ein weiter "Leaf"-User wurde im letzten Block hinzugefügt.
+Mit diesem LDIF-File werden mehrere neue ``ou`` dem DIT hinzugefügt. Außerdem wurde ein neuer User im letzten Block hinzugefügt
+
+Weitere *organizational units* können mit folgendem LDIF-Snippet angelegt werden:
+
+.. code-block:: html
+  :linenos:
+
+  dn: ou=sales,ou=departments,dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
+  changetype: add
+  objectClass: top
+  objectClass: organizationalUnit
+  ou: sales
+
+
+Für die Integration in das LDAP-Directory gibt es wie bei der Suche zwei Möglichkeiten: Über das Apache Directory Studio (GUI) oder über das CLI.
+
+Die Importfunktion der GUI ist selbsterklärend, daher gehen wir nur kurz auf den Konsolenbefehl ein, der oben bereits im Detail erklärt wurde:
+
+::
+
+    ldapadd -x -W -c -D cn=admin,dc=betrayer,dc=de -f data.ldif
+
+Um die Datei ``data.ldif`` auf den Server zu übertragen, kann man das Tool *scp* zur Hilfe gezogen werden. Mit dem Befehl
+
+::
+
+    scp ./data.ldif root@141.62.75.106:.
+
+wird die Datei ins Homeverzeichnis des Users *root* auf dem Server unter der IP ``141.62.75.106`` kopiert.
+
 
 LDAP mit Thunderbird
 ####################
-Auf die LDAP-Daten kann nun mit einem Mail-client zugegriffen werden, in unserem Fall dem Tool *Mozilla Thunderbird*.
+Auf die LDAP-Daten kann nun mit einem Mail-Client zugegriffen werden, in unserem Fall dem Tool *Mozilla Thunderbird*. Dazu müssen LDAP-Einträge eine Mailadresse beinhalten.
 
 Via *Tools->Address Book->New->LDAP Directory* kann ein neues LDAP-Directory hinzugefügt werden:
 
@@ -248,8 +309,8 @@ Nun können die User-Einträge mit dem Filter ``@`` angeschaut werden, sofern Us
 
 .. image:: images/addressbook.png
 
-LDAP Filter Search
-##################
+LDAP Suche mit Filtern
+######################
 
 Filter kann man über das CLI oder über das Apache Directory Studio festlegen.
 
@@ -260,7 +321,7 @@ Knoten rechtsklickt und "Filter Children" auswählt. Im Popup-Fenster lässts si
 dann ein Suchstring eingeben. Um die Syntax näher zu beleuchten, hier ein paar
 Beispiele:
 
-.. topic:: Beispiele zu LDAP Search Filtern
+.. topic:: Beispiele zu LDAP Suchfiltern
 
   .. glossary::
     ``(objectClass=*)``
@@ -288,6 +349,12 @@ Der Filter ``(uid=b*)`` filtert Einträge, für welche ein Attribut ``uid`` exis
 
 Der Filter ``(|(uid=*)(ou=d*))`` begrenzt die Ausgabe auf Einträge, die entweder ein definiertes ``uid``-Attribut oder ein ``ou``-Attribut mit dem Anfangsbuchstaben "d" besitzen.
 
+Ein entsprechender ``ldapsearch``-Aufruf, der den User *beans* findet, sieht damit wie folgt aus:
+
+::
+    ldapsearch -x -H -W ldap:/// "cn=admin,dc=betrayer,dc=de" -b dc=betrayer,dc=com -LLL "(uid=b*)"
+
+
 Einträge erweitern
 ##################
 Zuletzt fügten wir ein ``posixAccount`` für den User "Jim Beam" mithilfe dem folgenden ldif-File hinzu:
@@ -301,18 +368,32 @@ Zuletzt fügten wir ein ``posixAccount`` für den User "Jim Beam" mithilfe dem f
   objectClass: posixAccount
   -
   add: uidNumber
-  uidNumber: 600
+  uidNumber: 610
   -
   add: gidNumber
-  gidNumber: 600
+  gidNumber: 610
   -
   add: homeDirectory
   homeDirectory: /home/beam/
 
+Die Objektklasse ``posixAccount`` erfordert die Angabe einer ``uidNumber`` und einer ``gidNumber``.
+
+Über den Befehl ``ldapmodify`` lassen sich die Änderungen unter Angabe der LDIF-Datei einspielen:
+
+::
+    ldapmodify -x -W -D "cn=admin,dc=betrayer,dc=de" -f datamodified.ldif
+
+Die Syntax ist nahezu deckungsgleich mit der von ``ldapadd``, daher gehen wir nicht genauer darauf ein.
+
 LDAP Account Manager
 ********************
 Der LDAP Account Manager (LAM) stellt Funktionen zur Administration von LDAP-Verzeichnissen über ein Webinterface zur Verfügung.
-LAM kann über die Kommandozeile mit dem Befehl ``[sudo] apt-get install ldap-account-manager`` installiert werden.
+LAM kann über die Kommandozeile mit dem Befehl
+
+::
+    [sudo] apt-get install ldap-account-manager
+
+installiert werden.
 
 Der LAM läuft auf Apache und ist nach der Installation sofort unter
 ``http://localhost/lam`` erreichbar. Über das Interface, das unter dieser Adresse zu finden ist,
