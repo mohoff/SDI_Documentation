@@ -4,26 +4,21 @@
 LDAP
 ****
 
-The LDAP concept
-################
+LDAP Einführung
+###############
 
-SOMETHING AMNOG THOSE LINES:
+LDAP (Lighweight Directory Access Protocol) ist ein Protokoll mit dem über das Netzwerk auf spezielle Verzeichnisse zugegriffen werden kann. LDAP-Verzeichnisse zeichnen sich dadurch aus, dass sie sich automatisch replizieren- und über mehrere Systeme verteilen lassen. In LDAP-Verzeichnissen können Informationen verschiedenster Art gespeichert werden. Häufig sind die Informationen auf Benutzer innerhalb eines Unternehmens bezogen. Üblich sind beispielsweise Namen, Login-Daten und E-Mail-Adressen.
 
-- schemas (also built-ins like cosine, nis, inetorgperson)
-- tree structure
+Daten dieser Art könnten ebenfalls in Datenbanken abgespeichert werden. Ein Vergleich zwischen Verzeichnissen und (relationalen) Datenbanken liegt also nahe. Der wohl größte Unterschied ist die Strukturierung der Daten. Bei Datenbanken sind einzelne Datensätze in Form von Tupeln in einer Vielzahl von Tabellen gespeichert, die sich untereinander referenzieren. Verzeichnisse sind baumartig, also hierarchisch, innerhalb eines **Directory Information Tree** (DIT) strukturiert. Dieser enthält eine Menge von **Objekten**, die wiederum in **Container** und **Blätter** unterteilt sind. Container können wiederum weitere Objekte, also Container und Blätter, enthalten. Die Container an den "Enden" sind üblicherweise die gespeicherten Personen. Diese enthalten eine Menge an Blättern, die die einzelnen Attribute der Person darstellen. Ein solches Attribut ist beispielsweise ein Name, eine E-Mail-Adresse oder Telefonnummer, etc. Jedes dieser Attribute hat einen Typ, der in einer **objectClass** definiert ist.
+Die generelle Struktur des Baums ist in einem **Schema** definiert.
 
--  A LDAP directory is a tree of data entries that is hierarchical in nature and is called the Directory Information Tree (DIT).
-- An entry consists of a set of attributes.
-- An attribute has a type (a name/description) and one or more values.
-- Every attribute must be defined in at least one objectClass.
-- Attributes and objectclasses are defined in schemas (an objectclass is actually considered as a special kind of attribute).
-- Each entry has a unique identifier: its Distinguished Name (DN or dn). This, in turn, consists of a Relative Distinguished Name (RDN) followed by the parent entry's DN.
-- The entry's DN is not an attribute. It is not considered part of the entry itself.
-- The terms object, container, and node have certain connotations but they all essentially mean the same thing as entry, the technically correct term.
-- For example, below we have a single entry consisting of 11 attributes where the following is true:
-- DN is "cn=John Doe,dc=example,dc=com"
-- RDN is "cn=John Doe"
-- parent DN is "dc=example,dc=com"
+Die Objekte eines Baums werden über den sog. **Distinguished Name** (DN) referenziert. Dieser setzt sich aus einer Reihe **Relative Distinguished Names** (RDN) zusammen, welche folgendermaßen unterteilt werden können:
+
+- **Domain Component** (dc): Die Identifikation des Unternehmens. Üblicherweise ist dieser an dessen Internetdomain angelehnt, wobei die Punkte entfernt werden und die einzelnen Domainbestandteile in eigene RDNs verpackt werden. Aus *beispiel.de* wird also *dc=beispiel,dc=de*
+- **Organizational Unit** (ou): Definiert die einzelnen Organisationseinheiten (Abteilungen) innerhalb des Unternehmens
+- **Common Name** (cn): Der Name über den eine Person referenziert wird.
+
+RDNs werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter aneinandergeheftet. Ein Angestellter *Max Mustermann* des Unternehmens *Beispiel.de*, dem die Rolle *Project-Manager* in der Abteilung *Development* zugeteilt ist, könnte beispielsweise den DN *cn=mustermann,ou=pm,ou=dev,dc=beispiel,dc=de* haben.
 
 .. topic:: Abkürzungen
 
@@ -41,29 +36,65 @@ SOMETHING AMNOG THOSE LINES:
     OU
       Organizational Unit
 
+Exercises
+#########
+
 Apache Directory Studio
-#######################
+***********************
 
-Das Apache Directory Studio (ADS) ist ein auf Eclipse basierendes Tool, mit dem CRUD-Operations auf LDAP-Datenbanken
-ausgeführt werden können.
+Das Apache Directory Studio (ADS) ist ein auf Eclipse basierendes Tool, mit dem CRUD-Operationen auf LDAP-Datenbanken
+ausgeführt werden können. Es ist für Windows, Linux und Mac OS X verfügbar und kann `hier <https://directory.apache.org/studio/downloads.html>`_ heruntergeladen werden.
 
-Dient zur Unterstützung des Installationsprozesses, sowie der Entwicklung und dem Debugging unter LDAP.
-Für die alltäglichen Administrierungsaufgaben sind jedoch webbasierte Tools geeigneter.
+Das Apache Directory Studio vereinfacht den Installationsprozesses und eignet sich hervorragend, um LDAP-Verzeichnisse zu durchsuchen. Für Administrierungsaufgaben sind jedoch Web-basierte Tools, wie der LDAP Account Manager (s. u.) geeigneter.
+
+Um sich im Directory Studio mit einem LDAP-Server zu verbinden, muss der im untenstehenden Screenshot mit **1.** markierte Button im Interface betätigt werden, woraufhin das rechtsstehende Dialogfenster erscheint. Hier können die Verbindungsdaten eingegeben werden. Der **Verbindungsname** dient zum Zweck der Anzeige innerhalb des Programms und kann frei gewählt werden. **Hostname** und **Port** entprechen der Adresse des LDAP Servers. In diesm Fall handelt es sich um den der HdM. Als **Verschlüsselungs-Methode** kann optional TLS eingestellt werden.
+
+.. image:: images/LDAP/01-neue-verbindung.png
+
+Mit einem Klick auf "Weiter" gelangt man auf die nächste Seite des Dialogfensters.
+
+.. image:: images/LDAP/02-neue-verbindung-2.png
+
+In diesem kann man sich authentifizieren. Im Fall des HdM-LDAP-Servers kann der Zugriff auch anonym erfolgen. Mit einem Klick auf "Fertigstellen" ist die Einrichtung abgeschlossen.
+
+Um einen Eintrag zu finden muss die Filterfunktion bemüht werden. In diesem Beispiel ist die UID des gesuchten Benutzers bekannt. Es soll nach dem Benutzer mit der UID **dh055** gesucht werden. Hierfür wird der Zweig, in dem sich der Benutzer befindet, rechts geklickt werden und im Kontextmenü der Eintrag **Kind-Einträge filtern...** ausgewählt werden.
+
+.. image:: images/LDAP/03-filtern.png
+
+In der erscheinenden Maske wird die Abfrage formuliert. In diesem Fall lautet diese **(uid=dh055)**. Abfragen werden in einer speziellen LDAP-Syntax erstellt. Mehr dazu `hier <http://www.ldapexplorer.com/en/manual/109010000-ldap-filter-syntax.htm>`_.
+
+.. image:: images/LDAP/04-filtern-2.png
+
+Nach der Bestätigung durch **OK** wird der gesuchte Eintrag auf der Oberfläche angezeigt.
+
+.. image:: images/LDAP/05-filtern-3.png
 
 
+.. topic:: Hinweis
 
-Setting up a LDAP-Server
-########################
-
+<<<<<<< HEAD
 Man unterscheidet zwischen dem *OpenLDAP server daemon* im Package ``slapd`` und *LDAP
 management utilities* im Package ``ldap-utils``.
+=======
+  Standardmäßig werden im Directory Studio nur 1000 Einträge angzeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
+
+
+Selbiges Ergebnis kann auch über die Kommandozeile mit dem Tool **ldapsearch** erzielt werden. Dieses befindet sich im Paket **ldap-utilities**.
+Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055``. Die Kommandozeile zeigt daraufhin dieselben Informationen wie das Directory Studio.
+
+
+Einrichtung eines LDAP-Servers
+******************************
+
+Man unterscheidet zwischen dem OpenLDAP Server Daemon im Package ``slapd`` und LDAP
+Management Utilities im Package ``ldap-utils``.
+>>>>>>> 782cdf4753403ba1cbd994c3b6f9066720cbd384
 
 ::
 
   sudo apt-get install slapd ldap-utils
 
-Während der Installation muss man Admin-Credentials festlegen, die für den
-``rootDN`` der LDAP-Datenbank gesetzt werden, standardmäßig ist das
+Während der Installation muss man Admin-Credentials festlegen, die für den ``rootDN`` der LDAP-Datenbank gesetzt werden, standardmäßig heißt dieser bei uns
 
 ::
 
@@ -75,7 +106,7 @@ eine ``config``-Datenbank erstellt (s.u.).
 Die Installation erstellt eine lauffähige Konfiguration, darunter eine Datenbank
 in der die LDAP-Daten gespeichert werden können.
 
-Der "base DN" (DN = Distinguished Name) dieser Instanz wird vom Domainnamen des
+Der ``baseDN`` (DN = Distinguished Name) dieser Instanz wird vom Domainnamen des
 ``localhost`` abgeleitet. Alternativ kann man die Datei ``/etc/hosts`` editieren, um manuell
 Domainnamen für localhost vergeben, sodass ein erwünschter ``baseDN`` erstellt
 werden kann. Die Standardkonfiguration in unseren VMs ist daher
@@ -85,9 +116,9 @@ werden kann. Die Standardkonfiguration in unseren VMs ist daher
   dc=mi,dc=hdm-stuttgart,dc=de
 
 Die ``config``-Datenbank
-************************
+++++++++++++++++++++++++
 
-Der Inhalt der config-Datenbank sieht aus wie folgt:
+Der Inhalt der Config-Datenbank sieht aus wie folgt:
 
 .. code-block:: html
   :linenos:
@@ -110,8 +141,9 @@ Der Inhalt der config-Datenbank sieht aus wie folgt:
 Direkte Änderungen in der ``config``-Datenbank sind nicht empfohlen, man soll vielmehr
 über das LDAP-Protokoll (Tool aus dem Package ``ldap-utils``) Änderungen vornehmen.
 
-The LDAP-Protocol
-#################
+Das LDAP-Protokoll
+******************
+
 Befehl ``ldapsearch``:
 ::
 
@@ -151,9 +183,9 @@ and Security Layer" (SASL) (-Y <SASL mechanism>).
 
 
 LDIF Files
-##########
+**********
 
-Mit LDIF Files lassen sich LDAP-spezifische Daten speichern, z.B. als Export-Funktion.
+Mit LDIF Files lassen sich LDAP-spezifische Daten speichern, z.B. um Einträge im LDAP Verzeichnis zu speichern, zu ändern oder hinzuzufügen.
 Über ``slapadd`` im Terminal (LDAP-Server zur Sicherheit dafür stoppen) oder die
 Importfunktion des Apache Directory Studios lassen sich LDIF-Files importieren.
 
@@ -197,19 +229,13 @@ Ein LDIF-File kann z.B. folgendermaßen aussehen:
   sn: Beam
   mail: beam@betrayer.com
 
-  dn: uid=lappen,ou=devel,ou=software,ou=departments,dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
-  changetype: add
-  objectClass: inetOrgPerson
-  uid: lappen
-  cn: Lars Lappen
-  givenName: Lars
-  sn: Lappen
-  mail: lappen@sdi1a.mi.hdm-stuttgart.de
+Mit diesem LDIF-File werden mehrere neue ``ou`` dem DIT hinzugefügt. Außerdem wurde ein neuer User hinzugefügt
 
+<<<<<<< HEAD
 Ein weiter "Leaf"-User wurde im letzten Block hinzugefügt.
 
-LDAP with mail client Thunderbird
-#################################
+LDAP mit Thunderbird
+####################
 Auf die LDAP-Daten kann nun mit einem Mail-client zugegriffen werden, in unserem Fall dem Tool *Mozilla Thunderbird*.
 
 Via *Tools->Address Book->New->LDAP Directory* kann ein neues LDAP-Directory hinzugefügt werden:
@@ -220,7 +246,7 @@ Es kann auch für die Offline-Nutzung heruntergeladen werden:
 
 .. image:: images/offline.png
 
-Nun können die Mails mit dem Filter ``@`` angeschaut werden:
+Nun können die User-Einträge mit dem Filter ``@`` angeschaut werden, sofern User zuvor entsprechend angelegt wurden:
 
 .. image:: images/addressbook.png
 
@@ -252,7 +278,6 @@ Beispiele:
       Jeder Eintrag mit ``objectClass=user`` UND einer E-Mail-Adresse, die
       mit "abc" beginnt.
 
-
 Allgemein: die Search-Syntax uenterstützt Operatoren (!, &, |, =, ~=, <=, >=) und
 Wildcards (*). Gruppierungen erfolgen durch Einklammern. Falls nach reservierten
 Sonderzeichen gesucht werden muss (Klammern, !, ^, ...), lassen sich diese im
@@ -261,12 +286,12 @@ Suchstring escapen.
 
 Search Filter Aufgaben
 **********************
-Der Filter ``(uid=b*)`` filtert User, bei denen ein Attribut mit "d" beginnt.
+Der Filter ``(uid=b*)`` filtert Einträge, für welche ein Attribut ``uid`` existiert und das mit dem Buchstaben "d" beginnt.
 
 Der Filter ``(|(uid=*)(ou=d*))`` begrenzt die Ausgabe auf Einträge, die entweder ein definiertes ``uid``-Attribut oder ein ``ou``-Attribut mit dem Anfangsbuchstaben "d" besitzen.
 
-Extending an existing Entry
-###########################
+Einträge erweitern
+##################
 Zuletzt fügten wir ein ``posixAccount`` für den User "Jim Beam" mithilfe dem folgenden ldif-File hinzu:
 
 .. code-block:: html
@@ -286,54 +311,49 @@ Zuletzt fügten wir ein ``posixAccount`` für den User "Jim Beam" mithilfe dem f
   add: homeDirectory
   homeDirectory: /home/beam/
 
-LDAP Account Manager (LAM)
-##########################
-Installation unter Ubuntu mit
-::
-
-    [sudo] apt-get install ldap-account-manager
+LDAP Account Manager
+********************
+Der LDAP Account Manager (LAM) stellt Funktionen zur Administration von LDAP-Verzeichnissen über ein Webinterface zur Verfügung.
+LAM kann über die Kommandozeile mit dem Befehl ``[sudo] apt-get install ldap-account-manager`` installiert werden.
 
 Der LAM läuft auf Apache und ist nach der Installation sofort unter
-``http://localhost/lam`` erreichbar. Auf dieser Webseite
-lassen sich gleich die LAM-Einstellungen vornehmen. Das default Master-Passwort
-ist ``lam``.
+``http://localhost/lam`` erreichbar. Über das Interface, das unter dieser Adresse zu finden ist,
+lassen sich sogleich die LAM-Einstellungen vornehmen. Das standardmäßige Master-Passwort
+lautet ``lam``.
 
 .. image:: images/LAM/lamlogin.png
 
-Die "General Settings" umfassen Einstellungen zur Sicherheit, Passwörtern und
+Der Reiter *General Settings* umfasst Einstellungen zur Sicherheit, Passwörtern und
 deren Policies, sowie Logging.
 
-Damit wir auf unseren LDAP- Server zugreifen können, müssen unter Server-Profiles die Daten unseren Servers eingestellt werden.
+Damit auf den installierten LDAP-Server zugegriffen werden kann, müssen unter Server-Profiles die Daten des Servers eingestellt werden.
 
 .. image:: images/LAM/ServerSetting.png
 
-Außerdem müssen die richtigen Security-Settings eingestellt werden:
+Zudem müssen die richtigen Security-Settings eingestellt werden:
 
 .. image:: images/LAM/SecuritySettings.png
 
-Nun können wir uns auf unserem LDAP-Server korrekt anmelden.
+Im Anschluss kann man sich auf dem LDAP-Server anmelden.
 
-Auch unter "Account Types" müssen für User, Hosts und Groups die entsprechenden
-LDAP-Suffixes angegeben werden:
+Auch unter "Account Types" müssen für User, Hosts und Groups die entsprechenden LDAP-Suffixes angegeben werden:
 
 .. image:: images/LAM/AccountSettings.png
 
-Mit diesen Einstellungen werden im Server die User korrekt angezeigt:
+Mit diesen Einstellungen werden eingetragenen Benutzer unter dem Reiter **Users** korrekt angezeigt:
 
 .. image:: images/LAM/UserList.png
 
+Unter *Modules* können die ``objectClass`` der LDAP-Entitätstypen verwaltet werden.
 
-Unter "Modules" können die "objectClass"es der LDAP-Entitätstypen verwaltet
-werden.
-
-Unter "Module Settings" lassen sich u.a. Einstellungen zu den UIDs für Users, Groups
+Unter *Module Settings* lassen sich u.a. Einstellungen zu den UIDs für Users, Groups
 und Hosts vornehmen. Also z.B. die Art des UID-Generators, sowie die Range, in der sich
 generierte UIDs befinden dürfen.
 
 
-LDAP Replication (basic theory)
-###############################
-LDAP-Replikation dient zur Absicherung für Fehler. Mitfhilfe von Replikation können LDAP-Services weiterhin verfügbar sein, auch wenn eine LDAP-Instanz in der LDAP-Infrastruktur versagt hat.
+LDAP Replikation (Theorie)
+##########################
+LDAP-Replikation dient zur Ausfallsicherheit. Mitfhilfe von Replikation können LDAP-Services weiterhin verfügbar sein, auch wenn eine LDAP-Instanz in der LDAP-Infrastruktur versagt hat.
 
 Die Umgebung der HdM enthält einen LDAP-Master sowie einige LDAP-Slaves, wie z.B. ``ldap1.mi``. Je nach Konfiguration, können Änderungen bidirektional oder vom Master an alle Slaves übertragen werden (single source).
 

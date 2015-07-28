@@ -9,15 +9,15 @@ Samba Introduction
 Der Name Samba stammt vom Server Message Block-Protokoll (SMB).
 Mithilfe von Samba können Daten (Verzeichnisse, Laufwerke, Festplatten) sowie Geräte (zb. Drucker) im Netzwerk geteilt werden.
 Diese sogenannten Freigaben tauchen dann zB. in der Windows-Netzwerkumgebung auf und können eingebunden werden.
-Unter Linux diese Freigaben ebenfalls gemountet werden.
+Unter Linux könnendiese Freigaben ebenfalls gemountet werden.
 
-Samba kann in gemischten Netzen (Windows & Linux) sowie homogenen Netzwerken zum Datenaustausch eingesetzt werden.
+Samba kann daher in gemischten Netzen (Windows & Linux) sowie homogenen Netzwerken zum Datenaustausch eingesetzt werden.
 Samba ist unter Linux sozusagen das Bindeglied zu anderen Betriebssystemen.
 
 Die Bezeichnung "Samba-Server" bezeichnet den Rechner, der die Freigaben zur Verfügung stellt.
 Der "Samba-Klient" ist der Rechner, welcher die Freigaben einbindet.
 Ein Server kann mehrere Verzeichnisse für verschiedene Benutzer freigeben, so dass jeder Benutzer eine eigene Freigabe hat.
-Falls nun ein Klient eine Freigabe einbinden will, so muss er sich zuerst gegenüber dem Server authentifizieren.
+Falls nun ein Klient eine Freigabe einbinden will, so muss er sich zunächst gegenüber dem Server authentifizieren.
 
 
 Exercises
@@ -49,6 +49,8 @@ Zur Erstellung des Samba-Users:
 Man muss ein Passwort angeben, da Samba nicht die Standard-Linux-Passwörter nutzt, sondern eigene Passwörter.
 Das Passwort-Backend steht in der Samba-Konfigurationsdatei smb.conf:
 ``passdb backend = tdbsam``
+
+Samba verwendet eine eigene Passwortdatenbank, da diese mit Windows-Passwörtern kompatibel sein muss.
 
 Erklärung zu tdbsam:
 ::
@@ -142,7 +144,7 @@ Die Parameter im Detail:
 
 .. glossary::
 	path
-      Der Freizugebende Pfad
+	      Der Freizugebende Pfad
 
 	available
   		dient als "Schalter" für das Share. Wird der Parameter auf **no** gesetzt, schlagen alle Versuche auf das Share zuzugreifen fehl.
@@ -162,16 +164,6 @@ Die Parameter im Detail:
 
 Nach einem Serverneustart mit ``service smbd restart`` kann auf den Ordner über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testshare0\`` zugegriffen werden.
 
-Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben. Hierfür müssen in der ``smb.conf`` die Kommentare vor dem folgendem Eintrag entfernt werden:
-::
-  [homes]
-    comment = Home Directories
-    browseable = no
-
-Falls nun ein Klient versucht, sich mit einer Freigabe zu verbinden, die nicht explizit in der smb.conf definiert wurde, zb. "Alice", so durchsucht der Samba-Server das Password-Database-File nach einem User "Alice".
-Falls dieser gefunden wird und das vom Klienten eingegebene Passwort mit dem Unix-PW vom User "Alice" übereinstimmt, so wird eine neue Freigabe mit dem Namen "Alice" erzeugt, welcher auf Alice's Home-Directory zeigt.
-
-Der User ``testuser0`` kann anschließend über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testuser0\`` auf sein Homedirectory zugreifen.
 
 Die Konfiguration kann mit dem Befehl ``testparm`` überprüft werden:
 ::
@@ -182,6 +174,21 @@ Die Konfiguration kann mit dem Befehl ``testparm`` überprüft werden:
   Processing section "[printers]"
   Processing section "[print$]"
   Processing section "[testshare0]"
+  Processing section "[testshare1]"
+  Processing section "[testshare2]"
+  Loaded services file OK.
+  Server role: ROLE_STANDALONE
+  Press enter to see a dump of your service definitions
+
+Falls die Konfiguration fehlerhaft ist (zum Beispiel fehlendes [ in einem share), so wird dies angezeigt:
+::
+  root@sdi1a:~# testparm                 
+  Load smb config files from /etc/samba/smb.conf
+  rlimit_max: increasing rlimit_max (1024) to minimum Windows limit (16384)
+  Processing section "[homes]"
+  Processing section "[printers]"
+  Processing section "[print$]"
+  params.c:Parameter() - Ignoring badly formed line in configuration file: testshare0]
   Processing section "[testshare1]"
   Processing section "[testshare2]"
   Loaded services file OK.
@@ -241,11 +248,19 @@ Der Ordner erscheint nun in Form eines Netzwerklauferks im Arbeitsplatz.
 Linux
 +++++
 
-Mithilfe des mount-Kommandos kann das Dateisystem im Zielverzeichnis /mnt/test/ eingehängt werden:
+Mithilfe des mount-Kommandos können die freigegebenen Shares im Zielverzeichnis /mnt/test/ eingehängt werden:
 ::
   sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/testshare0 /mnt/test/ -ouser=testuser0
 
-bzw zum Einhängen der Home-Directory von "testuser0":
+Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben.Hierfür müssen in der ``smb.conf`` die Kommentare vor dem folgendem Eintrag entfernt werden:
+::
+  [homes]
+     comment = Home Directories
+     browseable = no
+
+Falls nun ein Klient versucht, sich mit einer Freigabe zu verbinden, die nicht explizit in der smb.conf definiert wurde, zb. "testuser0", so durchsucht der Samba-Server das Password-Database-File nach einem User "testuser0".
+Falls dieser gefunden wird und das vom Klienten eingegebene Passwort mit demUnix-PW vom User "testuser0" übereinstimmt, so wird eine neue Freigabe mit dem Namen "testuser0" erzeugt, welcher auf testuser0's Home-Directory zeigt.
+Beispielhaftes mount-Kommando für das mounten der Home-Directory von "testuser0":
 ::
   sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/testuser0 /mnt/test/ -ouser=testuser0
 
@@ -407,7 +422,7 @@ Samba Konfiguration
 
 Nun muss lediglich Samba so konfiguriert werden, dass LDAP zur Authentifizierung verwendet wird.
 
-Dazu werden in der Datei /etc/samba/smb.conf die folgenden Parameter eingefügt :
+Dazu werden in der Datei /etc/samba/smb.conf die folgenden Parameter eingefügt:
 ::
   passdb backend = ldapsam:ldap://sdi1a.mi.hdm-stuttgart.de
   ldap suffix = dc=mi,dc=hdm-stuttgart,dc=de
@@ -552,7 +567,7 @@ Der Log-Level sollte dabei 3 nicht überschreiten, da ansonsten sehr viele Infor
 smbcontrol
 ++++++++++
 
-Mithilfe des Tools smbcontrol können bereits bestehende Samba-Verbindungen beeinflusst werden (z.B. Log-Level ändern)
+Mithilfe des Tools smbcontrol können bereits bestehende Samba-Verbindungen beeinflusst werden (z.B. Log-Level ändern).
 
 Dazu wird zunächst die PID des smbd benötigt:
 ::
