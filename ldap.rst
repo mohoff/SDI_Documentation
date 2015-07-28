@@ -72,11 +72,10 @@ Nach der Bestätigung durch **OK** wird der gesuchte Eintrag auf der Oberfläche
 
 .. topic:: Hinweis
 
-<<<<<<< HEAD
 Man unterscheidet zwischen dem *OpenLDAP server daemon* im Package ``slapd`` und *LDAP
 management utilities* im Package ``ldap-utils``.
-=======
-  Standardmäßig werden im Directory Studio nur 1000 Einträge angzeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
+
+Standardmäßig werden im Directory Studio nur 1000 Einträge angzeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
 
 
 Selbiges Ergebnis kann auch über die Kommandozeile mit dem Tool **ldapsearch** erzielt werden. Dieses befindet sich im Paket **ldap-utilities**.
@@ -231,7 +230,6 @@ Ein LDIF-File kann z.B. folgendermaßen aussehen:
 
 Mit diesem LDIF-File werden mehrere neue ``ou`` dem DIT hinzugefügt. Außerdem wurde ein neuer User hinzugefügt
 
-<<<<<<< HEAD
 Ein weiter "Leaf"-User wurde im letzten Block hinzugefügt.
 
 LDAP mit Thunderbird
