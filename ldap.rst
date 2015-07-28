@@ -55,8 +55,28 @@ Mit einem Klick auf "Weiter" gelangt man auf die nächste Seite des Dialogfenste
 
 .. image:: images/LDAP/02-neue-verbindung-2.png
 
-In diesem kann man sich Authentifizieren. Im Fall des HdM-LDAP-Servers kann der Zugriff auch unautorisiert erfolgen. Mit einem Klick auf "Fertigstellen" ist die Einrichtung abgeschlossen.
+In diesem kann man sich authentifizieren. Im Fall des HdM-LDAP-Servers kann der Zugriff auch anonym erfolgen. Mit einem Klick auf "Fertigstellen" ist die Einrichtung abgeschlossen.
 
+Um einen Eintrag zu finden muss die Filterfunktion bemüht werden. In diesem Beispiel ist die UID des gesuchten Benutzers bekannt. Es soll nach dem Benutzer mit der UID **dh055** gesucht werden. Hierfür wird der Zweig, in dem sich der Benutzer befindet, rechts geklickt werden und im Kontextmenü der Eintrag **Kind-Einträge filtern...** ausgewählt werden.
+
+.. image:: images/LDAP/03-filtern.png
+
+In der erscheinenden Maske wird die Abfrage formuliert. In diesem Fall lautet diese **(uid=dh055)**. Abfragen werden in einer speziellen LDAP-Syntax erstellt. Mehr dazu `hier <http://www.ldapexplorer.com/en/manual/109010000-ldap-filter-syntax.htm>`_.
+
+.. image:: images/LDAP/04-filtern-2.png
+
+Nach der Bestätigung durch **OK** wird der gesuchte Eintrag auf der Oberfläche angezeigt.
+
+.. image:: images/LDAP/05-filtern-3.png
+
+
+.. topic:: Hinweis
+
+Standardmäßig werden im Directory Studio nur 1000 Einträge angzeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
+
+
+Selbiges Ergebnis kann auch über die Kommandozeile mit dem Tool **ldapsearch** erzielt werden. Dieses befindet sich im Paket **ldap-utilities**.
+Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055``. Die Kommandozeile zeigt daraufhin dieselben Informationen wie das Directory Studio.
 
 
 Einrichtung eines LDAP-Servers
