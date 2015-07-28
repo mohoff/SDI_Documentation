@@ -42,11 +42,20 @@ Exercises
 Apache Directory Studio
 ***********************
 
-Das Apache Directory Studio (ADS) ist ein auf Eclipse basierendes Tool, mit dem CRUD-Operations auf LDAP-Datenbanken
-ausgeführt werden können.
+Das Apache Directory Studio (ADS) ist ein auf Eclipse basierendes Tool, mit dem CRUD-Operationen auf LDAP-Datenbanken
+ausgeführt werden können. Es ist für Windows, Linux und Mac OS X verfügbar und kann `hier <https://directory.apache.org/studio/downloads.html>`_ heruntergeladen werden.
 
-Das Apache Directory Studio vereinfacht den Installationsprozesses, sowie der Entwicklung und Debugging.
-Für die alltäglichen Administrierungsaufgaben sind jedoch Web-basierte Tools, wie der LDAP Account Manager (s. u.) geeigneter.
+Das Apache Directory Studio vereinfacht den Installationsprozesses und eignet sich hervorragend, um LDAP-Verzeichnisse zu durchsuchen. Für Administrierungsaufgaben sind jedoch Web-basierte Tools, wie der LDAP Account Manager (s. u.) geeigneter.
+
+Um sich im Directory Studio mit einem LDAP-Server zu verbinden, muss der im untenstehenden Screenshot mit **1.** markierte Button im Interface betätigt werden, woraufhin das rechtsstehende Dialogfenster erscheint. Hier können die Verbindungsdaten eingegeben werden. Der **Verbindungsname** dient zum Zweck der Anzeige innerhalb des Programms und kann frei gewählt werden. **Hostname** und **Port** entprechen der Adresse des LDAP Servers. In diesm Fall handelt es sich um den der HdM. Als **Verschlüsselungs-Methode** kann optional TLS eingestellt werden.
+
+.. image:: images/LDAP/01-neue-verbindung.png
+
+Mit einem Klick auf "Weiter" gelangt man auf die nächste Seite des Dialogfensters.
+
+.. image:: images/LDAP/02-neue-verbindung-2.png
+
+In diesem kann man sich Authentifizieren. Im Fall des HdM-LDAP-Servers kann der Zugriff auch unautorisiert erfolgen. Mit einem Klick auf "Fertigstellen" ist die Einrichtung abgeschlossen.
 
 
 
