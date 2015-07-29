@@ -21,8 +21,9 @@ Die Objekte eines Baums werden über den sog. **Distinguished Name** (DN) refere
 RDNs werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter aneinandergeheftet. Ein Angestellter *Max Mustermann* des Unternehmens *Beispiel.de*, dem die Rolle *Project-Manager* in der Abteilung *Development* zugeteilt ist, könnte beispielsweise den DN 
 
 ::
+
   *cn=mustermann,ou=pm,ou=dev,dc=beispiel,dc=de* 
-  
+
 haben.
 
 .. topic:: Abkürzungen
