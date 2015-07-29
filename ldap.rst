@@ -18,7 +18,12 @@ Die Objekte eines Baums werden über den sog. **Distinguished Name** (DN) refere
 - **Organizational Unit** (ou): Definiert die einzelnen Organisationseinheiten (Abteilungen) innerhalb des Unternehmens
 - **Common Name** (cn): Der Name über den eine Person referenziert wird.
 
-RDNs werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter aneinandergeheftet. Ein Angestellter *Max Mustermann* des Unternehmens *Beispiel.de*, dem die Rolle *Project-Manager* in der Abteilung *Development* zugeteilt ist, könnte beispielsweise den DN *cn=mustermann,ou=pm,ou=dev,dc=beispiel,dc=de* haben.
+RDNs werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter aneinandergeheftet. Ein Angestellter *Max Mustermann* des Unternehmens *Beispiel.de*, dem die Rolle *Project-Manager* in der Abteilung *Development* zugeteilt ist, könnte beispielsweise den DN 
+
+::
+  *cn=mustermann,ou=pm,ou=dev,dc=beispiel,dc=de* 
+  
+haben.
 
 .. topic:: Abkürzungen
 
@@ -71,9 +76,6 @@ Nach der Bestätigung durch **OK** wird der gesuchte Eintrag auf der Oberfläche
 
 
 .. topic:: Hinweis
-
-Man unterscheidet zwischen dem *OpenLDAP server daemon* im Package ``slapd`` und *LDAP
-management utilities* im Package ``ldap-utils``.
 
 Standardmäßig werden im Directory Studio nur 1000 Einträge angzeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
 
