@@ -82,7 +82,7 @@ Standardmäßig werden im Directory Studio nur 1000 Einträge angzeigt. Bei Verz
 
 
 Selbiges Ergebnis kann auch über die Kommandozeile mit dem Tool **ldapsearch** erzielt werden. Dieses befindet sich im Paket **ldap-utilities**.
-Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055``. Die Kommandozeile zeigt daraufhin dieselben Informationen wie das Directory Studio. Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio. Das Kommando wird weiter unten im Detail behandelt.
+Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055``. Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio. Das Kommando wird weiter unten im Detail behandelt.
 
 
 Einrichtung eines LDAP-Servers
