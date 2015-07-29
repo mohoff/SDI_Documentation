@@ -9,12 +9,27 @@ DNS Einführung
 Was ist DNS und was macht ``nslookup``?
 ***************************************
 
-DNS (Domain Name Service) ist ein Netzwerkprotokoll, mit dem logische Netzadressen in physische und umgekehrt umgewandelt werden. Man spricht je nach Auflösungsrichtung von "lookup" oder "reverse lookup".
+DNS (Domain Name Service) ist ein Netzwerkprotokoll, mit dem logische Netzadressen in physische und umgekehrt umgewandelt werden. Man spricht je nach Auflösungsrichtung von *(forward) lookup* (z.B. www.hdm-stuttgart.de -> 141.62.1.52) oder *reverse lookup* (z.B. 141.62.1.52 -> www.hdm-stuttgart.de).
 
-* Domainnamen <-> IP-Adressen
-* Rechnernamen (in der gleichen Domäne) <-> IP-Adressen
-* MX-Records
-* Nameservice
+Umgehen können DNS-Server mit Domainnamen, Rechnernamen (in der gleichen Domäne), IP-Adressen, MX-Records (Mail-Exchange-Server) und anderen DNS-Server.
+
+Die DNS-Struktur ist hierarchisch in einem Baum aufgebaut. Im Wurzelknoten liegt ein Root-DNS, der seine Kinder kennt. Generell kennt jeder DNS-Server, der im Baum den Platz eines inneren Knoten belegt, seinen übergordneten (Eltern-)Knoten und seine untergeordneten (Kind-)knoten. Eine solche Weiterleitung wird im DNS-Kontext als *Forwarder* angegeben, also ein übergeordneter Nameserver, der den angefragten Namensraum bearbeiten kann bzw. weiß, welcher Nameserver als nächstes gefragt werden kann.
+
+Da kein DNS-Server alle möglichen Auflösungen kennt, sondern an andere DNS-Server iterativ oder rekursiv (s.u.) verwiesen wird, sofern ein Eintrag nicht gefunden wird, spricht man auch von einem dezentralen Aufbau.
+
+Zuständigkeitsbereiche von DNS-Servern nennt man "Zones" (s.u.), die in Zonesfiles von DNS-Servern spezifiziert sind. Zonesfiles enthalten im Wesentlichen DNS-Einträge, sog. *Resource Records*, die Zuordnungen von logischen auf physische Adressen entsprechen.
+
+Arten von Resource Records:
+  * **NS-Records**: weitere Nameserver, der hiermit referenziert wird
+  * **A-Record**: Mapping zwischen Domainname und IP4-Adresse
+  * **AAAA-Record**: Mapping zwischen Domainname und IP6-Adresse (4 "A"s, da IPv6-Adressen viermal so lang sind wie IPv4-Adressen)
+  * **CNAME-Record**: Steht für *canonical name* und arbeitet als eine Art Alias. Er referenziert also einen Domainnamen auf einen anderen Domainnamen, der z.B. in einem anderen A-Record auf eine IP-Adresse gemappt wird.
+  * **PTR-Record**: steht für einen Pointer-Eintrag, der einer gegebenen IP-Adresse ein oder mehrere Hostnames zuweist. Diese Art von Einträgen sind damit als Gegenstück von A- und AAAA-Records zu sehen, die andersrum zuordnen. PTR-Records sind zentrales Element des *reverse lookups*.
+  * **MX-Record**: Zuweisung von Domainname auf einen Mailserver. Wird gesondert behandelt, da es sich auf dem Mailtraffic über das Protokoll SMTP bezieht.
+
+Durch die Baumstruktur besitzt jeder aufgelöste Webserver einen FQDN (=Fully Qualified Domain Name), der im gesamten Baum eindeutig ist.
+
+DNS-Server arbeiten i.d.R. auf Port 53 mit dem Protokoll UDP. Eine TCP-Implementierung gibt es auch, wird aber in der Praxis selten eingesetzt, hauptsächlich beim Transfer von Zonefiles zwischen Nameservern.
 
 Der Windows- und Linux-CLI-Command für DNS-lookups ist ``nslookup``. Optional können abhängig von der Auflösungsrichtung Domainnamen bzw. IP-Adressen angegeben werden, die aufgelöst werden sollen.
 
@@ -118,11 +133,6 @@ Man braucht 2 Zonen, um einen einfachen DNS-Service einzurichten.
 
 Bei der Administrierung von DNS-Services kann das umständlich sein, da für jeden Eintrag im semantischen Sinn jeweils zwei Zone-Einträge getätigt werden müssen. Durch Managing-Tools oder Hooks stehen haber Maßnahmen zur Verfügung, um diesen Prozess zu vereinfachen.
 
-DNS Forwarding
-**************
-DNS-Server sind hierarchisch in einer Baumstruktur geordnet. Wenn ein "Leaf"-DNS, z.B. der DNS-Service den wir im Rahmen der Veranstaltung aufsetzen, eine Eingabe nicht auflösen kann, geht die Anfrage weiter an einen übergeordneten DNS. Je höher der DNS-Server in der Struktur liegt, desto wahrscheinlicher ist id.R., dass er die Domain bzw. die IP-Adresse auflösen kann. etwas nicht auflösen kann, geht die Anfrage weiter an übergeordnetes DNS, das evtl. mehr weiss.
-
-
 DNS Logs
 ********
 Logs sind default-mässig in ``/var/log``. Das ist der allgemeine Log-Ordner unter Linux, worunter viele Dienste ihre Logs ablegen. Im File ``syslog`` in diesem Verzeichnis werden u.a. DNS-Logs gespeichert, auch LDAP-Logs existieren vom Prozess ``slapd``.
@@ -198,7 +208,7 @@ Als nächstes muss die Options-Datei von BIND bearbeitet werden. Diese befindet 
   options {
         directory "/var/cache/bind";
         recursion yes;
-        //allow-recursion { trusted; };
+        //allow-recursion { any; };    s.u. für Aktivierung von rekursiven Anfragen
         listen-on { 141.62.75.101; };
         allow-transfer { none; };
 
@@ -216,13 +226,13 @@ Anschließend müssen die Zonen unter  ``/etc/bind/named.conf.local`` definiert 
   # Forward Zone
   zone "mi.hdm-stuttgart.de" {
     type master;
-    file "/etc/bind/zones/db.mi.hdm-stuttgart.de"; # zone file path
+    file "/etc/bind/zones/db.mi.hdm-stuttgart.de"; # zone file path for forward lookup
   };
 
   # Reverse Zone
   zone "75.62.141.in-addr.arpa" {
     type master;
-    file "/etc/bind/zones/db.141.62.75"; # zone file path
+    file "/etc/bind/zones/db.141.62.75"; # zone file path for reverse lookup
   };
 
 
@@ -255,7 +265,7 @@ Forward-Zone - ``/etc/bind/zones/db.mi.hdm-stuttgart.de``:
   ns1a.mi.hdm-stuttgart.de.          IN      A       141.62.75.101
   www1a.mi.hdm-stuttgart.de.         IN      A       141.62.75.101
 
-Erläuterungen zum Aufbau:
+Erläuterungen zum Aufbau (Details zu den Record-Typen stehen in der Einleitung):
 
 1. Ein SOA-Record (Start of Authority) definiert eine Domäne. ``ns1a.mi.hdm-stuttgart.de.`` kennzeichnet den primären (Master-) Nameserver und ``root.mi.hdm-stuttgart.de.`` die E-Mail-Adresse des Administrators - der erste Punkt ersetzt ein @-Symbol.
 2. Die Serial dient der Dokumentation und sollte nach jeder Änderung der Datei inkrementiert werden.
@@ -315,6 +325,8 @@ Rekursive Anfragen können in der Konfigurationsdatei ``/etc/bind/named.conf.opt
 	auth-nxdomain no;
 	listen-on-v6 { any; };
   };
+
+Mit dieser Erweiterung löst unseer DNS-Server Anfragen, die nicht in seinen Zuständigkeitsbereich fallen, über den HdM-DNS auf, der auf der IP ``141.62.64.21`` zu erreichen ist.
 
 Das Gegenstück zu rekursiven Anfragen sind iterative Anfragen, bei denen der Client Verweise zu einem anderen DNS-Server bekommt, den er als nächstes Abfragen soll (Im Fall, dass der angefragte DNS-Server keinen Eintrag zur Anfrage hat).
 
@@ -387,9 +399,13 @@ Zur Überprüfung der Konfiguration bietet BIND folgende Kommandozeilentools:
   named-checkzone (1) (2)
   	Überprüft alle Zone-Dateien auf ihre Korrektheit. Parameter (1) verlangt den Namen der Zone und Parameter (2) die zugehörige Zone-Datei. Im Beispiel lauten die Befehle für die Forward-, bzw. Reverse-Zone ``named-checkzone mi.hdm-stuttgart.de /etc/bind/zones/db.mi.hdm-stuttgart.de`` bzw. ``named-checkzone 75.62.141.in-addr.arpa /etc/bind/zones/db.141.62.75``
 
+In der Tat muss man mit den Einrückungen in den beiden Textdateien Vorsicht walten lassen. Am besten hält man sich an die in der Vorlage verwendeten Einrückungen und Zeilenumbrüchen.
 
-Falls keine Fehler auftreten, kann der Server verwendet werden. Ein Host kann den Server nun als Standard-Nameserver festlegen, indem er ihn in seine ``/etc/resolv.conf`` aufnimmt:
+
+Falls keine Fehler auftreten, kann der Server verwendet werden. Ein Rechner kann den Server nun als Standard-Nameserver festlegen, indem er ihn in seine ``/etc/resolv.conf`` aufnimmt:
 
 .. code-block:: none
 
   nameserver 141.62.75.101
+
+Wie Linux-basierte Hosts ihre ``resolv.conf`` und zugehörige Dateien handhaben und wie man manuelle Einträge permanent hinzufügen kann, wird im Kapitel *Apache* genauer erklärt.
