@@ -488,7 +488,7 @@ Auch unter dem Reiter *Account Types* müssen für User, Hosts und Groups die en
 
 .. image:: images/LAM/AccountSettings.png
 
-Ferner können unter dem Reiter **Modules** die ``objectClass``es der LDAP-Entitätstypen verwaltet werden.
+Ferner können unter dem Reiter **Modules** die ``objectClass`` der LDAP-Entitätstypen verwaltet werden:
 
 .. image:: images/LAM/modules.png
 
