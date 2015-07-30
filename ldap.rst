@@ -493,7 +493,7 @@ Ferner können unter dem Reiter **Modules** die ``objectClass`` der LDAP-Entitä
 .. image:: images/LAM/modules.png
 
 Unter dem Reiter **Module Settings** lassen sich zudem Einstellungen zu den UIDs für Users, Groups
-und Hosts vornehmen. Also z.B. die Art des UID-Generators oder die Wertebereich, in der sich
+und Hosts vornehmen. Also z.B. die Art des UID-Generators oder der Wertebereich, in dem sich
 generierte UIDs befinden dürfen.
 
 
