@@ -63,7 +63,14 @@ Mit einem Klick auf "Weiter" gelangt man auf die nächste Seite des Dialogfenste
 
 In diesem kann man sich authentifizieren. Im Fall des HdM-LDAP-Servers kann der Zugriff auch anonym erfolgen. Mit einem Klick auf "Fertigstellen" ist die Einrichtung abgeschlossen.
 
-Um einen Eintrag zu finden muss die Filterfunktion bemüht werden. In diesem Beispiel ist die UID des gesuchten Benutzers bekannt. Es soll nach dem Benutzer mit der UID **dh055** gesucht werden. Hierfür wird der Zweig, in dem sich der Benutzer befindet, rechts geklickt werden und im Kontextmenü der Eintrag **Kind-Einträge filtern...** ausgewählt werden.
+Auffinden von Einträgen
+***********************
+Einträge können entweder per GUI über das Directory Studio oder per Kommandozeilentool ``ldapsearch`` aufgefunden werden.
+
+Suche per Apache Directory Studio
++++++++++++++++++++++++++++++++++
+
+Um einen Eintrag per GUI zu finden muss die Filterfunktion bemüht werden. In diesem Beispiel ist die UID des gesuchten Benutzers bekannt. Es soll nach dem Benutzer mit der UID **dh055** gesucht werden. Hierfür wird der Zweig, in dem sich der Benutzer befindet, rechts geklickt werden und im Kontextmenü der Eintrag **Kind-Einträge filtern...** ausgewählt werden.
 
 .. image:: images/LDAP/03-filtern.png
 
@@ -78,11 +85,52 @@ Nach der Bestätigung durch **OK** wird der gesuchte Eintrag auf der Oberfläche
 
 .. topic:: Hinweis
 
-  Standardmäßig werden im Directory Studio nur 1000 Einträge angezeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
+  Standardmäßig werden im Directory Studio nur 1000 Einträge angezeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> *Eigenschaften* -> *Verbindung* -> Reiter *Browser Optionen* -> *Max. Anzahl*. Der gewünschte Wert kann dort eingegeben werden.
 
+Suche per ``ldapsearch``
+++++++++++++++++++++++++
 
-Selbiges Ergebnis kann auch über die Kommandozeile mit dem Tool **ldapsearch** erzielt werden. Dieses befindet sich im Paket **ldap-utilities**.
-Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055``. Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio. Das Kommando wird weiter unten im Detail behandelt.
+Ebenso kann der Eintrag mit dem Tool **ldapsearch** gefunden werden. Dieses befindet sich im Paket **ldap-utilities**.
+Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055``. Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio.
+
+Der Befehl wird folgendermaßen zusammengesetzt:
+::
+
+  [sudo] ldapsearch -Q -LLL -Y EXTERNAL -H ldapi:/// -b cn=config dn
+
+eine weitere Variation:
+::
+
+  [sudo] ldapsearch -x -LLL -H ldap:/// -b dc=example,dc=com dn
+
+Der Befehl kann entweder ohne Authentifizierung (Parameter ``-x``) oder mit "Simple Authenticationand Security Layer" (SASL) (``-Y`` <SASL mechanism>) ausgeführt werden.
+
+.. topic:: ``ldapsearch``
+
+  .. glossary::
+    ``-Q``
+      Nutzt den SASL "quiet mode". User wird nicht nach Eingaben gefragt.
+
+    ``-LLL``
+      Begrenzt die Ausgabe auf LDIFv1, versteckt Kommentare, deaktiviert das Ausgeben der LDIF-Version (jedes "L" grenzt die Ausgabe weiter ein)
+
+    ``-Y <mechanismus>``
+      Spezifiziert den Authentifizierungsmechanismus. Übliche Angaben sind ``DIGEST-MD5``, ``KERBEROS_V4`` und ``EXTERNAL``. Wir verwenden ``EXTERNAL``, das eine Authentifizierung über einen Sicherheitsmechanismus einer niedrigeren OSI-Schicht (wie z.B. TLS) ermöglicht.
+
+    ``-h <URIs>``
+      Aufgelistete URIs geben die Adresse von ein oder mehreren LDAP-Servern an. Der Standard ist ``ldap:///``, was bedeutet, dass das Protokoll LDAP über TCP verwendet wird. ``ldapi:///`` nutzt auch LDAP, was aber anstatt TCP den UNIX-domain Socket IPC verwendet
+
+    ``-b <searchbase>``
+      Spezifiziert eine sog. "Searchbase" als Startpunkt für die Suche. In unserem Fall ``cn=config`.
+
+    ``-x``
+      Gibt an, dass eine "einfache Authentifizierung" an Stelle von SASL verwendet wird.
+
+    ``-W``
+      User wird bei *simple authentication* per Prompt nach einem Passwort gefragt. Alternativ muss die Authentifizierung im Kommando selbst stattfinden.
+
+    ``<filter>``
+      Bietet die Möglichkeit, einen Ausgabefilter anzugeben. Falls er weggelassen wird, wird der Standardfilter ``(objectClass=*)`` verwendet. Wir verwenden ``dn``, sodass alle "distinguished names" innerhalb der Searchbase (s.o.) angezeigt werden.
 
 
 Einrichtung eines LDAP-Servers
@@ -136,46 +184,6 @@ Direkte Änderungen in der ``config``-Datenbank sind nicht empfohlen, man soll v
 
 Das LDAP-Protokoll
 ******************
-
-Befehl ``ldapsearch``:
-::
-
-  [sudo] ldapsearch -Q -LLL -Y EXTERNAL -H ldapi:/// -b cn=config dn
-
-Variation davon:
-::
-
-  [sudo] ldapsearch -x -LLL -H ldap:/// -b dc=example,dc=com dn
-
-Entweder ohne Authentifizierung (Parameter ``-x``) oder mit "Simple Authentication
-and Security Layer" (SASL) (-Y <SASL mechanism>).
-
-.. topic:: ``ldapsearch``
-
-  .. glossary::
-    ``-Q``
-      Nutzt den SASL "quiet mode". User wird nicht nach Eingaben gefragt.
-
-    ``-LLL``
-      Begrenzt die Ausgabe auf LDIFv1, versteckt Kommentare, deaktiviert das Ausgeben der LDIF-Version (jedes "L" grenzt die Ausgabe weiter ein)
-
-    ``-Y <mechanismus>``
-      Spezifiziert den Authentifizierungsmechanismus. Übliche Angaben sind ``DIGEST-MD5``, ``KERBEROS_V4`` und ``EXTERNAL``. Wir verwenden ``EXTERNAL``, das eine Authentifizierung über einen Sicherheitsmechanismus einer niedrigeren OSI-Schicht (wie z.B. TLS) ermöglicht.
-
-    ``-h <URIs>``
-      Aufgelistete URIs geben die Adresse von ein oder mehreren LDAP-Servern an. Der Standard ist ``ldap:///``, was bedeutet, dass das Protokoll LDAP über TCP verwendet wird. ``ldapi:///`` nutzt auch LDAP, was aber anstatt TCP den UNIX-domain Socket IPC verwendet
-
-    ``-b <searchbase>``
-      Spezifiziert eine sog. "Searchbase" als Startpunkt für die Suche. In unserem Fall ``cn=config`.
-
-    ``-x``
-      Gibt an, dass eine "einfache Authentifizierung" an Stelle von SASL verwendet wird.
-
-    ``-W``
-      User wird bei *simple authentication* per Prompt nach einem Passwort gefragt. Alternativ muss die Authentifizierung im Kommando selbst stattfinden.
-
-    ``<filter>``
-      Bietet die Möglichkeit, einen Ausgabefilter anzugeben. Falls er weggelassen wird, wird der Standardfilter ``(objectClass=*)`` verwendet. Wir verwenden ``dn``, sodass alle "distinguished names" innerhalb der Searchbase (s.o.) angezeigt werden.
 
 Befehl ``ldapadd``:
 ::
