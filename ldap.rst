@@ -484,17 +484,19 @@ Zudem müssen die richtigen Security-Settings eingestellt werden:
 
 .. image:: images/LAM/SecuritySettings.png
 
-Im Anschluss kann man sich auf dem LDAP-Server anmelden.
-
-Auch unter "Account Types" müssen für User, Hosts und Groups die entsprechenden LDAP-Suffixes angegeben werden:
+Auch unter dem Reiter *Account Types* müssen für User, Hosts und Groups die entsprechenden LDAP-Suffixes angegeben werden:
 
 .. image:: images/LAM/AccountSettings.png
 
-Mit diesen Einstellungen werden eingetragenen Benutzer unter dem Reiter **Users** korrekt angezeigt:
+Ferner können unter dem Reiter **Modules** die ``objectClass``es der LDAP-Entitätstypen verwaltet werden.
+
+.. image:: images/LAM/modules.png
+
+Nach dem Ausführen dieser Schritte ist der LAM fertig konfiguriert und die Anmeldung auf dem LDAP-Server is möglich.
+
+Die eingetragenen Benutzer werden nun unter dem Reiter **Users** korrekt angezeigt und können bearbeitet werden:
 
 .. image:: images/LAM/UserList.png
-
-Unter *Modules* können die ``objectClass`` der LDAP-Entitätstypen verwaltet werden.
 
 Unter *Module Settings* lassen sich u.a. Einstellungen zu den UIDs für Users, Groups
 und Hosts vornehmen. Also z.B. die Art des UID-Generators, sowie die Range, in der sich
