@@ -11,7 +11,7 @@ Inhalt:
 .. toctree::
    :numbered:
    
-   Allgemein <allgemein>
+   Einführung <allgemein>
    LDAP <ldap>
    DNS <dns>
    Webserver <webserver>
