@@ -193,7 +193,7 @@ Direkte Änderungen in der ``config``-Datenbank sind nicht empfohlen, man soll v
 LDIF Files
 **********
 
-Mit LDIF Files lassen sich LDAP-spezifische Daten speichern, z.B. um Einträge im LDAP Verzeichnis zu speichern, zu ändern oder hinzuzufügen.
+LDIF (LDAP Data Interchange Format) ist ein Dateiformat zur Darstellung von Informationen aus einem LDAP-Verzeichnis. Mit LDIF-Dateien lassen sich Einträge zu einem LDAP-Verzeichnis hinzufügen, editieren und löschen.
 Über ``slapadd`` im Terminal (LDAP-Server zur Sicherheit dafür stoppen) oder die
 Importfunktion des Apache Directory Studios lassen sich LDIF-Files importieren.
 
@@ -290,7 +290,7 @@ Die LDIF-Datei wurde in diesem Beispiel unter dem Namen **data.ldif** abgespeich
     [sudo] ldapadd -x -W -c -D <bindDN> -f <filename>
   
 
-.. topic:: ``ldapsearch``
+.. topic:: ``ldapadd``
 
   .. glossary::
     ``-x``
