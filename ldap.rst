@@ -88,29 +88,19 @@ Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=us
 Einrichtung eines LDAP-Servers
 ******************************
 
-Man unterscheidet zwischen dem OpenLDAP Server Daemon im Package ``slapd`` und LDAP
-Management Utilities im Package ``ldap-utils``.
+Zunächst muss der Open-LDAP-Server über den Paketmanager installiert werden. Neben dem eigentlichen Server (``slapd``) sollten auch Utilitys zur Administration des Servers (``ldap-utils``) installiert werden.
 
 ::
 
   sudo apt-get install slapd ldap-utils
 
-Während der Installation muss man Admin-Credentials festlegen, die für den ``rootDN`` der LDAP-Datenbank gesetzt werden, standardmäßig heißt dieser bei uns
+Während der Installation muss man Admin-Credentials festlegen, die für den ``rootDN`` der LDAP-Datenbank gesetzt werden. Standardmäßig heißt dieser bei uns ``cn=admin,dc=mi,dc=hdm-stuttgart,dc=de``.
 
-::
+Neben dem eigentlichen LDAP-Datenbank, in der später Daten gespeichert werden, wird ebenso eine ``config``-Datenbank erstellt (s.u.).
 
-  cn=admin,dc=mi,dc=hdm-stuttgart,dc=de
+Die Installation erstellt eine lauffähige Konfiguration - darunter eine Datenbank, in der die LDAP-Daten gespeichert werden können.
 
-Neben der eigentlichen LDAP-Datenbank, in der später Daten gespeichert werden, wird
-eine ``config``-Datenbank erstellt (s.u.).
-
-Die Installation erstellt eine lauffähige Konfiguration, darunter eine Datenbank
-in der die LDAP-Daten gespeichert werden können.
-
-Der ``baseDN`` (DN = Distinguished Name) dieser Instanz wird vom Domainnamen des
-``localhost`` abgeleitet. Alternativ kann man die Datei ``/etc/hosts`` editieren, um manuell
-Domainnamen für localhost vergeben, sodass ein erwünschter ``baseDN`` erstellt
-werden kann. Die Standardkonfiguration in unseren VMs ist daher
+Der ``baseDN`` dieser Instanz wird vom Domainnamen des ``localhost`` abgeleitet. Alternativ kann der Domainname für ``localhost`` in der Datei ``/etc/hosts`` manuell vergeben werden, sodass ein erwünschter ``baseDN`` erstellt werden kann. Die Standardkonfiguration in unseren VMs ist daher
 
 ::
 
