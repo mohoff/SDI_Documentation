@@ -28,19 +28,25 @@ Setup des Samba-Servers
 #######################
 
 Der Samba Server wird mit dem Befehl
+
 ::
-  apt-get install samba
+
+	apt-get install samba
 
 installiert.
 
 Anschließend können Benutzer hinzugefügt werden. Dies geschieht mit dem Befehl ``smbpasswd -a %username%``.
 
 Hierfür ist es notwendig, dass auf dem System ein Linux-Benutzer mit dem entsprechenden Benutzernamen angelegt ist. Benutzer können mit dem Befehl ``useradd --create-home %username%`` angelegt werden. Mit dem Parameter ``--create-home`` wird gleichzeitig ein Homeverzeichnis angelegt.
+
 ::
+
   root@sdi1a:~# useradd --create-home testuser0
 
 Zur Erstellung des Samba-Users:
+
 ::
+
   root@sdi1a:~# smbpasswd -a testuser0
   New SMB password:
   Retype new SMB password:
@@ -53,14 +59,18 @@ Das Passwort-Back-End steht in der Samba-Konfigurationsdatei smb.conf:
 Samba verwendet eine eigene Passwortdatenbank, da diese mit Windows-Passwörtern kompatibel sein muss.
 
 Erklärung zu tdbsam:
+
 ::
+
   This backend provides a rich database backend for local servers.
   This backend is not suitable for multiple domain controllers (i.e., PDC + one or more BDC) installations.
    The tdbsam password backend stores the old smbpasswd information plus the extended MS Windows NT/200x SAM information into a binary format TDB (trivial database) file.
   The inclusion of the extended information makes it possible for Samba-3 to implement the same account and system access controls that are possible with MS Windows NT4/200x-based systems.
 
 Diese werden unter  ``/var/lib/samba/private/passdb`` gespeichert:
+
 ::
+
   root@sdi1a:~# pdbedit -Lw
   testuser0:1000:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:BD2A15934DF3DD824C3AC7B2E0546EBC:[U          ]:LCT-558970F7:
   testuser1:1001:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:1120ACB74670C7DD46F1D3F5038A5CE8:[U          ]:LCT-5589712E:
@@ -73,7 +83,9 @@ Auf die gleiche Weise wurden mehrere Samba-Benutzer für verschiedene Linux-User
 
 
 Samba user können nun mit dem Befehl ``pdbedit -L -v`` aufgelistet werden:
+
 ::
+
   root@sdi1a:~# pdbedit -L -v
   ---------------
   Unix username:        testuser0
@@ -130,7 +142,9 @@ Freigabe von Ordnern
 ####################
 Die Konfiguration zur Freigabe von Ordnern befindet sich in der Datei ``/etc/samba/smb.conf``.
 Um beispielsweise das Verzeichnis ``/home/testuser0/shared`` freizugeben, muss in der Konfigurationsdatei folgender Block hinzugefügt werden:
+
 ::
+
   [testshare0]
   path = /home/testuser0/shared
   available = yes
@@ -146,30 +160,32 @@ Die Parameter im Detail:
 
 	.. glossary::
 		path
-		      Der Freizugebende Pfad
-	
+			Der Freizugebende Pfad
+			
 		available
-	  		dient als "Schalter" für das Share. Wird der Parameter auf **no** gesetzt, schlagen alle Versuche auf das Share zuzugreifen fehl.
-	
-	  	valid users
-	  		Eine mit Kommas getrennte Liste an Benutzern, die auf das Share zugreifen dürfen; Andersherum können einzelne Benutzer mit dem Parameter **invalid users** vom Zugriff ausgeschlossen werden.
-	
-	  	read only
-	  		Legt fest, ob die zugelassenen Benutzer Schreibzugriff auf das Share haben
-	
-	  	browsesable
-	  		Ist diese Option auf "no" gesetzt, wird das Share niemals aufgelistet. Es ist also nur möglich direkt per Pfad auf das Share zuzugreifen.
-	
-	  	public
-	  		Legt fest, ob für den Zugriff auf das Share ein Passwort benötigt wird.
+			dient als "Schalter" für das Share. Wird der Parameter auf **no** gesetzt, schlagen alle Versuche auf das Share zuzugreifen fehl.
+			
+		valid users
+			Eine mit Kommas getrennte Liste an Benutzern, die auf das Share zugreifen dürfen; Andersherum können einzelne Benutzer mit dem Parameter **invalid users** vom Zugriff ausgeschlossen werden.
+			
+		read only
+			Legt fest, ob die zugelassenen Benutzer Schreibzugriff auf das Share haben
+			
+		browsesable
+			Ist diese Option auf "no" gesetzt, wird das Share niemals aufgelistet. Es ist also nur möglich direkt per Pfad auf das Share zuzugreifen.
+			
+		public
+			Legt fest, ob für den Zugriff auf das Share ein Passwort benötigt wird.
 
 
 Nach einem Serverneustart mit ``service smbd restart`` kann auf den Ordner über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testshare0\`` zugegriffen werden.
 
 
 Die Konfiguration kann mit dem Befehl ``testparm`` überprüft werden:
+
 ::
-  root@sdi1a:~# testparm
+
+	root@sdi1a:~# testparm
   Load smb config files from /etc/samba/smb.conf
   rlimit_max: increasing rlimit_max (1024) to minimum Windows limit (16384)
   Processing section "[homes]"
@@ -183,7 +199,9 @@ Die Konfiguration kann mit dem Befehl ``testparm`` überprüft werden:
   Press enter to see a dump of your service definitions
 
 Falls die Konfiguration fehlerhaft ist (zum Beispiel fehlendes [ in einem share), so wird dies angezeigt:
+
 ::
+
   root@sdi1a:~# testparm                 
   Load smb config files from /etc/samba/smb.conf
   rlimit_max: increasing rlimit_max (1024) to minimum Windows limit (16384)
@@ -198,7 +216,9 @@ Falls die Konfiguration fehlerhaft ist (zum Beispiel fehlendes [ in einem share)
   Press enter to see a dump of your service definitions
 
 Informationen zu einzelnen Samba-Usern können mit ``smbclient`` abgerufen werden.
+
 ::
+
   root@sdi1a:/home# smbclient -L localhost --user testuser0
   Enter testuser0's password:
   Domain=[WORKGROUP] OS=[Unix] Server=[Samba 4.1.6-Ubuntu]
@@ -412,7 +432,7 @@ Anschließend werden die Objekte mithilfe des Kommandos ``smbldap-populate`` erz
 	  slavePw="test"
 
 
-In smbldap.conf müssen einige Parameter angepasst werden:
+In ``smbldap.conf`` müssen einige Parameter angepasst werden:
 
 ::
 
