@@ -276,12 +276,12 @@ Dieser Fügt sich folgendermaßen in den Baum ein:
 
   .
   └─ dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
-     ├─ ou=departments
-     |  └─ ou=software
-     |     └─ ou=devel
-     |        ├─ cn=beam
-     |        └─ cn=halle
      └─ ou=departments
+        ├─ ou=software
+        |  └─ ou=devel
+        |     ├─ cn=beam
+        |     └─ cn=halle
+        └─ ou=sales
 
 Für das Hinzufügen in das LDAP-Directory gibt es wie bei der Suche zwei Möglichkeiten: Über das Apache Directory Studio (GUI) oder über das CLI.
 
