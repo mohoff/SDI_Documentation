@@ -332,8 +332,42 @@ Der Befehl zur Suche des Benutzers **dh055** lautet
 
     ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055
 
+Die Konsole zeigt das Ergebnis daraufhin folgendermaßen an:
 
-Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio.
+::
+
+  # extended LDIF
+  #
+  # LDAPv3
+  # base <ou=userlist,dc=hdm-stuttgart,dc=de> with scope subtree
+  # filter: uid=dh055
+  # requesting: ALL
+  #
+  
+  # dh055, userlist, hdm-stuttgart.de
+  dn: uid=dh055,ou=userlist,dc=hdm-stuttgart,dc=de
+  hdmCategory: 1
+  sn: Hettler
+  loginShell: /bin/sh
+  uidNumber: 51804
+  gidNumber: 31111
+  mail: dh055@HdM-Stuttgart.de
+  uid: dh055
+  objectClass: hdmAccount
+  objectClass: hdmStudent
+  objectClass: inetOrgPerson
+  objectClass: posixAccount
+  objectClass: shadowAccount
+  objectClass: eduPerson
+  cn: David Hettler
+  homeDirectory: /home/stud/MIB/dh055
+  
+  # search result
+  search: 2
+  result: 0 Success
+  
+  # numResponses: 2
+  # numEntries: 1
 
 Der Befehl wird folgendermaßen zusammengesetzt:
 ::
