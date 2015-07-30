@@ -53,7 +53,7 @@ ausgeführt werden können. Es ist für Windows, Linux und Mac OS X verfügbar u
 
 Das Apache Directory Studio vereinfacht den Installationsprozesses und eignet sich hervorragend, um LDAP-Verzeichnisse zu durchsuchen. Für Administrierungsaufgaben sind jedoch Web-basierte Tools, wie der LDAP Account Manager (s. u.) geeigneter.
 
-Um sich im Directory Studio mit einem LDAP-Server zu verbinden, muss der im untenstehenden Screenshot mit **1.** markierte Button im Interface betätigt werden, woraufhin das rechtsstehende Dialogfenster erscheint. Hier können die Verbindungsdaten eingegeben werden. Der **Verbindungsname** dient zum Zweck der Anzeige innerhalb des Programms und kann frei gewählt werden. **Hostname** und **Port** entprechen der Adresse des LDAP Servers. In diesm Fall handelt es sich um den der HdM. Als **Verschlüsselungs-Methode** kann optional TLS eingestellt werden.
+Um sich im Directory Studio mit einem LDAP-Server zu verbinden, muss der im untenstehenden Screenshot mit **1.** markierte Button im Interface betätigt werden, woraufhin das rechtsstehende Dialogfenster erscheint. Hier können die Verbindungsdaten eingegeben werden. Der **Verbindungsname** dient zum Zweck der Anzeige innerhalb des Programms und kann frei gewählt werden. **Hostname** und **Port** entprechen der Adresse des LDAP Servers. In diesem Fall handelt es sich um den der HdM. Als **Verschlüsselungs-Methode** kann optional TLS eingestellt werden.
 
 .. image:: images/LDAP/01-neue-verbindung.png
 
@@ -78,7 +78,7 @@ Nach der Bestätigung durch **OK** wird der gesuchte Eintrag auf der Oberfläche
 
 .. topic:: Hinweis
 
-Standardmäßig werden im Directory Studio nur 1000 Einträge angzeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
+Standardmäßig werden im Directory Studio nur 1000 Einträge angezeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
 
 
 Selbiges Ergebnis kann auch über die Kommandozeile mit dem Tool **ldapsearch** erzielt werden. Dieses befindet sich im Paket **ldap-utilities**.
@@ -173,7 +173,7 @@ and Security Layer" (SASL) (-Y <SASL mechanism>).
       Spezifiziert den Authentifizierungsmechanismus. Übliche Angaben sind ``DIGEST-MD5``, ``KERBEROS_V4`` und ``EXTERNAL``. Wir verwenden ``EXTERNAL``, das eine Authentifizierung über einen Sicherheitsmechanismus einer niedrigeren OSI-Schicht (wie z.B. TLS) ermöglicht.
 
     ``-h <URIs>``
-      Aufgelistete URIs geben die Adresse von ein oder mehreren LDAP-Servern an. Der Standard ist ``ldap:///``, was bedeutet, dass das Protkoll LDAP über TCP verwendet wird. ``ldapi:///`` nutzt auch LDAP, was aber anstatt TCP den UNIX-domain Socket IPC verwendet
+      Aufgelistete URIs geben die Adresse von ein oder mehreren LDAP-Servern an. Der Standard ist ``ldap:///``, was bedeutet, dass das Protokoll LDAP über TCP verwendet wird. ``ldapi:///`` nutzt auch LDAP, was aber anstatt TCP den UNIX-domain Socket IPC verwendet
 
     ``-b <searchbase>``
       Spezifiziert eine sog. "Searchbase" als Startpunkt für die Suche. In unserem Fall ``cn=config`.
@@ -293,7 +293,7 @@ Um die Datei ``data.ldif`` auf den Server zu übertragen, kann man das Tool *scp
 
     scp ./data.ldif root@141.62.75.106:.
 
-wird die Datei ins Homeverzeichnis des Users *root* auf dem Server unter der IP ``141.62.75.106`` kopiert.
+wird die Datei ins Home-Verzeichnis des Users *root* auf dem Server unter der IP ``141.62.75.106`` kopiert.
 
 
 LDAP mit Thunderbird
@@ -319,8 +319,8 @@ Filter kann man über das CLI oder über das Apache Directory Studio festlegen.
 
 Die ``ldapsearch``-Syntax ist oben aufgeführt.
 
-Im Apache Directory Studio stellt man Fliter ein, indem man auf den zu filternden
-Knoten rechtsklickt und "Filter Children" auswählt. Im Popup-Fenster lässts sich
+Im Apache Directory Studio stellt man Filter ein, indem man auf den zu filternden
+Knoten rechtsklickt und "Filter Children" auswählt. Im Popup-Fenster lässt sich
 dann ein Suchstring eingeben. Um die Syntax näher zu beleuchten, hier ein paar
 Beispiele:
 
@@ -340,7 +340,7 @@ Beispiele:
       Jeder Eintrag mit ``objectClass=user`` UND einer E-Mail-Adresse, die
       mit "abc" beginnt.
 
-Allgemein: die Search-Syntax uenterstützt Operatoren (!, &, |, =, ~=, <=, >=) und
+Allgemein: die Search-Syntax unterstützt Operatoren (!, &, |, =, ~=, <=, >=) und
 Wildcards (*). Gruppierungen erfolgen durch Einklammern. Falls nach reservierten
 Sonderzeichen gesucht werden muss (Klammern, !, ^, ...), lassen sich diese im
 Suchstring escapen.
@@ -355,7 +355,8 @@ Der Filter ``(|(uid=*)(ou=d*))`` begrenzt die Ausgabe auf Einträge, die entwede
 Ein entsprechender ``ldapsearch``-Aufruf, der den User *beans* findet, sieht damit wie folgt aus:
 
 ::
-    ldapsearch -x -H -W ldap:/// "cn=admin,dc=betrayer,dc=de" -b dc=betrayer,dc=com -LLL "(uid=b*)"
+
+  ldapsearch -x -H -W ldap:/// "cn=admin,dc=betrayer,dc=de" -b dc=betrayer,dc=com -LLL "(uid=b*)"
 
 
 Einträge erweitern
@@ -384,7 +385,8 @@ Die Objektklasse ``posixAccount`` erfordert die Angabe einer ``uidNumber`` und e
 Über den Befehl ``ldapmodify`` lassen sich die Änderungen unter Angabe der LDIF-Datei einspielen:
 
 ::
-    ldapmodify -x -W -D "cn=admin,dc=betrayer,dc=de" -f datamodified.ldif
+
+  ldapmodify -x -W -D "cn=admin,dc=betrayer,dc=de" -f datamodified.ldif
 
 Die Syntax ist nahezu deckungsgleich mit der von ``ldapadd``, daher gehen wir nicht genauer darauf ein.
 
@@ -394,7 +396,8 @@ Der LDAP Account Manager (LAM) stellt Funktionen zur Administration von LDAP-Ver
 LAM kann über die Kommandozeile mit dem Befehl
 
 ::
-    [sudo] apt-get install ldap-account-manager
+
+  [sudo] apt-get install ldap-account-manager
 
 installiert werden.
 
@@ -435,7 +438,7 @@ generierte UIDs befinden dürfen.
 
 LDAP Replikation (Theorie)
 ##########################
-LDAP-Replikation dient zur Ausfallsicherheit. Mitfhilfe von Replikation können LDAP-Services weiterhin verfügbar sein, auch wenn eine LDAP-Instanz in der LDAP-Infrastruktur versagt hat.
+LDAP-Replikation dient zur Ausfallsicherheit. Mithilfe von Replikation können LDAP-Services weiterhin verfügbar sein, auch wenn eine LDAP-Instanz in der LDAP-Infrastruktur versagt hat.
 
 Die Umgebung der HdM enthält einen LDAP-Master sowie einige LDAP-Slaves, wie z.B. ``ldap1.mi``. Je nach Konfiguration, können Änderungen bidirektional oder vom Master an alle Slaves übertragen werden (single source).
 
