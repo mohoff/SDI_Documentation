@@ -10,11 +10,11 @@ Inhalt:
 
 .. toctree::
    :numbered:
-   
+
    Einführung <allgemein>
    LDAP <ldap>
    DNS <dns>
-   Webserver <webserver>
+   Apache Webserver <webserver>
    Samba <samba>
    Nagios <nagios>
 

@@ -57,6 +57,46 @@ Für die Verwendung von SSH war anschließend keine Passworteingabe mehr nötig.
     Last login: Thu Jul 30 07:15:37 2015 from 192.168.222.46
     root@sdi2b:~#
 
+Dokumentations-Tool Sphinx
+**************************
+
+Nach etwas Internetrecherche sind wir auf das Dokumentationswerkzeug Sphinx aufmerksam geworden, das auf Basis von *reStructuredText*, einer vereinfachten Auszeichnungssprache, aus ``rst``-files HTML-Files generiert, die mit etwas CSS letztendlich die Doku ausmachen. Der Sphinx-Parser selbst ist in Python implementiert.
+
+Wie andere Tools auch, bietet auch Sphinx (meist ähnliche) Auszeichnungsmöglichkeiten an:
+
+.. glossary::
+
+    ``*italic*, **bold** und ''code''``
+      Kursive und fette Formattierung lässt sich mit einfachen und doppelten Asterix (Sternchen) realisieren. Inline-Code lässt sich mit doppelten Backquotes in einer grau hinterlegen Monotype-Schrift als solcher kennzeichnen
+
+    ``Listen``
+      Ungeordnete Liste mit normalen Bullets lassen sich mit Asterix definieren. Mit Einrückungstiefen lassen sich Listenhierarchien erstellen. Analog dazu lassen sich nummerierte Listen mit ``<Zahl>.`` realisieren.
+
+    ``.. toctree::``
+      Legt die Dokumentenstruktur fest. Mit zusätzlichen Parametern, z.B. ``:maxdepth: 2`` werden im Inhaltsverzeichnis nur Überschriften bis Ebene 2 angezeigt.
+
+    ``.. glossary::``
+      Diese Direktive kündigt ein Glossar an, mit dem sich z.B. wie in unserer Dokumentation genutzt, Parametrisierungen von Konsolenbefehlen strukturiert erklären lassen.
+
+    ``::``
+      Hiermit lassen sich Codeblöcke auszeichnen, wenn der doppelte Doppelpunkt am Anfang des Codeblocks angeführt wird und der Code selbst um mindestens vier Leerzeichen eingerückt wird. Beenden lässt sich die Auszeichnung durch ein *newline*-Zeichen.
+
+    ``.. image:: <path/to/imagefile>``
+      Mit dieser Direktive werden Bilder in die Dokumentation angefügt. Der Pfad kann relativ zur gerade bearbeiteten ``rst``-Datei oder absolut in Bezug auf das Root-Verzeichnis der Dokumentation, angegeben werden. Mit erweiternden Optionen können zusätzlich Höhe, Breite, Skalierung, Ausrichtung und Referenzen explizit gesetzt werden.
+
+    ``.. topic:: <title>``
+      Hiermit können Textboxen in der Dokumentation erstellt werden, die z.B. Hinweise oder weiterführende Informationen beinhalten können.
+
+Ein paar CSS-Styles waren unserer Ansicht suboptimal gewählt, weswegen wir an einigen Stellen die CSS-Dateien entsprechend angepasst haben.
+
+Das eigentliche HTML wird mit dem Kommando
+
+::
+
+    make html
+
+generiert.
+
 Versionskontrolle mit Git
 *************************
 
