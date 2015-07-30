@@ -103,14 +103,15 @@ Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe 
 Der Befehl wird folgendermaßen zusammengesetzt:
 ::
 
-  [sudo] ldapsearch -Q -LLL -Y EXTERNAL -H ldapi:/// -b cn=config dn
+  [sudo] ldapsearch -Q -LLL -Y <mechanismus> -H <URIs> -b <searchbase> dn
 
-eine weitere Variation:
+Der Befehl kann entweder ohne Authentifizierung (Parameter ``-x``) oder mit "Simple Authenticationand Security Layer" (SASL) (``-Y`` <SASL mechanism>) ausgeführt werden:
+
 ::
 
-  [sudo] ldapsearch -x -LLL -H ldap:/// -b dc=example,dc=com dn
+  [sudo] ldapsearch -x -LLL -H <URIs> -b <searchbase> dn
 
-Der Befehl kann entweder ohne Authentifizierung (Parameter ``-x``) oder mit "Simple Authenticationand Security Layer" (SASL) (``-Y`` <SASL mechanism>) ausgeführt werden.
+
 
 .. topic:: ``ldapsearch``
 
