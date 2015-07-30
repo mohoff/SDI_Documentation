@@ -11,7 +11,9 @@ Die vorliegende Dokumentation wurde im Rahmen der Vorlesung **Software Defined I
 5. Samba
 6. Nagios
 
-Für jedes dieser Themengebiete wurden in Gruppen à 2-3 Studenten Aufgaben bearbeitet und die Vorgehensweise zur Lösung der Problemstellungen auf dieser Webseite dokumentiert.
+Für jedes dieser Themengebiete wurden in Gruppen à 2-3 Studenten Aufgaben bearbeitet und die Vorgehensweise zur Lösung der Problemstellungen auf dieser Seiten dokumentiert. Ziel der Veranstaltung war es, sich mit oben genannten Technologien auseinanderzusetzen, die Konzepte dahinter zu verstehen und sie jeweils hands-on auf eigenen VMs zu installieren, konfigurieren und testen.
+
+Im Fall von Nagios war das Vorgehen leicht anders, da das Tool zwei Maschinen benötigt, wobei eine die andere überwacht und Statusreports empfängt, die die andere Maschine übermittelt. Um dieses Verhalten zu erreichen, müssen beide Server unterschiedliche Komponenten von Nagios anwenden.
 
 
 Einrichtung der Arbeitsumgebung
