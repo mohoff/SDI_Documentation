@@ -91,7 +91,14 @@ Suche per ``ldapsearch``
 ++++++++++++++++++++++++
 
 Ebenso kann der Eintrag mit dem Tool **ldapsearch** gefunden werden. Dieses befindet sich im Paket **ldap-utilities**.
-Der Befehl zur Suche des Benutzers **dh055** lautet ``ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055``. Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio.
+Der Befehl zur Suche des Benutzers **dh055** lautet 
+
+::
+
+    ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055
+
+
+Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio.
 
 Der Befehl wird folgendermaßen zusammengesetzt:
 ::
@@ -182,31 +189,6 @@ Der Inhalt der Config-Datenbank sieht aus wie folgt:
 Direkte Änderungen in der ``config``-Datenbank sind nicht empfohlen, man soll vielmehr
 über das LDAP-Protokoll (Tool aus dem Package ``ldap-utils``) Änderungen vornehmen.
 
-Das LDAP-Protokoll
-******************
-
-Befehl ``ldapadd``:
-::
-
-  [sudo] ldapadd -x -W -c -D cn=admin,dc=betrayer,dc=com -f data.ldif
-
-Dieses Kommando wird in der nächsten Aufgabe verwendet.
-
-.. topic:: ``ldapsearch``
-
-  .. glossary::
-    ``-x``
-      Nutzt den SASL "quiet mode". User wird nicht nach Eingaben gefragt.
-
-    ``-c``
-      Fährt im Fall von Fehlern ohne Abbruch fort. Die Fehler werden nach Durchführung in einem Report zusammengefasst
-
-    ``-D <bindDN>``
-      Gibt den ``bindDN`` an, mit dem der Bind durchgeführt werden soll.
-
-    ``-f <filename>``
-      Gibt an, dass aus der angegebenen Datei gelesen werden soll.
-
 LDIF Files
 **********
 
@@ -279,13 +261,36 @@ Weitere Organizational Units können mit folgendem LDIF-Snippet angelegt werden:
 
 Für das Hinzufügen in das LDAP-Directory gibt es wie bei der Suche zwei Möglichkeiten: Über das Apache Directory Studio (GUI) oder über das CLI.
 
-Die Importfunktion der GUI ist selbsterklärend, daher gehen wir nur kurz auf den Konsolenbefehl ein, der oben bereits im Detail erklärt wurde:
+Die Importfunktion der GUI ist selbsterklärend, daher wird im Folgenden nur kurz auf den Konsolenbefehl eingegangen.
 
 ::
 
     ldapadd -x -W -c -D cn=admin,dc=betrayer,dc=de -f data.ldif
 
-Um die Datei ``data.ldif`` auf den Server zu übertragen, kann man das Tool ``scp`` zur Hilfe gezogen werden. Mit dem Befehl
+
+Der Befehl is folgendermaßen aufgebaut:
+::
+
+    [sudo] ldapadd -x -W -c -D <bindDN> -f <filename>
+  
+
+.. topic:: ``ldapsearch``
+
+  .. glossary::
+    ``-x``
+      Nutzt den SASL "quiet mode". User wird nicht nach Eingaben gefragt.
+
+    ``-c``
+      Fährt im Fall von Fehlern ohne Abbruch fort. Die Fehler werden nach Durchführung in einem Report zusammengefasst
+
+    ``-D <bindDN>``
+      Gibt den ``bindDN`` an, mit dem der Bind durchgeführt werden soll.
+
+    ``-f <filename>``
+      Gibt an, dass aus der angegebenen Datei gelesen werden soll.
+
+
+Um die Datei ``data.ldif`` auf den Server zu übertragen, kann das Tool ``scp`` zur Hilfe gezogen werden. Mit dem Befehl
 
 ::
 
