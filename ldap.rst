@@ -22,7 +22,7 @@ RDNs werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter ane
 
 ::
 
-  *cn=mustermann,ou=pm,ou=dev,dc=beispiel,dc=de* 
+  cn=mustermann,ou=pm,ou=dev,dc=beispiel,dc=de
 
 haben.
 
@@ -255,9 +255,9 @@ Ein LDIF-File kann z.B. folgendermaßen aussehen:
   sn: Halle
   mail: halle@betrayer.com
 
-Mit diesem LDIF-File werden mehrere neue ``ou`` dem DIT hinzugefügt. Außerdem wurde ein neuer User im letzten Block hinzugefügt
+Mit diesem LDIF-File werden dem DIT mehrere neue Organizational Units hinzugefügt. Im letzten Block wurde zudem ein User hinzugefügt.
 
-Weitere *organizational units* können mit folgendem LDIF-Snippet angelegt werden:
+Weitere Organizational Units können mit folgendem LDIF-Snippet angelegt werden:
 
 .. code-block:: html
   :linenos:
@@ -269,7 +269,7 @@ Weitere *organizational units* können mit folgendem LDIF-Snippet angelegt werde
   ou: sales
 
 
-Für die Integration in das LDAP-Directory gibt es wie bei der Suche zwei Möglichkeiten: Über das Apache Directory Studio (GUI) oder über das CLI.
+Für das Hinzufügen in das LDAP-Directory gibt es wie bei der Suche zwei Möglichkeiten: Über das Apache Directory Studio (GUI) oder über das CLI.
 
 Die Importfunktion der GUI ist selbsterklärend, daher gehen wir nur kurz auf den Konsolenbefehl ein, der oben bereits im Detail erklärt wurde:
 
@@ -277,13 +277,13 @@ Die Importfunktion der GUI ist selbsterklärend, daher gehen wir nur kurz auf de
 
     ldapadd -x -W -c -D cn=admin,dc=betrayer,dc=de -f data.ldif
 
-Um die Datei ``data.ldif`` auf den Server zu übertragen, kann man das Tool *scp* zur Hilfe gezogen werden. Mit dem Befehl
+Um die Datei ``data.ldif`` auf den Server zu übertragen, kann man das Tool ``scp`` zur Hilfe gezogen werden. Mit dem Befehl
 
 ::
 
     scp ./data.ldif root@141.62.75.106:.
 
-wird die Datei ins Home-Verzeichnis des Users *root* auf dem Server unter der IP ``141.62.75.106`` kopiert.
+wird die Datei ins Home-Verzeichnis des Users **root** auf dem Server unter der IP ``141.62.75.106`` kopiert.
 
 
 LDAP mit Thunderbird
