@@ -3,16 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to software-defined-infrastructure's documentation!
-===========================================================
+Willkommen zur SDI-Dokumentation!
+=================================
 
-Contents:
+Inhalt:
 
 .. toctree::
    :numbered:
-
-   Sphinx <sphinx>
-   Linux Commands <linuxcommands>
+   
+   Allgemein <allgemein>
    LDAP <ldap>
    DNS <dns>
    Webserver <webserver>
@@ -21,9 +20,8 @@ Contents:
 
 
 
-Indices and tables
+Index und Tabellen
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
