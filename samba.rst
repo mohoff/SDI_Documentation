@@ -7,7 +7,7 @@ Samba Introduction
 ******************
 
 Der Name Samba stammt vom Server Message Block-Protokoll (SMB).
-Mithilfe von Samba können Daten (Verzeichnisse, Laufwerke, Festplatten) sowie Geräte (zb. Drucker) im Netzwerk geteilt werden.
+Mithilfe von Samba können Daten (Verzeichnisse, Laufwerke, Festplatten) sowie Geräte (z.B. Drucker) im Netzwerk geteilt werden.
 Diese sogenannten Freigaben tauchen dann zB. in der Windows-Netzwerkumgebung auf und können eingebunden werden.
 Unter Linux könnendiese Freigaben ebenfalls gemountet werden.
 
@@ -35,7 +35,7 @@ installiert.
 
 Anschließend können Benutzer hinzugefügt werden. Dies geschieht mit dem Befehl ``smbpasswd -a %username%``.
 
-Hierfür ist es notwendig, dass auf dem System Linux Benutzer mit dem entsprechenden Benutzernamen angelegt ist. Benutzer können mit dem Befehl ``useradd --create-home %username%`` angelegt werden. Mit dem Parameter ``--create-home`` wird gleichzeitig ein Homeverzeichnis angelegt.
+Hierfür ist es notwendig, dass auf dem System ein Linux-Benutzer mit dem entsprechenden Benutzernamen angelegt ist. Benutzer können mit dem Befehl ``useradd --create-home %username%`` angelegt werden. Mit dem Parameter ``--create-home`` wird gleichzeitig ein Homeverzeichnis angelegt.
 ::
   root@sdi1a:~# useradd --create-home testuser0
 
@@ -47,7 +47,7 @@ Zur Erstellung des Samba-Users:
   Added user testuser0.
 
 Man muss ein Passwort angeben, da Samba nicht die Standard-Linux-Passwörter nutzt, sondern eigene Passwörter.
-Das Passwort-Backend steht in der Samba-Konfigurationsdatei smb.conf:
+Das Passwort-Back-End steht in der Samba-Konfigurationsdatei smb.conf:
 ``passdb backend = tdbsam``
 
 Samba verwendet eine eigene Passwortdatenbank, da diese mit Windows-Passwörtern kompatibel sein muss.
@@ -142,24 +142,26 @@ Um beispielsweise das Verzeichnis ``/home/testuser0/shared`` freizugeben, muss i
 Der Bezeichner innerhalb der eckigen Klammern ist der Name des Shares. In diesem Fall also **testshare0**.
 Die Parameter im Detail:
 
-.. glossary::
-	path
-	      Der Freizugebende Pfad
+.. topic:: Parameter
 
-	available
-  		dient als "Schalter" für das Share. Wird der Parameter auf **no** gesetzt, schlagen alle Versuche auf das Share zuzugreifen fehl.
-
-  	valid users
-  		Eine mit Kommas getrennte Liste an Benutzern, die auf das Share zugreifen dürfen; Andersherum können einzelne Benutzer mit dem Parameter **invalid users** vom Zugriff ausgeschlossen werden.
-
-  	read only
-  		Legt fest, ob die zugelassenen Benutzer Schreibzugriff auf das Share haben
-
-  	browsesable
-  		Ist diese Option auf "no" gesetzt, wird das Share niemals aufgelistet. Es ist also nur möglich direkt per Pfad auf das Share zuzugreifen.
-
-  	public
-  		Legt fest, ob für den Zugriff auf das Share ein Passwort benötigt wird.
+	.. glossary::
+		path
+		      Der Freizugebende Pfad
+	
+		available
+	  		dient als "Schalter" für das Share. Wird der Parameter auf **no** gesetzt, schlagen alle Versuche auf das Share zuzugreifen fehl.
+	
+	  	valid users
+	  		Eine mit Kommas getrennte Liste an Benutzern, die auf das Share zugreifen dürfen; Andersherum können einzelne Benutzer mit dem Parameter **invalid users** vom Zugriff ausgeschlossen werden.
+	
+	  	read only
+	  		Legt fest, ob die zugelassenen Benutzer Schreibzugriff auf das Share haben
+	
+	  	browsesable
+	  		Ist diese Option auf "no" gesetzt, wird das Share niemals aufgelistet. Es ist also nur möglich direkt per Pfad auf das Share zuzugreifen.
+	
+	  	public
+	  		Legt fest, ob für den Zugriff auf das Share ein Passwort benötigt wird.
 
 
 Nach einem Serverneustart mit ``service smbd restart`` kann auf den Ordner über den Pfad ``\\sdi1a.mi.hdm-stuttgart.de\testshare0\`` zugegriffen werden.
@@ -228,7 +230,7 @@ Mounten von shares
 Windows
 +++++++
 Der freigegebene ``shared``-Ordner kann folgendermaßen in Windows eingebunden werden.
-Im Arbeitsplatz im Reiter "Computer" die Option "Netzwerkaufwerk verbinden" wählen.
+Im Arbeitsplatz im Reiter "Computer" die Option "Netzwerklaufwerk verbinden" wählen.
 
 .. image:: images/Samba/windows/01.bmp
 
@@ -248,19 +250,20 @@ Der Ordner erscheint nun in Form eines Netzwerklauferks im Arbeitsplatz.
 Linux
 +++++
 
-Mithilfe des mount-Kommandos können die freigegebenen Shares im Zielverzeichnis /mnt/test/ eingehängt werden:
+Mithilfe des ``mount`` -Kommandos können die freigegebenen Shares im Zielverzeichnis ``/mnt/test/`` eingehängt werden:
 ::
   sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/testshare0 /mnt/test/ -ouser=testuser0
 
-Außerdem ist es möglich, alle Homedirectorys der Benutzer freizugeben.Hierfür müssen in der ``smb.conf`` die Kommentare vor dem folgendem Eintrag entfernt werden:
+Außerdem ist es möglich, alle Home-Directorys der Benutzer freizugeben. Hierfür müssen in der ``smb.conf`` die Kommentare vor dem folgendem Eintrag entfernt werden:
 ::
   [homes]
      comment = Home Directories
      browseable = no
 
-Falls nun ein Klient versucht, sich mit einer Freigabe zu verbinden, die nicht explizit in der smb.conf definiert wurde, zb. "testuser0", so durchsucht der Samba-Server das Password-Database-File nach einem User "testuser0".
+Falls nun ein Klient versucht, sich mit einer Freigabe zu verbinden, die nicht explizit in der ``smb.conf`` definiert wurde, z.B. "testuser0", so durchsucht der Samba-Server das Password-Database-File nach einem User "testuser0".
 Falls dieser gefunden wird und das vom Klienten eingegebene Passwort mit demUnix-PW vom User "testuser0" übereinstimmt, so wird eine neue Freigabe mit dem Namen "testuser0" erzeugt, welcher auf testuser0's Home-Directory zeigt.
-Beispielhaftes mount-Kommando für das mounten der Home-Directory von "testuser0":
+
+Beispielhafter Einsatz von ``mount`` für das mounten der Home-Directory von "testuser0":
 ::
   sudo mount -t cifs  //sdi1a.mi.hdm-stuttgart.de/testuser0 /mnt/test/ -ouser=testuser0
 
@@ -276,7 +279,7 @@ Zunächst müssen diverse Packages installiert werden:
 Samba LDAP Schema
 +++++++++++++++++
 
-Nun muss das Samba LDAP Schema auf den LDAP-Server angewendet werden, so dass OpenLDAP als Backend von Samba verwendet werden kann, da der Samba-Server nach spezifischen Einträgen im DIT sucht.
+Nun muss das Samba LDAP Schema auf den LDAP-Server angewendet werden, so dass OpenLDAP als Back-End von Samba verwendet werden kann, da der Samba-Server nach spezifischen Einträgen im DIT sucht.
 
 Der DIT braucht hierbei neue objectClasses, welche die nötigen Samba-Attribute beinhalten.
 Diese objectClasses sind im Samba LDAP Schema beschrieben.
@@ -287,7 +290,7 @@ Entpacken des Schemas:
   sudo cp /usr/share/doc/samba-doc/examples/LDAP/samba.schema.gz /etc/ldap/schema
   sudo gzip -d /etc/ldap/schema/samba.schema.gz
 
-Erstellen einer Datei "schema_convert.conf":
+Erstellen einer Datei ``schema_convert.conf``:
 ::
   include /etc/ldap/schema/core.schema
   include /etc/ldap/schema/collective.schema
@@ -305,7 +308,7 @@ Erstellen einer Datei "schema_convert.conf":
   include /etc/ldap/schema/pmi.schema
   include /etc/ldap/schema/samba.schema
 
-Erstellen einer Output-Directory:
+Erstellen eines Output-Verzeichnisses:
 ::
   mkdir ldif_output
 
@@ -321,22 +324,22 @@ Konvertieren des Schemas ins LDIF-Format:
   ldap:///cn={14}samba,cn=schema,cn=config -l cn=samba.ldif
 
 
-slapcat ist das Kommando, welches benutzt werden kann um die Inhalte einer slapd-Datenbank in das LDIF-Format umzuwandeln.
+``slapcat`` ist das Kommando, welches benutzt werden kann um die Inhalte einer slapd-Datenbank in das LDIF-Format umzuwandeln.
 
-Parameter:
+.. topic:: Parameter:
+	
+	.. glossary::
+	
+		-f
+			Definiert Konfigurationsdatei
+		-F
+			Definiert Konfigurations-Directory. Die mit -f definierte Datei wird in eine Verzeichnisstruktur umgewandelt und das Zielverzeichnis gespeichert
+		-H
+			Hier wird die LDAP-URI definiert.
+		-l
+			Ziel-LDIF-Datei
 
-.. glossary::
-
-	-f
-		Definiert Konfigurationsdatei
-	-F
-		Definiert Konfigurations-Directory. Die mit -f definierte Datei wird in eine Verzeichnisstruktur umgewandelt und das Zielverzeichnis gespeichert
-	-H
-		Hier wird die LDAP-URI definiert.
-	-l
-		Ziel-LDIF-Datei
-
-Anschließend muss noch die Index- Information aus der generierten LDIF- Datei entfernt werden.
+Anschließend muss noch die Index-Information aus der generierten LDIF- Datei entfernt werden.
 Am Ende der Datei müssen die Zeilen
 ::
   structuralObjectClass: olcSchemaConfig
@@ -348,7 +351,8 @@ Am Ende der Datei müssen die Zeilen
   modifyTimestamp: 20080827045234Z
 ebenfalls gelöscht werden.
 
-Diese zwei Änderungen müssen gemacht werden, da das Output-LDIF nicht kompatibel mit dem Kommando ldapadd ist.
+Diese zwei Änderungen müssen gemacht werden, da das Output-LDIF nicht kompatibel mit dem Kommando ``ldapadd`` ist.
+
 Erweitern des bestehenden Schemas auf dem LDAP-Server durch das generierte Schema:
 ::
   sudo ldapadd -Q -Y EXTERNAL -H ldapi:/// -f cn\=samba.ldif
@@ -359,7 +363,7 @@ Samba Indizes
 
 OpenLDAP kennt nun Samba-Attribute, nun können noch Indizes für diese hinzugefügt werden, um die Performanz zu verbessern.
 
-Eine neue Datei "samba_indices.ldif" wurde hierzu erstellt:
+Eine neue Datei ``samba_indices.ldif`` wurde hierzu erstellt:
 ::
   dn: olcDatabase={1}hdb,cn=config
   changetype: modify
@@ -387,32 +391,31 @@ Hinzufügen von Samba LDAP Objekten
 ++++++++++++++++++++++++++++++++++
 
 Nun sollen die für Samba notwendigen Objekte in den DIT eingefügt werden.
-Dies wird mithilfe des Packages "smbldap-tools" realisiert.
+Dies wird mithilfe des Packages **smbldap-tools** realisiert.
 
 Zunächst wird ein Backup des aktuellen DIT erstellt, für den Fall dass etwas schief geht.
 ::
   slapcat -l backup.ldif
 
-Anschließend werden die Objekte mithilfe des Kommandos
+Anschließend werden die Objekte mithilfe des Kommandos ``smbldap-populate`` erzeugt.
+
+.. topic:: Anmerkung
+
+	Aufgrund eines Fehlers wurden die von ``smbldap-populate`` verwendeten Skripte nicht korrekt erzeugt.
+	Als Notlösung wurden uns diese von Hr. Goik zur Verfügung gestellt, mussten jedoch noch manuell konfiguriert werden:
+	
+	In smbldap_bind.conf müssen die korrekten Credentials für den Root-Zugang des LDAP-Servers hinterlegt werden:
+	::
+	  masterDN="cn=admin,dc=mi,dc=hdm-stuttgart,dc=de"
+	  masterPw="test"
+	  slaveDN="cn=admin,dc=mi,dc=hdm-stuttgart,dc=de"
+	  slavePw="test"
+
+
+In smbldap.conf müssen einige Parameter angepasst werden:
+
 ::
-  smbldap-populate
-erzeugt.
 
-Anmerkung:
-
-Aufgrund eines Fehlers wurden die von smbldap-populate verwendeten Skripte nicht korrekt erzeugt.
-Als Notlösung wurden uns diese von Hr. Goik zur Verfügung gestellt, mussten jedoch noch manuell konfiguriert werden:
-
-In smbldap_bind.conf müssen die korrekten Credentials für den Root-Zugang des LDAP-Servers hinterlegt werden:
-::
-  masterDN="cn=admin,dc=mi,dc=hdm-stuttgart,dc=de"
-  masterPw="test"
-  slaveDN="cn=admin,dc=mi,dc=hdm-stuttgart,dc=de"
-  slavePw="test"
-
-
-In smbldap.conf müssen einiger Parameter angepasst werden:
-::
   SID="S-1-5-21-191455238-2906638316-4037938886"	//Eigene SID einfügen
   ldapTLS="0" 						//Deaktivieren von TLS
   suffix="dc=mi,dc=hdm-stuttgart,dc=de"			//Korrekter LDAP-Suffix
@@ -422,7 +425,7 @@ Samba Konfiguration
 
 Nun muss lediglich Samba so konfiguriert werden, dass LDAP zur Authentifizierung verwendet wird.
 
-Dazu werden in der Datei /etc/samba/smb.conf die folgenden Parameter eingefügt:
+Dazu werden in der Datei ``/etc/samba/smb.conf`` die folgenden Parameter eingefügt:
 ::
   passdb backend = ldapsam:ldap://sdi1a.mi.hdm-stuttgart.de
   ldap suffix = dc=mi,dc=hdm-stuttgart,dc=de
@@ -457,11 +460,11 @@ NSS-Client
 
 Wenn Samba mit einer LDAP-Authentifizierung funktionieren soll, so muss sichergestellt werden, dass die LDAP-User für das Host-OS sichtbar sind.
 
-Um dies zu ermöglichen muss das Paket libnss-ldapd installiert werden:
+Um dies zu ermöglichen muss das Paket **libnss-ldapd** installiert werden:
 ::
   apt-get install libnss-ldapd
 
-Nun muss in der Datei /etc/nssswitch.conf ldap als weitere Ressource angegeben werden:
+Nun muss in der Datei ``/etc/nssswitch.conf`` **ldap** als weitere Ressource angegeben werden:
 ::
   1 # /etc/nsswitch.conf
   2 #
@@ -485,7 +488,7 @@ Nun muss in der Datei /etc/nssswitch.conf ldap als weitere Ressource angegeben w
   20 aliases:        ldap
 
 
-Außerdem muss die Adresse des LDAP-Servers in der Datei nslcd.conf angegeben werden:
+Außerdem muss die Adresse des LDAP-Servers in der Datei ``nslcd.conf`` angegeben werden:
 ::
   1 # /etc/nslcd.conf
   2 # nslcd configuration file. See nslcd.conf(5)
@@ -510,11 +513,12 @@ Nun ist der nur im LDAP-Verzeichnis vorhandene User testuser4 im OS sichtbar:
 Ergebnis
 ++++++++
 
-Wenn der testuser4 Zugriff auf einen share erhält (via /etc/samba/smb.conf) so kann sich dieser beim mounten über LDAP authentifizieren.
+Wenn der testuser4 Zugriff auf einen share erhält (via ``/etc/samba/smb.conf``), so kann sich dieser beim mounten über LDAP authentifizieren.
 
-Anmerkung:
-Es kann passieren, dass beim Mounten die Fehlermeldung "Key Expired" auftritt.
-In diesem Fall muss dass LDAP-Attribut "maxShadow" gelöscht im jeweiligen User gelöscht werden.
+.. topic:: Anmerkung:
+	
+	Es kann passieren, dass beim Mounten die Fehlermeldung "Key Expired" auftritt.
+	In diesem Fall muss das LDAP-Attribut "maxShadow" gelöscht im jeweiligen User gelöscht werden.
 
 Möglichkeiten zur Fehlerbehandlung in Samba/LDAP
 #######################################################
@@ -567,7 +571,7 @@ Der Log-Level sollte dabei 3 nicht überschreiten, da ansonsten sehr viele Infor
 smbcontrol
 ++++++++++
 
-Mithilfe des Tools smbcontrol können bereits bestehende Samba-Verbindungen beeinflusst werden (z.B. Log-Level ändern).
+Mithilfe des Tools **smbcontrol** können bereits bestehende Samba-Verbindungen beeinflusst werden (z.B. Log-Level ändern).
 
 Dazu wird zunächst die PID des smbd benötigt:
 ::
@@ -583,9 +587,7 @@ Dazu wird zunächst die PID des smbd benötigt:
   IPC$         21420   192.168.222.126  Sat Jun 27 10:13:56 2015
 
 
-Nun kann der Log-Level angepasst werden:
-
-``smbcontrol 21420 debug 3``
+Nun kann der Log-Level angepasst werden: ``smbcontrol 21420 debug 3``
 
 Logging in LDAP
 +++++++++++++++
