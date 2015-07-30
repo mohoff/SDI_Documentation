@@ -399,7 +399,7 @@ Zur Überprüfung der Konfiguration bietet BIND folgende Kommandozeilentools:
   named-checkzone (1) (2)
   	Überprüft alle Zone-Dateien auf ihre Korrektheit. Parameter (1) verlangt den Namen der Zone und Parameter (2) die zugehörige Zone-Datei. Im Beispiel lauten die Befehle für die Forward-, bzw. Reverse-Zone ``named-checkzone mi.hdm-stuttgart.de /etc/bind/zones/db.mi.hdm-stuttgart.de`` bzw. ``named-checkzone 75.62.141.in-addr.arpa /etc/bind/zones/db.141.62.75``
 
-In der Tat muss man mit den Einrückungen in den beiden Textdateien Vorsicht walten lassen. Am besten hält man sich an die in der Vorlage verwendeten Einrückungen und Zeilenumbrüchen.
+In der Tat muss man mit den Einrückungen in den beiden Textdateien Vorsicht walten lassen. Am besten hält man sich an die in der Vorlage verwendeten Einrückungen und Zeilenumbrüche.
 
 
 Falls keine Fehler auftreten, kann der Server verwendet werden. Ein Rechner kann den Server nun als Standard-Nameserver festlegen, indem er ihn in seine ``/etc/resolv.conf`` aufnimmt:
