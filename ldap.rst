@@ -78,7 +78,7 @@ Nach der Bestätigung durch **OK** wird der gesuchte Eintrag auf der Oberfläche
 
 .. topic:: Hinweis
 
-Standardmäßig werden im Directory Studio nur 1000 Einträge angezeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
+  Standardmäßig werden im Directory Studio nur 1000 Einträge angezeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> Eigenschaften -> Verbindung -> Reiter "Browser Optionen" -> "Max. Anzahl". Der gewünschte Wert kann dort eingegeben werden.
 
 
 Selbiges Ergebnis kann auch über die Kommandozeile mit dem Tool **ldapsearch** erzielt werden. Dieses befindet sich im Paket **ldap-utilities**.
