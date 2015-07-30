@@ -492,15 +492,18 @@ Ferner können unter dem Reiter **Modules** die ``objectClass`` der LDAP-Entitä
 
 .. image:: images/LAM/modules.png
 
+Unter dem Reiter **Module Settings** lassen sich zudem Einstellungen zu den UIDs für Users, Groups
+und Hosts vornehmen. Also z.B. die Art des UID-Generators oder die Wertebereich, in der sich
+generierte UIDs befinden dürfen.
+
+
+
 Nach dem Ausführen dieser Schritte ist der LAM fertig konfiguriert und die Anmeldung auf dem LDAP-Server is möglich.
 
 Die eingetragenen Benutzer werden nun unter dem Reiter **Users** korrekt angezeigt und können bearbeitet werden:
 
 .. image:: images/LAM/UserList.png
 
-Unter *Module Settings* lassen sich u.a. Einstellungen zu den UIDs für Users, Groups
-und Hosts vornehmen. Also z.B. die Art des UID-Generators, sowie die Range, in der sich
-generierte UIDs befinden dürfen.
 
 
 LDAP Replikation (Theorie)
