@@ -547,7 +547,7 @@ Wenn der testuser4 Zugriff auf einen share erhält (via ``/etc/samba/smb.conf``)
 .. topic:: Anmerkung:
 	
 	Es kann passieren, dass beim Mounten die Fehlermeldung "Key Expired" auftritt.
-	In diesem Fall muss das LDAP-Attribut "maxShadow" gelöscht im jeweiligen User gelöscht werden.
+	In diesem Fall muss das LDAP-Attribut "maxShadow" im jeweiligen User gelöscht werden.
 
 Möglichkeiten zur Fehlerbehandlung in Samba/LDAP
 #######################################################

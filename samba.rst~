@@ -308,7 +308,7 @@ Zunächst müssen diverse Packages installiert werden:
 Samba LDAP Schema
 +++++++++++++++++
 
-Nun muss das Schema des LDAP-Servers um eine Samba-LDAP-Schema erweitert werden, so dass OpenLDAP als Back-End von Samba verwendet werden kann, da der Samba-Server nach spezifischen Einträgen im DIT sucht.
+Nun muss das Schema des LDAP-Servers um eine Samba-LDAP-Schema erweitert werden, da der Samba-Server nach spezifischen Einträgen im DIT sucht.
 
 Der DIT braucht hierbei neue objectClasses, welche die nötigen Samba-Attribute beinhalten.
 Diese objectClasses sind im Samba-LDAP Schema beschrieben.
@@ -390,7 +390,7 @@ Nun kann das bestehende LDAP Schema durch unser generiertes Schema erweitert wer
 Samba Indizes
 +++++++++++++
 
-OpenLDAP kennt nun Samba-Attribute, nun können noch Indizes für diese hinzugefügt werden, um die Performanz zu verbessern.
+OpenLDAP kennt nun Samba-Attribute, nun können noch Indizes für diese hinzugefügt werden um die Performanz zu verbessern.
 
 Eine neue Datei ``samba_indices.ldif`` wurde hierzu erstellt:
 ::
