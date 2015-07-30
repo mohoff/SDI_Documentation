@@ -246,7 +246,18 @@ Ein LDIF-File kann z.B. folgendermaßen aussehen:
   sn: Halle
   mail: halle@betrayer.com
 
-Mit diesem LDIF-File werden dem DIT mehrere neue Organizational Units hinzugefügt. Im letzten Block wurde zudem ein User hinzugefügt.
+Mit diesem LDIF-File werden dem DIT mehrere Organizational Units hinzugefügt. In den letzten zwei Blöcken wurden zudem zwei User hinzugefügt. Der Verzeichnisbaum sieht daraufhin folgendermaßen aus:
+
+::
+
+  .
+  └─ dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
+      └─ ou=departments
+          └─ ou=software
+            └─ ou=devel
+               ├─ cn=beam
+               └─ cn=halle
+
 
 Weitere Organizational Units können mit folgendem LDIF-Snippet angelegt werden:
 
@@ -264,12 +275,16 @@ Für das Hinzufügen in das LDAP-Directory gibt es wie bei der Suche zwei Mögli
 
 Die Importfunktion der GUI ist selbsterklärend, daher wird im Folgenden nur kurz auf den Konsolenbefehl eingegangen.
 
+Der Befehl zum Hinzufügen der LDIF-Datei lautet folgendermaßen:
+
 ::
 
-    ldapadd -x -W -c -D cn=admin,dc=betrayer,dc=de -f data.ldif
+    ldapadd -x -W -c -D cn=admin,dc=mi,dc=hdm-stuttgart,dc=de -f data.ldif
+
+Die LDIF-Datei wurde in diesem Beispiel unter dem Namen **data.ldif** abgespeichert
 
 
-Der Befehl is folgendermaßen aufgebaut:
+``ldapadd`` is folgendermaßen aufgebaut:
 ::
 
     [sudo] ldapadd -x -W -c -D <bindDN> -f <filename>
@@ -290,14 +305,15 @@ Der Befehl is folgendermaßen aufgebaut:
     ``-f <filename>``
       Gibt an, dass aus der angegebenen Datei gelesen werden soll.
 
+.. topic:: Hinweis
 
-Um die Datei ``data.ldif`` auf den Server zu übertragen, kann das Tool ``scp`` zur Hilfe gezogen werden. Mit dem Befehl
-
-::
-
-    scp ./data.ldif root@141.62.75.106:.
-
-wird die Datei ins Home-Verzeichnis des Users **root** auf dem Server unter der IP ``141.62.75.106`` kopiert.
+  Um die Datei ``data.ldif`` auf den Server zu übertragen, kann das Tool ``scp`` zur Hilfe gezogen werden. Mit dem Befehl
+  
+  ::
+  
+      scp ./data.ldif root@141.62.75.106:.
+  
+  wird die Datei ins Home-Verzeichnis des Users **root** auf dem Server unter der IP ``141.62.75.106`` kopiert.
 
 
 LDAP mit Thunderbird
