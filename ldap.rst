@@ -255,7 +255,8 @@ Die LDIF-Datei wurde in diesem Beispiel unter dem Namen **data.ldif** abgespeich
 
 
 LDAP mit Thunderbird
-####################
+********************
+
 Auf die LDAP-Daten kann nun mit einem Mail-Client zugegriffen werden, in unserem Fall dem Tool *Mozilla Thunderbird*. Dazu müssen LDAP-Einträge eine Mailadresse beinhalten.
 
 Via *Tools->Address Book->New->LDAP Directory* kann ein neues LDAP-Directory hinzugefügt werden:
@@ -271,12 +272,12 @@ Nun können die User-Einträge mit dem Filter ``@`` angeschaut werden, sofern Us
 .. image:: images/addressbook.png
 
 LDAP Suche mit Filtern
-######################
+**********************
 
 LDAP-Einträge können entweder per GUI über das Directory Studio oder per Kommandozeilentool ``ldapsearch`` aufgefunden werden.
 
 Suche per Apache Directory Studio
-*********************************
++++++++++++++++++++++++++++++++++
 
 Um einen Eintrag per GUI zu finden muss die Filterfunktion bemüht werden. In diesem Beispiel ist die UID des gesuchten Benutzers bekannt. Es soll nach dem Benutzer mit der UID **dh055** gesucht werden. Hierfür wird der Zweig, in dem sich der Benutzer befindet, rechts geklickt werden und im Kontextmenü der Eintrag **Kind-Einträge filtern...** ausgewählt werden.
 
@@ -322,7 +323,7 @@ Suchstring escapen.
 
 
 Suche per ``ldapsearch``
-************************
+++++++++++++++++++++++++
 
 Ebenso kann der Eintrag mit dem Tool **ldapsearch** gefunden werden. Dieses befindet sich im Paket **ldap-utilities**.
 Der Befehl zur Suche des Benutzers **dh055** lautet 
@@ -376,7 +377,7 @@ Der Befehl kann entweder ohne Authentifizierung (Parameter ``-x``) oder mit "Sim
 
 
 Such-Filter Aufgaben
-********************
+++++++++++++++++++++
 
 Der Filter ``(uid=b*)`` filtert Einträge, für welche ein Attribut ``uid`` existiert und das mit dem Buchstaben "d" beginnt.
 
@@ -390,7 +391,7 @@ Ein entsprechender ``ldapsearch``-Aufruf, der den User *beans* findet, sieht dam
 
 
 Einträge erweitern
-##################
+******************
 Zuletzt fügten wir ein ``posixAccount`` für den User "Jim Beam" mithilfe dem folgenden ldif-File hinzu:
 
 .. code-block:: html
@@ -467,7 +468,7 @@ generierte UIDs befinden dürfen.
 
 
 LDAP Replikation (Theorie)
-##########################
+**************************
 LDAP-Replikation dient zur Ausfallsicherheit. Mithilfe von Replikation können LDAP-Services weiterhin verfügbar sein, auch wenn eine LDAP-Instanz in der LDAP-Infrastruktur versagt hat.
 
 Die Umgebung der HdM enthält einen LDAP-Master sowie einige LDAP-Slaves, wie z.B. ``ldap1.mi``. Je nach Konfiguration, können Änderungen bidirektional oder vom Master an alle Slaves übertragen werden (single source).
