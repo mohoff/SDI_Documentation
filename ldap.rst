@@ -249,17 +249,17 @@ Ein LDIF-File kann z.B. folgendermaßen aussehen:
 Mit diesem LDIF-File werden dem DIT mehrere Organizational Units hinzugefügt. In den letzten zwei Blöcken wurden zudem zwei User hinzugefügt. Der Verzeichnisbaum sieht daraufhin folgendermaßen aus:
 
 ::
-
+  
   .
   └─ dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
-      └─ ou=departments
-          └─ ou=software
-            └─ ou=devel
-               ├─ cn=beam
-               └─ cn=halle
+     └─ ou=departments
+        └─ ou=software
+           └─ ou=devel
+              ├─ cn=beam
+              └─ cn=halle
 
 
-Weitere Organizational Units können mit folgendem LDIF-Snippet angelegt werden:
+Eine weitere Organizational Unit "sales" kann mit folgendem LDIF-Snippet angelegt werden:
 
 .. code-block:: html
   :linenos:
@@ -270,6 +270,18 @@ Weitere Organizational Units können mit folgendem LDIF-Snippet angelegt werden:
   objectClass: organizationalUnit
   ou: sales
 
+Dieser Fügt sich folgendermaßen in den Baum ein:
+
+::
+
+  .
+  └─ dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
+     ├─ ou=departments
+     |  └─ ou=software
+     |     └─ ou=devel
+     |        ├─ cn=beam
+     |        └─ cn=halle
+     └─ ou=departments
 
 Für das Hinzufügen in das LDAP-Directory gibt es wie bei der Suche zwei Möglichkeiten: Über das Apache Directory Studio (GUI) oder über das CLI.
 
