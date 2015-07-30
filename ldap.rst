@@ -7,6 +7,9 @@ LDAP
 LDAP Einführung
 ###############
 
+Allgemeines
++++++++++++
+
 LDAP (Lighweight Directory Access Protocol) ist ein Protokoll mit dem über das Netzwerk auf spezielle Verzeichnisse zugegriffen werden kann. LDAP-Verzeichnisse zeichnen sich dadurch aus, dass sie sich automatisch replizieren- und über mehrere Systeme verteilen lassen. In LDAP-Verzeichnissen können Informationen verschiedenster Art gespeichert werden. Häufig sind die Informationen auf Benutzer innerhalb eines Unternehmens bezogen. Üblich sind beispielsweise Namen, Login-Daten und E-Mail-Adressen.
 
 Daten dieser Art könnten ebenfalls in Datenbanken abgespeichert werden. Ein Vergleich zwischen Verzeichnissen und (relationalen) Datenbanken liegt also nahe. Der wohl größte Unterschied ist die Strukturierung der Daten. Bei Datenbanken sind einzelne Datensätze in Form von Tupeln in einer Vielzahl von Tabellen gespeichert, die sich untereinander referenzieren. Verzeichnisse sind baumartig, also hierarchisch, innerhalb eines **Directory Information Tree** (DIT) strukturiert. Dieser enthält eine Menge von **Objekten**, die wiederum in **Container** und **Blätter** unterteilt sind. Container können wiederum weitere Objekte, also Container und Blätter, enthalten. Die Container an den "Enden" sind üblicherweise die gespeicherten Personen. Diese enthalten eine Menge an Blättern, die die einzelnen Attribute der Person darstellen. Ein solches Attribut ist beispielsweise ein Name, eine E-Mail-Adresse oder Telefonnummer, etc. Jedes dieser Attribute hat einen Typ, der in einer **objectClass** definiert ist.
@@ -42,11 +45,9 @@ haben.
     OU
       Organizational Unit
 
-Exercises
-#########
 
 Apache Directory Studio
-***********************
++++++++++++++++++++++++
 
 Das Apache Directory Studio (ADS) ist ein auf Eclipse basierendes Tool, mit dem CRUD-Operationen auf LDAP-Datenbanken
 ausgeführt werden können. Es ist für Windows, Linux und Mac OS X verfügbar und kann `hier <https://directory.apache.org/studio/downloads.html>`_ heruntergeladen werden.
@@ -63,83 +64,8 @@ Mit einem Klick auf "Weiter" gelangt man auf die nächste Seite des Dialogfenste
 
 In diesem kann man sich authentifizieren. Im Fall des HdM-LDAP-Servers kann der Zugriff auch anonym erfolgen. Mit einem Klick auf "Fertigstellen" ist die Einrichtung abgeschlossen.
 
-Auffinden von Einträgen
-***********************
-Einträge können entweder per GUI über das Directory Studio oder per Kommandozeilentool ``ldapsearch`` aufgefunden werden.
-
-Suche per Apache Directory Studio
-+++++++++++++++++++++++++++++++++
-
-Um einen Eintrag per GUI zu finden muss die Filterfunktion bemüht werden. In diesem Beispiel ist die UID des gesuchten Benutzers bekannt. Es soll nach dem Benutzer mit der UID **dh055** gesucht werden. Hierfür wird der Zweig, in dem sich der Benutzer befindet, rechts geklickt werden und im Kontextmenü der Eintrag **Kind-Einträge filtern...** ausgewählt werden.
-
-.. image:: images/LDAP/03-filtern.png
-
-In der erscheinenden Maske wird die Abfrage formuliert. In diesem Fall lautet diese **(uid=dh055)**. Abfragen werden in einer speziellen LDAP-Syntax erstellt. Mehr dazu `hier <http://www.ldapexplorer.com/en/manual/109010000-ldap-filter-syntax.htm>`_.
-
-.. image:: images/LDAP/04-filtern-2.png
-
-Nach der Bestätigung durch **OK** wird der gesuchte Eintrag auf der Oberfläche angezeigt.
-
-.. image:: images/LDAP/05-filtern-3.png
-
-
-.. topic:: Hinweis
-
-  Standardmäßig werden im Directory Studio nur 1000 Einträge angezeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> *Eigenschaften* -> *Verbindung* -> Reiter *Browser Optionen* -> *Max. Anzahl*. Der gewünschte Wert kann dort eingegeben werden.
-
-Suche per ``ldapsearch``
-++++++++++++++++++++++++
-
-Ebenso kann der Eintrag mit dem Tool **ldapsearch** gefunden werden. Dieses befindet sich im Paket **ldap-utilities**.
-Der Befehl zur Suche des Benutzers **dh055** lautet 
-
-::
-
-    ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055
-
-
-Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio.
-
-Der Befehl wird folgendermaßen zusammengesetzt:
-::
-
-  [sudo] ldapsearch -Q -LLL -Y <mechanismus> -H <URIs> -b <searchbase> dn
-
-Der Befehl kann entweder ohne Authentifizierung (Parameter ``-x``) oder mit "Simple Authenticationand Security Layer" (SASL) (``-Y`` <SASL mechanism>) ausgeführt werden:
-
-::
-
-  [sudo] ldapsearch -x -LLL -H <URIs> -b <searchbase> dn
-
-
-
-.. topic:: ``ldapsearch``
-
-  .. glossary::
-    ``-Q``
-      Nutzt den SASL "quiet mode". User wird nicht nach Eingaben gefragt.
-
-    ``-LLL``
-      Begrenzt die Ausgabe auf LDIFv1, versteckt Kommentare, deaktiviert das Ausgeben der LDIF-Version (jedes "L" grenzt die Ausgabe weiter ein)
-
-    ``-Y <mechanismus>``
-      Spezifiziert den Authentifizierungsmechanismus. Übliche Angaben sind ``DIGEST-MD5``, ``KERBEROS_V4`` und ``EXTERNAL``. Wir verwenden ``EXTERNAL``, das eine Authentifizierung über einen Sicherheitsmechanismus einer niedrigeren OSI-Schicht (wie z.B. TLS) ermöglicht.
-
-    ``-h <URIs>``
-      Aufgelistete URIs geben die Adresse von ein oder mehreren LDAP-Servern an. Der Standard ist ``ldap:///``, was bedeutet, dass das Protokoll LDAP über TCP verwendet wird. ``ldapi:///`` nutzt auch LDAP, was aber anstatt TCP den UNIX-domain Socket IPC verwendet
-
-    ``-b <searchbase>``
-      Spezifiziert eine sog. "Searchbase" als Startpunkt für die Suche. In unserem Fall ``cn=config`.
-
-    ``-x``
-      Gibt an, dass eine "einfache Authentifizierung" an Stelle von SASL verwendet wird.
-
-    ``-W``
-      User wird bei *simple authentication* per Prompt nach einem Passwort gefragt. Alternativ muss die Authentifizierung im Kommando selbst stattfinden.
-
-    ``<filter>``
-      Bietet die Möglichkeit, einen Ausgabefilter anzugeben. Falls er weggelassen wird, wird der Standardfilter ``(objectClass=*)`` verwendet. Wir verwenden ``dn``, sodass alle "distinguished names" innerhalb der Searchbase (s.o.) angezeigt werden.
-
+Exercises
+#########
 
 Einrichtung eines LDAP-Servers
 ******************************
@@ -347,13 +273,29 @@ Nun können die User-Einträge mit dem Filter ``@`` angeschaut werden, sofern Us
 LDAP Suche mit Filtern
 ######################
 
-Filter kann man über das CLI oder über das Apache Directory Studio festlegen.
+LDAP-Einträge können entweder per GUI über das Directory Studio oder per Kommandozeilentool ``ldapsearch`` aufgefunden werden.
 
-Die ``ldapsearch``-Syntax ist oben aufgeführt.
+Suche per Apache Directory Studio
+*********************************
 
-Im Apache Directory Studio stellt man Filter ein, indem man auf den zu filternden
-Knoten rechtsklickt und "Filter Children" auswählt. Im Popup-Fenster lässt sich
-dann ein Suchstring eingeben. Um die Syntax näher zu beleuchten, hier ein paar
+Um einen Eintrag per GUI zu finden muss die Filterfunktion bemüht werden. In diesem Beispiel ist die UID des gesuchten Benutzers bekannt. Es soll nach dem Benutzer mit der UID **dh055** gesucht werden. Hierfür wird der Zweig, in dem sich der Benutzer befindet, rechts geklickt werden und im Kontextmenü der Eintrag **Kind-Einträge filtern...** ausgewählt werden.
+
+.. image:: images/LDAP/03-filtern.png
+
+In der erscheinenden Maske wird die Abfrage formuliert. In diesem Fall lautet diese **(uid=dh055)**. Abfragen werden in einer speziellen LDAP-Syntax erstellt. Mehr dazu `hier <http://www.ldapexplorer.com/en/manual/109010000-ldap-filter-syntax.htm>`_.
+
+.. image:: images/LDAP/04-filtern-2.png
+
+Nach der Bestätigung durch **OK** wird der gesuchte Eintrag auf der Oberfläche angezeigt.
+
+.. image:: images/LDAP/05-filtern-3.png
+
+
+.. topic:: Hinweis
+
+  Standardmäßig werden im Directory Studio nur 1000 Einträge angezeigt. Bei Verzeichnissen, die mehr Einträge enthalten, muss der Wert entsprechend angehoben werden. Dazu muss der betroffene Zweig im LDAP Browser rechts geklickt werden -> *Eigenschaften* -> *Verbindung* -> Reiter *Browser Optionen* -> *Max. Anzahl*. Der gewünschte Wert kann dort eingegeben werden.
+
+Um die Filtersyntax näher zu beleuchten, hier ein paar
 Beispiele:
 
 .. topic:: Beispiele zu LDAP Suchfiltern
@@ -378,8 +320,64 @@ Sonderzeichen gesucht werden muss (Klammern, !, ^, ...), lassen sich diese im
 Suchstring escapen.
 
 
-Search Filter Aufgaben
-**********************
+
+Suche per ``ldapsearch``
+************************
+
+Ebenso kann der Eintrag mit dem Tool **ldapsearch** gefunden werden. Dieses befindet sich im Paket **ldap-utilities**.
+Der Befehl zur Suche des Benutzers **dh055** lautet 
+
+::
+
+    ldapsearch -x -W -b "ou=userlist,dc=hdm-stuttgart,dc=de" -p 389 -h "ldap1.mi.hdm-stuttgart.de" uid=dh055
+
+
+Das Kommando enthält in der Ausgabe die gleichen Informationen wie die Ausgabe im Apache Directory Studio.
+
+Der Befehl wird folgendermaßen zusammengesetzt:
+::
+
+  [sudo] ldapsearch -Q -LLL -Y <mechanismus> -H <URIs> -b <searchbase> dn
+
+Der Befehl kann entweder ohne Authentifizierung (Parameter ``-x``) oder mit "Simple Authenticationand Security Layer" (SASL) (``-Y`` <SASL mechanism>) ausgeführt werden:
+
+::
+
+  [sudo] ldapsearch -x -LLL -H <URIs> -b <searchbase> dn
+
+
+
+.. topic:: ``ldapsearch``
+
+  .. glossary::
+    ``-Q``
+      Nutzt den SASL "quiet mode". User wird nicht nach Eingaben gefragt.
+
+    ``-LLL``
+      Begrenzt die Ausgabe auf LDIFv1, versteckt Kommentare, deaktiviert das Ausgeben der LDIF-Version (jedes "L" grenzt die Ausgabe weiter ein)
+
+    ``-Y <mechanismus>``
+      Spezifiziert den Authentifizierungsmechanismus. Übliche Angaben sind ``DIGEST-MD5``, ``KERBEROS_V4`` und ``EXTERNAL``. Wir verwenden ``EXTERNAL``, das eine Authentifizierung über einen Sicherheitsmechanismus einer niedrigeren OSI-Schicht (wie z.B. TLS) ermöglicht.
+
+    ``-h <URIs>``
+      Aufgelistete URIs geben die Adresse von ein oder mehreren LDAP-Servern an. Der Standard ist ``ldap:///``, was bedeutet, dass das Protokoll LDAP über TCP verwendet wird. ``ldapi:///`` nutzt auch LDAP, was aber anstatt TCP den UNIX-domain Socket IPC verwendet
+
+    ``-b <searchbase>``
+      Spezifiziert eine sog. "Searchbase" als Startpunkt für die Suche. In unserem Fall ``cn=config`.
+
+    ``-x``
+      Gibt an, dass eine "einfache Authentifizierung" an Stelle von SASL verwendet wird.
+
+    ``-W``
+      User wird bei *simple authentication* per Prompt nach einem Passwort gefragt. Alternativ muss die Authentifizierung im Kommando selbst stattfinden.
+
+    ``<filter>``
+      Bietet die Möglichkeit, einen Ausgabefilter anzugeben. Falls er weggelassen wird, wird der Standardfilter ``(objectClass=*)`` verwendet. Wir verwenden ``dn``, sodass alle "distinguished names" innerhalb der Searchbase (s.o.) angezeigt werden.
+
+
+Such-Filter Aufgaben
+********************
+
 Der Filter ``(uid=b*)`` filtert Einträge, für welche ein Attribut ``uid`` existiert und das mit dem Buchstaben "d" beginnt.
 
 Der Filter ``(|(uid=*)(ou=d*))`` begrenzt die Ausgabe auf Einträge, die entweder ein definiertes ``uid``-Attribut oder ein ``ou``-Attribut mit dem Anfangsbuchstaben "d" besitzen.
