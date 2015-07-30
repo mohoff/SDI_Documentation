@@ -364,7 +364,7 @@ Logging aktivieren
 Falls der DNS-Server nicht erwartungsgemäß funktioniert, oder man einfach
 aufgetretene Fehler abspeichern möchte, so bietet ``bind9`` die Möglichkeit, Logging auf verschiedenen ``Loglevels`` zu  aktivieren.
 
-Dazu muss der folgende Eintrag in ``named.conf.options`` hinzugefügt werden;
+Dazu muss der folgende Eintrag in ``named.conf.options`` hinzugefügt werden:
 
 .. code-block:: html
   :linenos:
