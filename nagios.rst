@@ -38,8 +38,8 @@ Exercises
 Voraussetzungen
 ***************
 In diesem Beispiel wird ein Nagios Server aufgesetzt, der einen Remote Host überwacht. Die Überwachung des Remote Hosts erfolgt teilweise mittels NRPE, teilweise ohne.
-Das *überwachende* System, auf dem Nagios läuft, hat den Hostnamen ``sdi2a``. Die Adresse lautet ``141.62.75.2``.
-Das *überwachte* System, also der Remote Host, hat den Hostnamen ``sdi2b`` und hat die Adresse ``141.62.75.2``.
+Das *überwachende* System, auf dem Nagios läuft, hat den Hostnamen ``sdi2a``. Die Adresse lautet ``141.62.75.102``.
+Das *überwachte* System, also der Remote Host, hat den Hostnamen ``sdi2b`` und hat die Adresse ``141.62.75.107``.
 
 Die Voraussetzungen für das überwachende System sind
 
