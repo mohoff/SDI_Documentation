@@ -232,7 +232,11 @@ Die LDIF-Datei wurde in diesem Beispiel unter dem Namen **data.ldif** abgespeich
 
   .. glossary::
     ``-x``
-      Nutzt den SASL "quiet mode". User wird nicht nach Eingaben gefragt.
+      Gibt an, dass eine "einfache Authentifizierung" an Stelle von SASL verwendet wird.
+
+    ``-W``
+      User wird bei *simple authentication* per Prompt nach einem Passwort gefragt. Alternativ muss die Authentifizierung im Kommando selbst stattfinden.
+      
 
     ``-c``
       Fährt im Fall von Fehlern ohne Abbruch fort. Die Fehler werden nach Durchführung in einem Report zusammengefasst
@@ -241,7 +245,7 @@ Die LDIF-Datei wurde in diesem Beispiel unter dem Namen **data.ldif** abgespeich
       Gibt den ``bindDN`` an, mit dem der Bind durchgeführt werden soll.
 
     ``-f <filename>``
-      Gibt an, dass aus der angegebenen Datei gelesen werden soll.
+      Gibt die LDIF-Datei an, mit der die Aktion durgeführt werden soll.
 
 .. topic:: Hinweis
 
