@@ -21,7 +21,7 @@ Die Objekte eines Baums werden über den sog. **Distinguished Name** (DN) refere
 - **Organizational Unit** (ou): Definiert die einzelnen Organisationseinheiten (Abteilungen) innerhalb des Unternehmens
 - **Common Name** (cn): Der Name über den eine Person referenziert wird.
 
-RDNs werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter aneinandergeheftet. Ein Angestellter *Max Mustermann* des Unternehmens *Beispiel.de*, dem die Rolle *Project-Manager* in der Abteilung *Development* zugeteilt ist, könnte beispielsweise den DN 
+RDNs werden bei der Zusammensetzung des DN mit einem Komma als Abstandhalter aneinandergeheftet. Ein Angestellter *Max Mustermann* des Unternehmens *Beispiel.de*, dem die Rolle *Project-Manager* in der Abteilung *Development* zugeteilt ist, könnte beispielsweise den DN
 
 ::
 
@@ -113,6 +113,8 @@ Der Inhalt der Config-Datenbank sieht aus wie folgt:
   /etc/ldap/slapd.d/cn=config/olcDatabase={1}hdb.ldif
   /etc/ldap/slapd.d/cn=config.ldif
 
+Die Datenbank enthält globale Konfigurationsoptionen. Zusätzliche Einstellungen sind in den Kindeinträgen, also z.B. ``cn=module`` und ``cn=schema``, enthalten.
+
 Direkte Änderungen in der ``config``-Datenbank sind nicht empfohlen, man soll vielmehr
 über das LDAP-Protokoll (Tool aus dem Package ``ldap-utils``) Änderungen vornehmen.
 
@@ -175,7 +177,7 @@ Ein LDIF-File kann z.B. folgendermaßen aussehen:
 Mit diesem LDIF-File werden dem DIT mehrere Organizational Units hinzugefügt. In den letzten zwei Blöcken wurden zudem zwei User hinzugefügt. Der Verzeichnisbaum sieht daraufhin folgendermaßen aus:
 
 ::
-  
+
   .
   └─ dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de
      └─ ou=departments
@@ -226,7 +228,7 @@ Die LDIF-Datei wurde in diesem Beispiel unter dem Namen **data.ldif** abgespeich
 ::
 
     [sudo] ldapadd -x -W -c -D <bindDN> -f <filename>
-  
+
 
 .. topic:: ``ldapadd``
 
@@ -236,7 +238,7 @@ Die LDIF-Datei wurde in diesem Beispiel unter dem Namen **data.ldif** abgespeich
 
     ``-W``
       User wird bei *simple authentication* per Prompt nach einem Passwort gefragt. Alternativ muss die Authentifizierung im Kommando selbst stattfinden.
-      
+
 
     ``-c``
       Fährt im Fall von Fehlern ohne Abbruch fort. Die Fehler werden nach Durchführung in einem Report zusammengefasst
@@ -250,11 +252,11 @@ Die LDIF-Datei wurde in diesem Beispiel unter dem Namen **data.ldif** abgespeich
 .. topic:: Hinweis
 
   Um die Datei ``data.ldif`` auf den Server zu übertragen, kann das Tool ``scp`` zur Hilfe gezogen werden. Mit dem Befehl
-  
+
   ::
-  
+
       scp ./data.ldif root@141.62.75.106:.
-  
+
   wird die Datei ins Home-Verzeichnis des Users **root** auf dem Server unter der IP ``141.62.75.106`` kopiert.
 
 
@@ -330,7 +332,7 @@ Suche per ``ldapsearch``
 ++++++++++++++++++++++++
 
 Ebenso kann der Eintrag mit dem Tool **ldapsearch** gefunden werden. Dieses befindet sich im Paket **ldap-utilities**.
-Der Befehl zur Suche des Benutzers **dh055** lautet 
+Der Befehl zur Suche des Benutzers **dh055** lautet
 
 ::
 
@@ -347,7 +349,7 @@ Die Konsole zeigt das Ergebnis daraufhin folgendermaßen an:
   # filter: uid=dh055
   # requesting: ALL
   #
-  
+
   # dh055, userlist, hdm-stuttgart.de
   dn: uid=dh055,ou=userlist,dc=hdm-stuttgart,dc=de
   hdmCategory: 1
@@ -365,11 +367,11 @@ Die Konsole zeigt das Ergebnis daraufhin folgendermaßen an:
   objectClass: eduPerson
   cn: David Hettler
   homeDirectory: /home/stud/MIB/dh055
-  
+
   # search result
   search: 2
   result: 0 Success
-  
+
   # numResponses: 2
   # numEntries: 1
 

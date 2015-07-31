@@ -110,7 +110,9 @@ Auch wenn Git-Mechanismen nicht Bestandteil der Veranstaltung waren, wollen wir 
 
 Da wir freie Wahl bei Git-Lösung zur Versionskontrolle unserer Doku hatten, haben wir uns für den bekannten Anbieter *github.com* entschieden. Als Student bekommt man dort auch Zugriff auf einige private Repositories.
 
-Auf der Startseite des Repositories wird das Repository an sich angezeigt, sowie einige Eckdaten über dieses:
+Auf der `Startseite unseres Repositories`_ wird das Repository an sich angezeigt, sowie einige Eckdaten über dieses:
+
+.. _Startseite unseres Repositories: https://github.com/mohoff/SDI_Documentation
 
 .. image:: images/Allgemein/03_github_landingpage.png
 
