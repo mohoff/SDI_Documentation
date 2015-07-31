@@ -25,7 +25,7 @@ Auf den Poolrechnern wurde zu diesem Zweck zunächst ein 4096 bit-Schlüsselpaar
 
 ::
 
-    ``ssh-keygen -b 4096``
+    ssh-keygen -b 4096
 
 erzeugt.
 
