@@ -72,6 +72,12 @@ Wie andere Tools auch, bietet auch Sphinx (meist ähnliche) Auszeichnungsmöglic
     ``Listen``
       Ungeordnete Liste mit normalen Bullets lassen sich mit Asterix definieren. Mit Einrückungstiefen lassen sich Listenhierarchien erstellen. Analog dazu lassen sich nummerierte Listen mit ``<Zahl>.`` realisieren.
 
+    ``externe Links``
+      Ein Alias kann im Text mit ``'alias'_`` festgelegt werden, der an anderer Stelle mit ``.. _alias: url`` aufgelöst werden kann. Im generierten HTML wird der Alias mit dem Verweis auf die externe Referenz ausgegeben.
+
+    ``interne Links``
+      In der Doku können Überschriften referenziert werden, in dem die Zeile ``.. _labelname:`` direkt über einer Überschrift eingefügt wird. Ein entsprechender HTML-Anker wird dann für die Überschrift gesetzt. Verwendet werden kann der Anker im Text mit der Syntax ``:ref:'labelname'``.
+
     ``.. toctree::``
       Legt die Dokumentenstruktur fest. Mit zusätzlichen Parametern, z.B. ``:maxdepth: 2`` werden im Inhaltsverzeichnis nur Überschriften bis Ebene 2 angezeigt.
 
