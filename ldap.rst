@@ -417,12 +417,6 @@ Der Filter ``(uid=b*)`` filtert Einträge, für welche ein Attribut ``uid`` exis
 
 Der Filter ``(|(uid=*)(ou=d*))`` begrenzt die Ausgabe auf Einträge, die entweder ein definiertes ``uid``-Attribut oder ein ``ou``-Attribut mit dem Anfangsbuchstaben "d" besitzen.
 
-Ein entsprechender ``ldapsearch``-Aufruf, der den User *beans* findet, sieht damit wie folgt aus:
-
-::
-
-  ldapsearch -x -H -W ldap:/// "cn=admin,dc=betrayer,dc=de" -b dc=betrayer,dc=com -LLL "(uid=b*)"
-
 
 Einträge erweitern
 ******************
@@ -451,7 +445,7 @@ Die Objektklasse ``posixAccount`` erfordert die Angabe einer ``uidNumber`` und e
 
 ::
 
-  ldapmodify -x -W -D "cn=admin,dc=betrayer,dc=de" -f datamodified.ldif
+  ldapmodify -x -W -D "cn=admin,dc=betrayer,dc=mi,dc=hdm-stuttgart,dc=de" -f datamodified.ldif
 
 Die Syntax ist nahezu deckungsgleich mit der von ``ldapadd``, daher gehen wir nicht genauer darauf ein.
 
