@@ -892,28 +892,28 @@ Seitens Apache muss zuerst min. ein LDAP-Modul aktiviert werden:
     a2enmod authnz_ldap    // mandatory
     a2enmod ldap           // optional
 
-* Das wichtige Modul ist ``authnz_ldap``: es stellt Authentifizierung- und Authorisierungsmöglichkeiten gegenüber einem LDAP-Server zur Verfügung. Die beiden Phasen Authentifizierung (das *n* in ``authnz``) und Authorisierung (das *z* in ``authnz``) werden nacheinander in dieser Reihenfolge ausgeführt:
+Das wichtige Modul ist ``authnz_ldap``: es stellt Authentifizierung- und Authorisierungsmöglichkeiten gegenüber einem LDAP-Server zur Verfügung. Die beiden Phasen Authentifizierung (das *n* in ``authnz``) und Authorisierung (das *z* in ``authnz``) werden nacheinander in dieser Reihenfolge ausgeführt:
 
-  1. Authentifizierungsphase: Es wird sichergestellt, dass die User-Credentials valide sind. Wird durch die Zeile ``AuthBasicProvider ldap`` (s.u.) aufgerufen. Dieser Schritt wird auch die *search/bind*-Phase genannt, da erst nach dem User gesucht wird und bei einem eindeutigen Treffer anschließend ein Bind mit dem DN des Suchtreffers und Passwort des Users (über HTTP vom Client erhalten) gegen den LDAP-Server.
-  2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsächlichen Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Details s.u.
+1. Authentifizierungsphase: Es wird sichergestellt, dass die User-Credentials valide sind. Wird durch die Zeile ``AuthBasicProvider ldap`` (s.u.) aufgerufen. Dieser Schritt wird auch die *search/bind*-Phase genannt, da erst nach dem User gesucht wird und bei einem eindeutigen Treffer anschließend ein Bind mit dem DN des Suchtreffers und Passwort des Users (über HTTP vom Client erhalten) gegen den LDAP-Server.
+2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsächlichen Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Details s.u.
 
-  .. topic:: Bemerkung
+.. topic:: Bemerkung
 
-      Das Modul ``authz_user`` muss aktiviert sein, wenn ``valid-user`` in der ``Require``-Direktive angegeben wird.
+    Das Modul ``authz_user`` muss aktiviert sein, wenn ``valid-user`` in der ``Require``-Direktive angegeben wird.
 
-  Vgl. `httpd.apache.org - mod_authnz_ldap`_ und `httpd.apache.prg - mod_authz_user`_
+Vgl. `httpd.apache.org - mod_authnz_ldap`_ und `httpd.apache.prg - mod_authz_user`_
 
 .. _httpd.apache.org - mod_authnz_ldap: http://httpd.apache.org/docs/2.4/mod/mod_authnz_ldap.html
 
 .. _httpd.apache.prg - mod_authz_user: http://httpd.apache.org/docs/2.4/mod/mod_authz_user.html
 
-* Das optionale Modul ``ldap`` dient zur Performanceverbesserung gegenüber einem LDAP-Server und bringt im Wesentlichen zwei Verbesserungen mit sich: es fügt dem standardmäßigem Funktionsumfang von ``authnz_ldap`` sog. *Connection-Pools* und Caching-Strategien hinzu.
-  * *Connections-Pools* erlauben dem LDAP-Server dauerhaft an den Apache-Server gebunden zu sein, ohne ständige Unbinds/Connects/Rebinds durchführen zu müssen.
-  * Caching reduziert die Anzahl der Anfragen an den LDAP-Server und senkt somit gleichzeitig die Last des LDAP-Servers. Über Apache-Direktiven wie ``LDAPCacheEntries`` (z.B. 1024) und ``LDAPCacheTTL`` (z.B. 600) kann das Verhalten des Cache angepasst werden. Beide Verfahren machen v.a. bei großer Last Sinn.
+Das optionale Modul ``ldap`` dient zur Performanceverbesserung gegenüber einem LDAP-Server und bringt im Wesentlichen zwei Verbesserungen mit sich: es fügt dem standardmäßigem Funktionsumfang von ``authnz_ldap`` sog. *Connection-Pools* und Caching-Strategien hinzu.
+* *Connections-Pools* erlauben dem LDAP-Server dauerhaft an den Apache-Server gebunden zu sein, ohne ständige Unbinds/Connects/Rebinds durchführen zu müssen.
+* Caching reduziert die Anzahl der Anfragen an den LDAP-Server und senkt somit gleichzeitig die Last des LDAP-Servers. Über Apache-Direktiven wie ``LDAPCacheEntries`` (z.B. 1024) und ``LDAPCacheTTL`` (z.B. 600) kann das Verhalten des Cache angepasst werden. Beide Verfahren machen v.a. bei großer Last Sinn.
 
-  Vgl. `httpd.apache.org - mod_ldap`_
+Vgl. `httpd.apache.org - mod_ldap`_
 
-  .. _httpd.apache.org - mod_ldap: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html
+.. _httpd.apache.org - mod_ldap: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html
 
 Nun, da Apache fähig ist LDAP-AuthNZ zu vollziehen, können wir einen (oder mehrere) ``VirtualHost`` einrichten:
 
