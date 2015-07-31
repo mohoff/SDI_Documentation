@@ -19,6 +19,8 @@ Die Aufgabe eines Webservers ist es, statische Dateien zur Darstellung von Webse
 * Er antwortet mit der angeforderten Seite, bzw. einer Fehlerseite, falls die Ressource nicht gefunden wurde bzw. die Authentifizierung fehlgeschlagen ist.
 * Der Browser des Clients interpretiert die vom Webserver erhaltenen Daten, führt die Skripte aus, rendert die Seite und zeigt sie dem Benutzer an.
 
+.. _virtualhosting:
+
 Virtual Hosts
 #############
 Falls auf einem Webserver mehrere Websites gehostet werden sollen, benötigt man Virtual Hosting. Es gibt zwei Techniken um dies zu erreichen: IP- und namensbasiertes virtuelles Hosting.
@@ -209,11 +211,11 @@ Das Modul kann mit dem folgendem Kommando aktiviert werden. Anschließend wird d
     sudo a2enmod auth_mysql
     sudo service apache2 restart
 
-Mit ``a2dismod auth_mysql`` lässt sich das Modul wieder deaktivieren (Apache-spezifische Skripte werden im Kapitel "Apache Befehle" behandelt).
+Mit ``a2dismod auth_mysql`` lässt sich das Modul wieder deaktivieren (Apache-spezifische Skripte werden im Kapitel :ref:`apachebefehle` behandelt).
 
 ``sites-available`` und ``sites-enabled``
 *****************************************
-Der systematische Aufbau von ``sites`` ist derselbe wie bei ``mods`` - es gibt *verfügbare* und *aktivierte* Seiten. Damit gleich nach der Apache-Installation eine Standardseite über den Browser erreichbar ist, existiert eine Standardseite, die in der Datei ``000-default.conf`` definiert ist. In dieser Art von Dateien muss mindestens eine ``VirtualHost``-Direktive stehen, mehrere sind aber auch möglich. Wichtig ist, dass pro aktivierter ``site`` dann mehrere Hosts gestartet werden können (vgl. Kapitel "namebased und IP-based virtual hosting").
+Der systematische Aufbau von ``sites`` ist derselbe wie bei ``mods`` - es gibt *verfügbare* und *aktivierte* Seiten. Damit gleich nach der Apache-Installation eine Standardseite über den Browser erreichbar ist, existiert eine Standardseite, die in der Datei ``000-default.conf`` definiert ist. In dieser Art von Dateien muss mindestens eine ``VirtualHost``-Direktive stehen, mehrere sind aber auch möglich. Wichtig ist, dass pro aktivierter ``site`` dann mehrere Hosts gestartet werden können (vgl. Kapitel :ref:`virtualhosting`).
 
 Eine einfache Seite könnte wie folgt in einer ``VirtualHost``-Direktive definiert sein:
 
@@ -241,7 +243,9 @@ Erklärung der verwendeten Attribute:
 ***************************************
 Enthält wie ``mods-...`` auch Konfigurationsdateien. Nur erweitern diese das Funktionsspektrum des Apaches nicht direkt (wie es bei den Modulen der Fall ist), sondern kommen von externen, auf Apache beruhenden Anwendungen. Z.B. existieren Konfigurationsdateien in diesem Ordner für den LDAP-Account-Manager, Nagios, phpMyAdmin und die Apache-Dokumentation. Alle Tools kommen mit einer Weboberfläche, die vom Apache verwaltet wird und für die die Speicherorte z.B. über ``Directory``-Direktiven freigegeben werden müssen.
 
-Wie eine solche Konfigurationsdatei aussieht, steht im Aufgabenkapitel.
+Wie eine solche Konfigurationsdatei aussieht, steht im Kapitel :ref:`exercises`.
+
+.. _apachebefehle:
 
 Apache Befehle
 ##############
@@ -254,7 +258,10 @@ Der Apache-Webserver lässt sich mit einigen Commands steuern. Einige sind Skrip
 * ``apache2 -t``: Checked Syntax von den Konfigurationsdateien und gibt etwaige Fehler in der Konsole aus.
 * ``service apache [restart|reload|start|stop|force-reload]``: Kontrolliert den Status des Webservers. Er lässt sich mit diesen Parametern starten, stoppen, neu laden (Konfigurationsdateien werden neu geladen und aktuelle Verbindungen werden aufrecht erhalten), neu starten (bricht aktuelle Verbindungen ab) und "zwanghaft neu laden" (wie ``reload``, nur bricht aktuelle Verbindungen ab wenn das die Konfigurationsdateien erfordern).
 
-*Quelle: https://wiki.ubuntuusers.de/apache#Apache-steuern*
+Vgl. `Ubuntuusers - Apache steuern`_
+
+.. _Ubuntuusers - Apache steuern: https://wiki.ubuntuusers.de/apache#Apache-steuern
+
 
 Apache Prozesse
 ###############
@@ -279,6 +286,8 @@ Der Client startet einen Verbindungsversuch zum Server. Der Server reagiert, ind
 .. topic:: Bemerkung
 
     Im Fall von namensbasiertem virtuellen Hosting mit HTTPS gibt es eine Besonderheit zu beachten: bei HTTPS muss der Webserver für jeden Hostnamen ein eignenes Zertifikat ausliefern. Der Hostname ist dem Apache-Server aber erst nach dem TLS-Handshake bekannt. Eine Lösung besteht in der Erweiterung des TLS-Protocols um den Mechanismus Server Name Indication (SNI), welches seit TLS Version 1.2 verfügbar ist und auch in der Praxis eingesetzt wird. Hierbei wird die Hostname-Information bereits während des TLS-Handshakes an den Apache-Server übermittelt, sodass dieser das entsprechende Zertifikat zurückgeben kann.
+
+.. _exercises:
 
 Exercises
 #########
@@ -376,26 +385,34 @@ SDI-Doku hochladen und zugänglich machen
 Die SDI-Doku besteht aus mehreren Files, daher macht es Sinn die Doku vor dem Upload in eine Datei zu packen. Somit muss man nur eine Datei manuell hochladen. Gepackt wurde die Doku in einen Tarball mittels ``tar -cvzf sphinxdoku.tgz html``. Die Übertragung von lokalem PC auf den Server ist mit dem Tool ``scp`` realisierbar, konkret dem Befehl ``scp sphinxdoku.tgz root@141.62.75.106:.``.
 
 Erklärung der verwendeten ``scp``-Parameter:
-.. glossary::
-	*Parameter 1*
-  		Die Datei, die übertragen werden soll (=Quelle)
 
-	*Parameter 2*
-      User und Zieladresse mit Pfadangabe (=Ziel)
+.. glossary::
+
+  *Parameter 1*
+    Die Datei, die übertragen werden soll (=Quelle)
+
+  *Parameter 2*
+    User und Zieladresse mit Pfadangabe (=Ziel)
+
 
 Durch die Angabe des Punkts hinten, landet die Datei dann serverseitig im Homeverzeichnis des Users root. Anschließend muss die Datei wieder entpackt werden, z.B. mit dem Befehl ``tar -xvf sphinxdoku.tgz``. Unsere SDI-Doku liegt nun also auf dem Server in dem Verzeichnis ``/home/sdidoc/``.
 
 Erklärung der verwendeten ``tar``-Parameter:
 
 .. glossary::
+
   c
     *create*, erstellt ein Archiv
+
   v
     *verbose*, führt die ``tar``-Operation im ``verbose``-Modus aus, sprich zeigt ausführliche Informationen an sofern verfügbar.
+
   z
     *gzip*, das angegebene Archiv soll mit ``gzip`` gelesen und geschrieben werden. Trifft auf Archive mit Dateiendung ``.tar.gz`` zu.
+
   f
     *file*, gibt das Archiv-File an, mit der operiert wird.
+
   x
     *extract*, gibt an die Dateien eines Archivs zu entpacken.
 
@@ -437,7 +454,7 @@ Es gibt zwei Möglichkeiten:  Eine Redirect-Directive oder einen Alias. Vorrauss
 
   .. topic:: Bemerkung
 
-      Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgelöst werden. Auf meinem Server habe ich daher diesen Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgelöst wird. Vergleiche auch mit der nächsten Aufgabe.
+    Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgelöst werden. Auf meinem Server habe ich daher diesen Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgelöst wird. Vergleiche auch mit der nächsten Aufgabe.
 
 
   ::
@@ -495,7 +512,9 @@ Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin über ``s
 
 Damit auch der eigene DNS-Server zur Auflösung verwendet wird, muss unter Ubuntu dieser manuell eingetragen werden. Das Ziel ist, dass in der Datei ``/etc/resolv.conf`` unser eigener DNS-Server an erster Stelle steht. Dazu kann der Eintrag in ``/etc/resolvconf/resolv.conf.d/head`` hinzugefügt werden. Hintergrund ist, dass die ``/etc/resolv.conf`` aus den beiden ``head``- und ``base``-Dateien generiert wird. Der Inhalt von ``head`` wird bei der Generierung immer vor dem von ``base`` in das resultierende File eingefügt.
 
-*Quelle: http://askubuntu.com/questions/157154/how-do-i-include-lines-in-resolv-conf-that-wont-get-lost-on-reboot*
+Vgl. `Askubuntu - How do I include lines in resolv.conf`_
+
+.. _Askubuntu - How do I include lines in resolv.conf: http://askubuntu.com/questions/157154/how-do-i-include-lines-in-resolv-conf-that-wont-get-lost-on-reboot
 
 Wir fügen also den Eintrag in die ``head``-Datei ein:
 
@@ -537,7 +556,10 @@ Außerdem muss sichergestellt werden, dass in der bereits behandelten ``ports.co
 
 Der folgende prinzipielle Ablauf ist: Wir erstellen uns eine eigene Root-CA, die wir in den Browser importieren. Anschließend erstellen wir das Server-Zertifikat, das wir mit dem Key der Root-CA signieren und auf unseren Server ``sdi1b.mi.hdm-stuttgart.de`` laden. Dort erstellen wir einen passenden ``VirtualHost``, der SSL-fähig ist und starten den Webserver neu. Anschließend kann mit dem Browser, der das Root-CA geladen hat, problemlos die HTTPS-Version der Seite angesurfed werden.
 
-Die eigentliche Erstellung der Keys und Zertifikate, sowie die Apache-Konfiguration, erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird (*Vorgehensweise ist auf http://datacenteroverlords.com/2012/03/01/creating-your-own-ssl-certificate-authority/* genau beschrieben).
+Die eigentliche Erstellung der Keys und Zertifikate, sowie die Apache-Konfiguration, erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird. Die Vorgehensweise ist auf `Datacenteroverlords.com - Creating your own SSL Certificate Authority`_ genau beschrieben.
+
+.. _Datacenteroverlords.com - Creating your own SSL Certificate Authority: http://datacenteroverlords.com/2012/03/01/creating-your-own-ssl-certificate-authority/
+
 
 Die Erklärungen aller verwendeten Parameter im Laufe des Prozesses sind am Ende des hierauf folgenden Unterkapitels aufgeführt.
 
@@ -754,13 +776,17 @@ Erklärung der ``openssl``-Parameter:
 
 .. glossary::
   genrsa
-    ein Standardkommando, das die Generierung eines RSA-private-keys bewirkt. Der public Key ist im private Key enthalten. (*Quelle: https://www.openssl.org/docs/HOWTO/keys.txt*)
+    Ein Standardkommando, das die Generierung eines RSA-private-keys bewirkt. Der public Key ist im private Key enthalten.
+
+    Vgl. `Openssl.org - HowTo Keys`_
+
+    .. _Openssl.org - HowTo Keys: https://www.openssl.org/docs/HOWTO/keys.txt
 
   req
-    ein Standardkommando, das Certificate Signing Requests (CSR) handhabt.
+    Ein Standardkommando, das Certificate Signing Requests (CSR) handhabt.
 
   x509
-      ein Standardkommando, das ein vielseitiges Certificate-Utility ist, um Zertifikate anzuzeigen, konvertieren und um Certificate-Requests zu signieren.
+      Ein Standardkommando, das ein vielseitiges Certificate-Utility ist, um Zertifikate anzuzeigen, konvertieren und um Certificate-Requests zu signieren.
 
   -out <filename>
       Gibt den Dateinamen für die Ausgabe eines Befehls an.
@@ -784,7 +810,7 @@ Erklärung der ``openssl``-Parameter:
       Gibt die Datei an, von der der private Key gelesen werden soll.
 
   -days <num>
-      Gibt im Kontext des ``-x509`-Kommandos an, wie viele Tage das Zertifikat gültig sein soll. Der Standardwert beträgt 30 Tage.
+      Gibt im Kontext des ``-x509``-Kommandos an, wie viele Tage das Zertifikat gültig sein soll. Der Standardwert beträgt 30 Tage.
 
   -in  <filename>
       Gibt den Input-Dateinamen an, von dem ein Request gelesen werden soll. Ein Request wird nur gelesen, sofern die Option ``-new`` nicht im gleichen Befehl mit angegeben wurde.
@@ -875,13 +901,19 @@ Seitens Apache muss zuerst min. ein LDAP-Modul aktiviert werden:
 
       Das Modul ``authz_user`` muss aktiviert sein, wenn ``valid-user`` in der ``Require``-Direktive angegeben wird.
 
-*(Quellen: http://httpd.apache.org/docs/2.4/mod/mod_authnz_ldap.html, http://httpd.apache.org/docs/2.4/mod/mod_authz_user.html)*
+  Vgl. `httpd.apache.org - mod_authnz_ldap`_ und `httpd.apache.prg - mod_authz_user`_
+
+.. _httpd.apache.org - mod_authnz_ldap: http://httpd.apache.org/docs/2.4/mod/mod_authnz_ldap.html
+
+.. _httpd.apache.prg - mod_authz_user: http://httpd.apache.org/docs/2.4/mod/mod_authz_user.html
 
 * Das optionale Modul ``ldap`` dient zur Performanceverbesserung gegenüber einem LDAP-Server und bringt im Wesentlichen zwei Verbesserungen mit sich: es fügt dem standardmäßigem Funktionsumfang von ``authnz_ldap`` sog. *Connection-Pools* und Caching-Strategien hinzu.
   * *Connections-Pools* erlauben dem LDAP-Server dauerhaft an den Apache-Server gebunden zu sein, ohne ständige Unbinds/Connects/Rebinds durchführen zu müssen.
   * Caching reduziert die Anzahl der Anfragen an den LDAP-Server und senkt somit gleichzeitig die Last des LDAP-Servers. Über Apache-Direktiven wie ``LDAPCacheEntries`` (z.B. 1024) und ``LDAPCacheTTL`` (z.B. 600) können das Verhalten des Cache angepasst werden. Beide Verfahren machen v.a. bei großer Last Sinn.
 
-*(Quelle: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html)*
+  Vgl. `httpd.apache.org - mod_ldap`_
+
+  .. _httpd.apache.org - mod_ldap: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html
 
 Nun, da Apache fähig ist LDAP-AuthNZ zu vollziehen, können wir einen (oder mehrere) ``VirtualHost`` einrichten:
 
