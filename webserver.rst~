@@ -19,6 +19,8 @@ Die Aufgabe eines Webservers ist es, statische Dateien zur Darstellung von Webse
 * Er antwortet mit der angeforderten Seite, bzw. einer Fehlerseite, falls die Ressource nicht gefunden wurde bzw. die Authentifizierung fehlgeschlagen ist.
 * Der Browser des Clients interpretiert die vom Webserver erhaltenen Daten, führt die Skripte aus, rendert die Seite und zeigt sie dem Benutzer an.
 
+.. _virtualhosting:
+
 Virtual Hosts
 #############
 Falls auf einem Webserver mehrere Websites gehostet werden sollen, benötigt man Virtual Hosting. Es gibt zwei Techniken um dies zu erreichen: IP- und namensbasiertes virtuelles Hosting.
@@ -209,11 +211,11 @@ Das Modul kann mit dem folgendem Kommando aktiviert werden. Anschließend wird d
     sudo a2enmod auth_mysql
     sudo service apache2 restart
 
-Mit ``a2dismod auth_mysql`` lässt sich das Modul wieder deaktivieren (Apache-spezifische Skripte werden im Kapitel "Apache Befehle" behandelt).
+Mit ``a2dismod auth_mysql`` lässt sich das Modul wieder deaktivieren (Apache-spezifische Skripte werden im Kapitel :ref:`apachebefehle` behandelt).
 
 ``sites-available`` und ``sites-enabled``
 *****************************************
-Der systematische Aufbau von ``sites`` ist derselbe wie bei ``mods`` - es gibt *verfügbare* und *aktivierte* Seiten. Damit gleich nach der Apache-Installation eine Standardseite über den Browser erreichbar ist, existiert eine Standardseite, die in der Datei ``000-default.conf`` definiert ist. In dieser Art von Dateien muss mindestens eine ``VirtualHost``-Direktive stehen, mehrere sind aber auch möglich. Wichtig ist, dass pro aktivierter ``site`` dann mehrere Hosts gestartet werden können (vgl. Kapitel "namebased und IP-based virtual hosting").
+Der systematische Aufbau von ``sites`` ist derselbe wie bei ``mods`` - es gibt *verfügbare* und *aktivierte* Seiten. Damit gleich nach der Apache-Installation eine Standardseite über den Browser erreichbar ist, existiert eine Standardseite, die in der Datei ``000-default.conf`` definiert ist. In dieser Art von Dateien muss mindestens eine ``VirtualHost``-Direktive stehen, mehrere sind aber auch möglich. Wichtig ist, dass pro aktivierter ``site`` dann mehrere Hosts gestartet werden können (vgl. Kapitel :ref:`virtualhosting`).
 
 Eine einfache Seite könnte wie folgt in einer ``VirtualHost``-Direktive definiert sein:
 
@@ -241,7 +243,9 @@ Erklärung der verwendeten Attribute:
 ***************************************
 Enthält wie ``mods-...`` auch Konfigurationsdateien. Nur erweitern diese das Funktionsspektrum des Apaches nicht direkt (wie es bei den Modulen der Fall ist), sondern kommen von externen, auf Apache beruhenden Anwendungen. Z.B. existieren Konfigurationsdateien in diesem Ordner für den LDAP-Account-Manager, Nagios, phpMyAdmin und die Apache-Dokumentation. Alle Tools kommen mit einer Weboberfläche, die vom Apache verwaltet wird und für die die Speicherorte z.B. über ``Directory``-Direktiven freigegeben werden müssen.
 
-Wie eine solche Konfigurationsdatei aussieht, steht im Aufgabenkapitel.
+Wie eine solche Konfigurationsdatei aussieht, steht im Kapitel :ref:`exercises`.
+
+.. _apachebefehle:
 
 Apache Befehle
 ##############
@@ -254,7 +258,10 @@ Der Apache-Webserver lässt sich mit einigen Commands steuern. Einige sind Skrip
 * ``apache2 -t``: Checked Syntax von den Konfigurationsdateien und gibt etwaige Fehler in der Konsole aus.
 * ``service apache [restart|reload|start|stop|force-reload]``: Kontrolliert den Status des Webservers. Er lässt sich mit diesen Parametern starten, stoppen, neu laden (Konfigurationsdateien werden neu geladen und aktuelle Verbindungen werden aufrecht erhalten), neu starten (bricht aktuelle Verbindungen ab) und "zwanghaft neu laden" (wie ``reload``, nur bricht aktuelle Verbindungen ab wenn das die Konfigurationsdateien erfordern).
 
-*Quelle: https://wiki.ubuntuusers.de/apache#Apache-steuern*
+Vgl. `Ubuntuusers - Apache steuern`_
+
+.. _Ubuntuusers - Apache steuern: https://wiki.ubuntuusers.de/apache#Apache-steuern
+
 
 Apache Prozesse
 ###############
@@ -279,6 +286,8 @@ Der Client startet einen Verbindungsversuch zum Server. Der Server reagiert, ind
 .. topic:: Bemerkung
 
     Im Fall von namensbasiertem virtuellen Hosting mit HTTPS gibt es eine Besonderheit zu beachten: bei HTTPS muss der Webserver für jeden Hostnamen ein eignenes Zertifikat ausliefern. Der Hostname ist dem Apache-Server aber erst nach dem TLS-Handshake bekannt. Eine Lösung besteht in der Erweiterung des TLS-Protocols um den Mechanismus Server Name Indication (SNI), welches seit TLS Version 1.2 verfügbar ist und auch in der Praxis eingesetzt wird. Hierbei wird die Hostname-Information bereits während des TLS-Handshakes an den Apache-Server übermittelt, sodass dieser das entsprechende Zertifikat zurückgeben kann.
+
+.. _exercises:
 
 Exercises
 #########
@@ -345,7 +354,7 @@ Den Pfad finden, über den der Apache Webserver die installierte Doku zur Verfü
     /etc/apache2/conf-available
     /etc/apache2/conf-available/apache2-doc.conf
 
-Wie zu sehen ist, wurden die in Frage kommenden Files erheblich reduziert. Die einzigste Datei, die Sinn macht, ist die ``/etc/apache2/conf-available/apache2-doc.conf``. Ein Apache-Kenner hätte sofot in dieser Datei nachschauen können, da in diesem Verzeichnis alle Konfigurationsdateien von auf Apache beruhenden Packages, also z.B. der Apache-Doku, aber auch dem MySql-Frontend sowie dem Nagios-Frontend, gehalten werden.
+Wie zu sehen ist, wurden die in Frage kommenden Files erheblich reduziert. Die einzigste Datei, die Sinn macht, ist die Datei ``/etc/apache2/conf-available/apache2-doc.conf``. Ein Apache-Kenner hätte sofort in dieser Datei nachschauen können, da in diesem Verzeichnis alle Konfigurationsdateien von auf Apache beruhenden Packages, also z.B. der Apache-Doku, aber auch dem MySql-Frontend sowie dem Nagios-Frontend, gespeichert werden.
 
 Die gefundene Datei enthält:
 
@@ -376,26 +385,34 @@ SDI-Doku hochladen und zugänglich machen
 Die SDI-Doku besteht aus mehreren Files, daher macht es Sinn die Doku vor dem Upload in eine Datei zu packen. Somit muss man nur eine Datei manuell hochladen. Gepackt wurde die Doku in einen Tarball mittels ``tar -cvzf sphinxdoku.tgz html``. Die Übertragung von lokalem PC auf den Server ist mit dem Tool ``scp`` realisierbar, konkret dem Befehl ``scp sphinxdoku.tgz root@141.62.75.106:.``.
 
 Erklärung der verwendeten ``scp``-Parameter:
-.. glossary::
-	*Parameter 1*
-  		Die Datei, die übertragen werden soll (=Quelle)
 
-	*Parameter 2*
-      User und Zieladresse mit Pfadangabe (=Ziel)
+.. glossary::
+
+  *Parameter 1*
+    Die Datei, die übertragen werden soll (=Quelle)
+
+  *Parameter 2*
+    User und Zieladresse mit Pfadangabe (=Ziel)
+
 
 Durch die Angabe des Punkts hinten, landet die Datei dann serverseitig im Homeverzeichnis des Users root. Anschließend muss die Datei wieder entpackt werden, z.B. mit dem Befehl ``tar -xvf sphinxdoku.tgz``. Unsere SDI-Doku liegt nun also auf dem Server in dem Verzeichnis ``/home/sdidoc/``.
 
 Erklärung der verwendeten ``tar``-Parameter:
 
 .. glossary::
+
   c
     *create*, erstellt ein Archiv
+
   v
     *verbose*, führt die ``tar``-Operation im ``verbose``-Modus aus, sprich zeigt ausführliche Informationen an sofern verfügbar.
+
   z
     *gzip*, das angegebene Archiv soll mit ``gzip`` gelesen und geschrieben werden. Trifft auf Archive mit Dateiendung ``.tar.gz`` zu.
+
   f
-    *file*, gibt das Archiv-File an, mit der operiert wird.
+    *file*, gibt das Archiv-File an, mit dem operiert wird.
+
   x
     *extract*, gibt an die Dateien eines Archivs zu entpacken.
 
@@ -437,7 +454,7 @@ Es gibt zwei Möglichkeiten:  Eine Redirect-Directive oder einen Alias. Vorrauss
 
   .. topic:: Bemerkung
 
-      Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgelöst werden. Auf meinem Server habe ich daher diesen Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgelöst wird. Vergleiche auch mit der nächsten Aufgabe.
+    Der virtuelle Host ``sdidoc.mi.hdm-stuttgart.de`` muss vom DNS-Server korrekt aufgelöst werden. Auf meinem Server habe ich daher diesen Domainnamen in meine Zonefile des DNS-Servers mit aufgenommen, sodass dieser auf die IP 141.62.75.106 aufgelöst wird. Vergleiche auch mit der nächsten Aufgabe.
 
 
   ::
@@ -495,7 +512,9 @@ Die eigene ``index.html`` mit dem Inhalt ``testcontent`` ist weiterhin über ``s
 
 Damit auch der eigene DNS-Server zur Auflösung verwendet wird, muss unter Ubuntu dieser manuell eingetragen werden. Das Ziel ist, dass in der Datei ``/etc/resolv.conf`` unser eigener DNS-Server an erster Stelle steht. Dazu kann der Eintrag in ``/etc/resolvconf/resolv.conf.d/head`` hinzugefügt werden. Hintergrund ist, dass die ``/etc/resolv.conf`` aus den beiden ``head``- und ``base``-Dateien generiert wird. Der Inhalt von ``head`` wird bei der Generierung immer vor dem von ``base`` in das resultierende File eingefügt.
 
-*Quelle: http://askubuntu.com/questions/157154/how-do-i-include-lines-in-resolv-conf-that-wont-get-lost-on-reboot*
+Vgl. `Askubuntu - How do I include lines in resolv.conf`_
+
+.. _Askubuntu - How do I include lines in resolv.conf: http://askubuntu.com/questions/157154/how-do-i-include-lines-in-resolv-conf-that-wont-get-lost-on-reboot
 
 Wir fügen also den Eintrag in die ``head``-Datei ein:
 
@@ -505,7 +524,7 @@ Wir fügen also den Eintrag in die ``head``-Datei ein:
     #     DO NOT EDIT THIS FILE BY HAND -- YOUR CHANGES WILL BE OVERWRITTEN
     nameserver 141.62.75.106
 
-Die Warnung steht am Anfang dort, weil diese den User davon bewahren soll, die generierte ``resolv.conf`` zu ändern. In unserem Fall können wir die Warnung ignorieren. Mit dem Befehl ``sudo resolvconf -u`` kann ``resolv.conf`` neu generiert werden. Das Resultat in ``resolv.conf``:
+Die Warnung soll den User davor bewahren , die generierte ``resolv.conf`` zu ändern. In unserem Fall können wir die Warnung ignorieren. Mit dem Befehl ``sudo resolvconf -u`` kann ``resolv.conf`` neu generiert werden. Das Resultat in ``resolv.conf``:
 
 ::
 
@@ -537,7 +556,10 @@ Außerdem muss sichergestellt werden, dass in der bereits behandelten ``ports.co
 
 Der folgende prinzipielle Ablauf ist: Wir erstellen uns eine eigene Root-CA, die wir in den Browser importieren. Anschließend erstellen wir das Server-Zertifikat, das wir mit dem Key der Root-CA signieren und auf unseren Server ``sdi1b.mi.hdm-stuttgart.de`` laden. Dort erstellen wir einen passenden ``VirtualHost``, der SSL-fähig ist und starten den Webserver neu. Anschließend kann mit dem Browser, der das Root-CA geladen hat, problemlos die HTTPS-Version der Seite angesurfed werden.
 
-Die eigentliche Erstellung der Keys und Zertifikate, sowie die Apache-Konfiguration, erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird (*Vorgehensweise ist auf http://datacenteroverlords.com/2012/03/01/creating-your-own-ssl-certificate-authority/* genau beschrieben).
+Die eigentliche Erstellung der Keys und Zertifikate, sowie die Apache-Konfiguration, erfordern mehrere Schritte, auf die im Folgenden der Reihe nach eingegangen wird. Die Vorgehensweise ist auf `Datacenteroverlords.com - Creating your own SSL Certificate Authority`_ genau beschrieben.
+
+.. _Datacenteroverlords.com - Creating your own SSL Certificate Authority: http://datacenteroverlords.com/2012/03/01/creating-your-own-ssl-certificate-authority/
+
 
 Die Erklärungen aller verwendeten Parameter im Laufe des Prozesses sind am Ende des hierauf folgenden Unterkapitels aufgeführt.
 
@@ -635,7 +657,7 @@ Import des Root-Zertifikats in den Browser
 
 Dieses Zertifikat muss nun in den Browser des Clients, der die HTTPS-Verbindung später aufbauen soll, importiert werden. Dazu wurde ``rootCA.pem`` unter Windows über das GUI-Took ``WinSCP`` auf den Client geladen und unter Linux folgender ``scp``-Command ausgeführt: ``scp root@141.62.75.106:rootCA.key``. Voraussetzung für den Linux-Command ist, dass das Zertifikat im Home-Verzeichnis des Users ``root`` liegt.
 
-Unter dem Firefox unter Windows kann man Zertifikate mit folgendem Dialog importieren:
+Im Browser Firefox unter Windows kann man Zertifikate mit folgendem Dialog importieren:
 
 .. image:: images/Apache/07_zertifikatManager.png
 
@@ -674,7 +696,7 @@ Wieder werden einige User-Eingaben verlangt. Wichtig ist hierbei nur, dass unter
 
 .. topic:: Bemerkung
 
-    Einem Zertifikat vertraut der Browser nur, wenn angesurfter Domainname mit dem des im Zertifikat definierten "common name"s übereinstimmt. Alternativ kann auch in den Browser ``https://<IP-Address>`` eingegeben werden, vorausgesetzt der "common name" ist auch auf die IP-Adresse gesetzt. Sind diese beiden Kombinationen nicht gegeben, kommt der Warnhinweis des Browsers ("Nicht vertrauenswürdige Seite ...", s.u.).
+    Einem Zertifikat vertraut der Browser nur, wenn angesurfter Domainname mit dem des im Zertifikat definierten "common name"s übereinstimmt. Alternativ kann auch im Browser ``https://<IP-Address>`` eingegeben werden, vorausgesetzt der "common name" ist auch auf die IP-Adresse gesetzt. Sind diese beiden Kombinationen nicht gegeben, kommt der Warnhinweis des Browsers ("Nicht vertrauenswürdige Seite ...", s.u.).
 
 .. image:: images/Apache/11_CSRRequest.png
 
@@ -702,7 +724,7 @@ Der erstellte CSR hat folgenden Inhalt:
     ncLhvKcJ+0E=
     -----END CERTIFICATE REQUEST-----
 
-Nun wir der CSR mit dem ganz zu Beginn erstelltem privaten Schlüssel der Root-CA signiert:
+Nun wird der CSR mit dem ganz zu Beginn erstelltem privaten Schlüssel der Root-CA signiert:
 
 ::
 
@@ -754,13 +776,17 @@ Erklärung der ``openssl``-Parameter:
 
 .. glossary::
   genrsa
-    ein Standardkommando, das die Generierung eines RSA-private-keys bewirkt. Der public Key ist im private Key enthalten. (*Quelle: https://www.openssl.org/docs/HOWTO/keys.txt*)
+    Ein Standardkommando, das die Generierung eines RSA-private-keys bewirkt. Der public Key ist im private Key enthalten.
+
+    Vgl. `Openssl.org - HowTo Keys`_
+
+    .. _Openssl.org - HowTo Keys: https://www.openssl.org/docs/HOWTO/keys.txt
 
   req
-    ein Standardkommando, das Certificate Signing Requests (CSR) handhabt.
+    Ein Standardkommando, das Certificate Signing Requests (CSR) handhabt.
 
   x509
-      ein Standardkommando, das ein vielseitiges Certificate-Utility ist, um Zertifikate anzuzeigen, konvertieren und um Certificate-Requests zu signieren.
+      Ein Standardkommando, welches ein vielseitiges Certificate-Utility ist. Wird genutzt um Zertifikate anzuzeigen, zu konvertieren und um Certificate-Requests zu signieren.
 
   -out <filename>
       Gibt den Dateinamen für die Ausgabe eines Befehls an.
@@ -778,13 +804,13 @@ Erklärung der ``openssl``-Parameter:
       Diese Option generiert einen neuen Certificate-Request. Der User wird nach relevanten Eingaben gefragt.
 
   -nodes
-      Mit diesem Parameter, wird ein privater Key, der im Laufe der Operation generiert wird, nicht verschlüsselt.
+      Mit diesem Parameter wird ein privater Key, der im Laufe der Operation generiert wird, nicht verschlüsselt.
 
   -key <filename>
-      Gibt die Datei an, von der der private Key gelesen werden soll.
+      Gibt die Datei an, aus der der private Key gelesen werden soll.
 
   -days <num>
-      Gibt im Kontext des ``-x509`-Kommandos an, wie viele Tage das Zertifikat gültig sein soll. Der Standardwert beträgt 30 Tage.
+      Gibt im Kontext des ``-x509``-Kommandos an, wie viele Tage das Zertifikat gültig sein soll. Der Standardwert beträgt 30 Tage.
 
   -in  <filename>
       Gibt den Input-Dateinamen an, von dem ein Request gelesen werden soll. Ein Request wird nur gelesen, sofern die Option ``-new`` nicht im gleichen Befehl mit angegeben wurde.
@@ -793,7 +819,7 @@ Erklärung der ``openssl``-Parameter:
       Spezifiziert das CA-Zertifikat, das zum Signieren verwendet werden soll. Das Standardkommando ``x509`` verhält sich nun wie eine "mini CA". Die Input-Datei kann mit dieser signiert werden.
 
   -CAkey <filename>
-      Setzt den private Key der CA, mit dem ein Zertifikat signiert werden soll. Wenn diese Option nicht gesetzt ist, wird davon ausgegangen, dass der private Key der CA bereits im Zertifikat der CA enthalten ist.
+      Setzt den private Key der CA, mit dem ein Zertifikat signiert werden soll. Wenn diese Option nicht gesetzt ist wird davon ausgegangen, dass der private Key der CA bereits im Zertifikat der CA enthalten ist.
 
   -CAcreateserial
       Mit dieser Option wird eine CA-serial-number erstellt, falls sie nicht schon existiert. Falls die ``-CA``-Option gesetzt ist und die serial-number-Datei nicht existiert, wird eine Zufallszahl generiert.
@@ -837,7 +863,7 @@ Der Aufruf von ``https://sdi1b.mi.hdm-stuttgart.de`` funktioniert nun. Der Firef
 
 .. image:: images/Apache/12_pageTrusted.png
 
-Mit einem Click auf "Weitere Informationen..." kann das Server-Zertifikat (Device-Zertifikat) begutachtet werden.
+Mit einem Klick auf "Weitere Informationen..." kann das Server-Zertifikat (Device-Zertifikat) begutachtet werden.
 
 Wenn das Root-Zertifikat nicht im Browser integriert ist, kommt folgender - aus dem Alltag bekannter - Warnhinweis:
 
@@ -869,19 +895,25 @@ Seitens Apache muss zuerst min. ein LDAP-Modul aktiviert werden:
 * Das wichtige Modul ist ``authnz_ldap``: es stellt Authentifizierung- und Authorisierungsmöglichkeiten gegenüber einem LDAP-Server zur Verfügung. Die beiden Phasen Authentifizierung (das *n* in ``authnz``) und Authorisierung (das *z* in ``authnz``) werden nacheinander in dieser Reihenfolge ausgeführt:
 
   1. Authentifizierungsphase: Es wird sichergestellt, dass die User-Credentials valide sind. Wird durch die Zeile ``AuthBasicProvider ldap`` (s.u.) aufgerufen. Dieser Schritt wird auch die *search/bind*-Phase genannt, da erst nach dem User gesucht wird und bei einem eindeutigen Treffer anschließend ein Bind mit dem DN des Suchtreffers und Passwort des Users (über HTTP vom Client erhalten) gegen den LDAP-Server.
-  2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsächlich Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Details s.u.
+  2. Authorisierungsphase: Es wird sichergestellt, dass der bereits authentifizierte User auch Zugriffsrechte auf die angefragte Resource hat. Der Check wird durch die ``Require``-Direktive, z.B. ``Require valid-user`` (s.u.), angestossen. Dieser Schritt wird auch die *compare*-Phase genannt, da die tatsächlichen Rechte des authentifizierten Users mit denen in der ``Require``-Direktive genannten Bedinungen verglichen werden. Details s.u.
 
   .. topic:: Bemerkung
 
       Das Modul ``authz_user`` muss aktiviert sein, wenn ``valid-user`` in der ``Require``-Direktive angegeben wird.
 
-*(Quellen: http://httpd.apache.org/docs/2.4/mod/mod_authnz_ldap.html, http://httpd.apache.org/docs/2.4/mod/mod_authz_user.html)*
+  Vgl. `httpd.apache.org - mod_authnz_ldap`_ und `httpd.apache.prg - mod_authz_user`_
+
+.. _httpd.apache.org - mod_authnz_ldap: http://httpd.apache.org/docs/2.4/mod/mod_authnz_ldap.html
+
+.. _httpd.apache.prg - mod_authz_user: http://httpd.apache.org/docs/2.4/mod/mod_authz_user.html
 
 * Das optionale Modul ``ldap`` dient zur Performanceverbesserung gegenüber einem LDAP-Server und bringt im Wesentlichen zwei Verbesserungen mit sich: es fügt dem standardmäßigem Funktionsumfang von ``authnz_ldap`` sog. *Connection-Pools* und Caching-Strategien hinzu.
   * *Connections-Pools* erlauben dem LDAP-Server dauerhaft an den Apache-Server gebunden zu sein, ohne ständige Unbinds/Connects/Rebinds durchführen zu müssen.
-  * Caching reduziert die Anzahl der Anfragen an den LDAP-Server und senkt somit gleichzeitig die Last des LDAP-Servers. Über Apache-Direktiven wie ``LDAPCacheEntries`` (z.B. 1024) und ``LDAPCacheTTL`` (z.B. 600) können das Verhalten des Cache angepasst werden. Beide Verfahren machen v.a. bei großer Last Sinn.
+  * Caching reduziert die Anzahl der Anfragen an den LDAP-Server und senkt somit gleichzeitig die Last des LDAP-Servers. Über Apache-Direktiven wie ``LDAPCacheEntries`` (z.B. 1024) und ``LDAPCacheTTL`` (z.B. 600) kann das Verhalten des Cache angepasst werden. Beide Verfahren machen v.a. bei großer Last Sinn.
 
-*(Quelle: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html)*
+  Vgl. `httpd.apache.org - mod_ldap`_
+
+  .. _httpd.apache.org - mod_ldap: http://httpd.apache.org/docs/trunk/mod/mod_ldap.html
 
 Nun, da Apache fähig ist LDAP-AuthNZ zu vollziehen, können wir einen (oder mehrere) ``VirtualHost`` einrichten:
 
@@ -902,7 +934,7 @@ Nun, da Apache fähig ist LDAP-AuthNZ zu vollziehen, können wir einen (oder meh
             </Directory>
      </VirtualHost>
 
-Die Resource, für die in obigem Beispiel authentifiziert und authorisiert wird, ist ``/usr/share/doc/apache2-doc/manual``, das Verzeichnis, in dem die Apache-Doku liegt.
+Die Resource, für die im obigem Beispiel authentifiziert und authorisiert wird, ist ``/usr/share/doc/apache2-doc/manual``, also das Verzeichnis, in dem die Apache-Doku liegt.
 
 Erklärung der verwendeten Direktiven:
 
@@ -955,7 +987,7 @@ Die Installation des MySQL-Frontends ``phpMyAdmin`` geschieht folgendermaßen:
 
     sudo apt-get install phpmyadmin
 
-Während dem Installationsprozess wird eine Apache-Konfigurationsdatei ``phpmyadmin.conf`` in das Verzeichnis ``/etc/apache2/conf-enabled/`` geschoben. Genauer gesagt wird ein symbolischer Link in auf das ``/etc/apache2/conf-available/phpmyadmin.conf``-File gesetzt, was selbst wiederum ein symbolischer Link auf das File ``/etc/phpmyadmin/apache2.conf`` ist. Falls die Konfiguration nicht aktiviert sein sollte, kann dies mit ``a2enconf phpmyadmin`` erledigt werden. Sollte das ``phpMyAdmin``-Package jemals neu konfiguriert werden müssen, geht das über den Befehl ``sudo dpkg-reconfigure phpmyadmin``:
+Während des Installationsprozesses wird eine Apache-Konfigurationsdatei ``phpmyadmin.conf`` in das Verzeichnis ``/etc/apache2/conf-enabled/`` geschoben. Genauer gesagt wird ein symbolischer Link in auf das ``/etc/apache2/conf-available/phpmyadmin.conf``-File gesetzt, was selbst wiederum ein symbolischer Link auf das File ``/etc/phpmyadmin/apache2.conf`` ist. Falls die Konfiguration nicht aktiviert sein sollte, kann dies mit ``a2enconf phpmyadmin`` erledigt werden. Sollte das ``phpMyAdmin``-Package jemals neu konfiguriert werden müssen, geht das über den Befehl ``sudo dpkg-reconfigure phpmyadmin``:
 
 .. image:: images/Apache/19_phpmyadminReconfigure.png
 
