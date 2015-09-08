@@ -1,12 +1,12 @@
 # SDI_Documentation
 
-Die vorliegende Dokumentation wurde im Rahmen der Vorlesung **Software Defined Infrastructure** an der **Hochschule der Medien** erstellt. Gegenstand der Vorlesung waren die Themen 
+This documentation was created during the lecture **Software Defined Infrastructure** at Stuttgart Media Univerity. It contains theoretical background as well as exercises for following topics:
 
-1. Genereller Umgang mit Linux
+1. Working with Linux
 2. LDAP
 3. DNS
-4. Webserver
+4. Apache Webserver
 5. Samba
 6. Nagios
 
-Für jedes dieser Themengebiete wurden in Gruppen à 2-3 Studenten Aufgaben bearbeitet und die Vorgehensweise zur Lösung der Problemstellungen hier dokumentiert.
+The documentation is in German.
